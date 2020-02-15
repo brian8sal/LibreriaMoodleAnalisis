@@ -1,0 +1,16 @@
+--- 
+addons:
+  sonarcloud:
+    organization: "libreriamoodleanalisis"
+    token:
+      secure: "AH+tTr+cwa0CVNo51KnNitIw5AjBpCFXwMpa1rt5F1rWT+mIUMNbohH7qjmig9wirc0bwKS8KIKdWESmWNgW7XR42Q2MSwTnADK6D9g5uDS6WYi5lZNj/nky2DUIkR3KjU+VXyoLsJb30hv0fKysFdPsGpQpVX02IyX1sMWZFKhL/jj9HNZ6CIQMKsC1Z/z52t3b2bUlhIpvL4X5mx/rSe8upAmm1fIpKUzPOlqRNW6EHC5stOff+2pgYRWJJgv5zi1SXkYEamzcFLKOl9duuFZ/7haBZOJRqJIuczlhqH9M+Ucjmpb/7uF9Tds0qlRfnJTkZVNRaDRho8i81e+T4TfzHj1bLzbRlY9iSa26ibo2ssChFuDU5EQq276JxaxhQVMkUIaymT7lnexBbScGHfqEsPYGKBVhU4kJgcNiert0aTRGpd0YmuD1zr5GiKZdu0BcUawHbtESL2mYN0f28owKXVBklYVRb9UBstZ8SSV3rpBJYsFAOzftgPVqqWSIKgC8zatFRxDpTKF//QKTXM31DtjQiMMvgnVnC1245eDGAq5E73EVddiNbZ+47VaB+0NLuEZjYU0oF8nfsGGwSRYNmHk4nQYuaLNdj9qzs6a5yZEyONzI2bOtfCViLB1Wjyr4GHgv6cuRNLhijMjfDMaNu5T0XKQJcjbmcGLMH54=" # encrypted value of your token
+before_install: 
+  - "python --version"
+  - "pip install -U pip"
+dist: trusty
+language: python
+python: 3.6
+script: 
+  - "python -m unittest"
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - sonar-scanner
