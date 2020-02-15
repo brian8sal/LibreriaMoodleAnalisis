@@ -1,20 +1,19 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import MetricasNivelCurso
-import EjerciciosLog
+import MoodleAnalysisLibrary
 
-df1 = EjerciciosLog.createDataFrameFileName("logs_G668_1819_20191223-1648.csv")
-df2 = EjerciciosLog.createDataFrameFileName("2logs_G668_1819_20191223-1648.csv")
-df1 = EjerciciosLog.changeHoraType(df1)
-df2 = EjerciciosLog.changeHoraType(df2)
+df1 = MoodleAnalysisLibrary.createDataFrameFileName("logs_G668_1819_20191223-1648.csv")
+df2 = MoodleAnalysisLibrary.createDataFrameFileName("2logs_G668_1819_20191223-1648.csv")
+df1 = MoodleAnalysisLibrary.changeHoraType(df1)
+df2 = MoodleAnalysisLibrary.changeHoraType(df2)
 coursedf = [df1, df2]
-dfaux = MetricasNivelCurso.averageEventsPerParticipant(coursedf)
-dfaux2 = MetricasNivelCurso.eventsPerMonth(coursedf)
-dfaux3 = MetricasNivelCurso.eventsPerWeek(coursedf)
-dfaux4 = MetricasNivelCurso.eventsPerDay(coursedf)
-dfaux6 = MetricasNivelCurso.eventsPerResource(coursedf)
-dfaux7 = MetricasNivelCurso.eventsPerHour(coursedf)
+dfaux = MoodleAnalysisLibrary.averageEventsPerParticipant(coursedf)
+dfaux2 = MoodleAnalysisLibrary.eventsPerMonth(coursedf)
+dfaux3 = MoodleAnalysisLibrary.eventsPerWeek(coursedf)
+dfaux4 = MoodleAnalysisLibrary.eventsPerDay(coursedf)
+dfaux6 = MoodleAnalysisLibrary.eventsPerResource(coursedf)
+dfaux7 = MoodleAnalysisLibrary.eventsPerHour(coursedf)
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -43,13 +42,13 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             'font-family': 'sa'
         }
     ),
-    html.Div(children='Número de eventos: ' + str(MetricasNivelCurso.numEvents(coursedf)), style={
+    html.Div(children='Número de eventos: ' + str(MoodleAnalysisLibrary.numEvents(coursedf)), style={
         'textAlign': 'center',
         'color': colors['text'],
         'font-family': 'sa',
         'font-size': '20px'
     }),
-    html.Div(children='Número de participantes: ' + str(MetricasNivelCurso.numParticipantsPerCourse(coursedf)), style={
+    html.Div(children='Número de participantes: ' + str(MoodleAnalysisLibrary.numParticipantsPerCourse(coursedf)), style={
         'textAlign': 'center',
         'color': colors['text'],
         'font-family': 'sa',
@@ -185,7 +184,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
-    dfaux5 = MetricasNivelCurso.eventsBetweenDates(coursedf, start_date, end_date)
+    dfaux5 = MoodleAnalysisLibrary.eventsBetweenDates(coursedf, start_date, end_date)
     return {
         'data': [
             {'x': dfaux5['Fecha'], 'y': dfaux5['Número de eventos'], 'type': 'scatter'},
@@ -203,7 +202,7 @@ def update_output(start_date, end_date):
     dash.dependencies.Output('graph-with-range-slider', 'figure'),
     [dash.dependencies.Input('slider', 'value')])
 def update_output(selected_range):
-    dfaux6 = MetricasNivelCurso.resourcesByEvents(coursedf, selected_range[0], selected_range[1])
+    dfaux6 = MoodleAnalysisLibrary.resourcesByEvents(coursedf, selected_range[0], selected_range[1])
     return {
         'data': [
             {'x': dfaux6['Número de eventos'], 'y': dfaux6['Recurso'], 'type': 'scatter'},
