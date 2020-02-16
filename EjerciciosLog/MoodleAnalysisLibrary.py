@@ -1,21 +1,22 @@
 import os
 import pandas as pd
-import re
 import matplotlib.pyplot as plt
-from datetime import date
-from sklearn import preprocessing
-import numpy
 
-# Le pasas el nombre del archivo y el directorio en el que buscarlo
-# Obviamente se le podría pasar la ruta completa y utilizar directamente
-# la función de pandas para leer convertir csv en DataFrame
+# Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
+#
+# Recibe como parámetro el nombre del archivo y el path del mismo.
+# Retorna un dataframe.
 def createDataFrame(name, path) -> pd.DataFrame:
-    for root, directories, files in os.walk(path): # Nombres en un directorio árbol
+    for root, directories, files in os.walk(path):
         if name in files:
-            return pd.read_csv(os.path.join(root, name)) # Concatena la dirección con el nombre del archivo
+            return pd.read_csv(os.path.join(root, name))
 
-#print(createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca"))
+# print(createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca"))
 
+# Crea un dataframe a partir de un archivo csv.
+#
+# Recibe como parámetro el nombre del archivo. *Ha de estar en el path del proyecto
+# Retorna un dataframe.
 def createDataFrameFileName(name) -> pd.DataFrame:
     return pd.read_csv(name)
 
@@ -23,6 +24,10 @@ def createDataFrameFileName(name) -> pd.DataFrame:
 
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 
+# Añade una columna con el ID del usuario.
+#
+# Recibe como parámetro el dataframe al que añadir la columna.
+# Retorna un dataframe con la columna añadida.
 def addIDColumn(dataframe) -> pd.DataFrame:
     dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
     return dataframe
@@ -32,8 +37,12 @@ def addIDColumn(dataframe) -> pd.DataFrame:
 
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 
+# Elimina unas columnas del dataframe.
+#
+# Recibe como parámetro el dataframe y las columnas a borrar de este.
+# Retorna un dataframe con las columnas borradas.
 def deleteColumns(dataframe, columns) -> pd.DataFrame:
-    dataframe = dataframe.drop(columns, axis='columns') # ¿Mejor un del?
+    dataframe = dataframe.drop(columns, axis='columns')
     return dataframe
 
 # print(deleteColumns(df,list(df)))
@@ -41,6 +50,10 @@ def deleteColumns(dataframe, columns) -> pd.DataFrame:
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 df = addIDColumn(df)
 
+# Elimina una lista de usuarios dado su ID.
+#
+# Recibe como parámetro el dataframe del que borrar los usuarios y los IDs de estos.
+# Retorna un dataframe con los usuarios borrados.
 def deleteByID(dataframe, idList) -> pd.DataFrame:
     for ele in idList:
         dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
@@ -52,6 +65,9 @@ listIDs = ["6844", "20105"]
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 df = addIDColumn(df)
 
+# Genera una gráfica con los eventos por usuario.
+#
+# Recibe como parámetro el dataframe a representar.
 def graphicEventsPerUser(dataframe):
     groups = dataframe.groupby(['IDUsuario']).size()
     groups.plot.bar()
@@ -62,6 +78,9 @@ def graphicEventsPerUser(dataframe):
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 df = addIDColumn(df)
 
+# Genera una gráfica con los eventos por contexto.
+#
+# Recibe como parámetro el dataframe a representar.
 def graphicEventsPerContext(dataframe):
      groups = dataframe.groupby(['Contexto del evento']).size()
      groups.plot.bar()
@@ -72,6 +91,10 @@ def graphicEventsPerContext(dataframe):
 df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 df = addIDColumn(df)
 
+# Cambia el tipo de la columna Hora a datetime.
+#
+# Recibe como parámetro el dataframe cuya columna quiere ser cambiada de tipo.
+# Retorna un dataframe con la columna con el tipo cambiado.
 def changeHoraType(dataframe):
     dataframe['Hora']=pd.to_datetime(dataframe['Hora'])
     return dataframe
@@ -82,6 +105,10 @@ df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDriv
 df = addIDColumn(df)
 df = changeHoraType(df)
 
+# Devuelve los eventos que se encuentren entre dos fechas dadas.
+#
+# Recibe como parámetro el dataframe y las fechas.
+# Retorna un dataframe con las filas comprendidas entre las fechas.
 def betweenDates(dataframe, initial, final):
     result = (dataframe['Hora']>initial)&(dataframe['Hora']<=final)
     dataframe = df.loc[result]
@@ -95,10 +122,14 @@ df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDriv
 df = addIDColumn(df)
 df = changeHoraType(df)
 
+# Añade columnas de hora, día y mes.
+#
+# Recibe como parámetro el dataframe al que añadir las columnas.
+# Retorna un dataframe con las columna añadidas.
 def addMontDayHourColumns(dataframe):
+    dataframe['HoraSeparada'] = pd.DatetimeIndex(dataframe['Hora']).time
     dataframe['DíaSeparado'] = pd.DatetimeIndex(dataframe['Hora']).day
     dataframe['MesSeparado'] = pd.DatetimeIndex(dataframe['Hora']).month
-    dataframe['HoraSeparada'] = pd.DatetimeIndex(dataframe['Hora']).time
     return dataframe
 
 # print(addMontDayHourColumns(df))
