@@ -12,8 +12,6 @@ class MoodleAnalysisLibrary():
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
 
-
-
     # Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
     #
     # Recibe como parámetro el nombre del archivo y el path del mismo.
@@ -23,18 +21,12 @@ class MoodleAnalysisLibrary():
             if name in files:
                 return pd.read_csv(os.path.join(root, name))
 
-    # print(createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca"))
-
     # Crea un dataframe a partir de un archivo csv.
     #
     # Recibe como parámetro el nombre del archivo. *Ha de estar en el path del proyecto
     # Retorna un dataframe.
     def createDataFrameFileName(name) -> pd.DataFrame:
         return pd.read_csv(name)
-
-    # print(createDataFrameFileName("logs_G668_1819_20191223-1648.csv"))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
 
     # Añade una columna con el ID del usuario.
     #
@@ -44,10 +36,6 @@ class MoodleAnalysisLibrary():
         dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
-    # print(addIDColumn(df)['IDUsuario'])
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-
     # Elimina unas columnas del dataframe.
     #
     # Recibe como parámetro el dataframe y las columnas a borrar de este.
@@ -55,11 +43,6 @@ class MoodleAnalysisLibrary():
     def deleteColumns(dataframe, columns) -> pd.DataFrame:
         dataframe = dataframe.drop(columns, axis='columns')
         return dataframe
-
-    # print(deleteColumns(df,list(df)))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
 
     # Elimina una lista de usuarios dado su ID.
     #
@@ -70,37 +53,21 @@ class MoodleAnalysisLibrary():
             dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
         return dataframe
 
-    listIDs = ["6844", "20105"]
-    # print(deleteByID(df,listIDs))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-
     # Genera una gráfica con los eventos por usuario.
     #
     # Recibe como parámetro el dataframe a representar.
-    def graphicEventsPerUser(dataframe):
+    def graphicEventsPerUser(self,dataframe):
         groups = dataframe.groupby(['IDUsuario']).size()
         groups.plot.bar()
         plt.show()
 
-    # graphicEventsPerUser(df)
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-
     # Genera una gráfica con los eventos por contexto.
     #
     # Recibe como parámetro el dataframe a representar.
-    def graphicEventsPerContext(dataframe):
+    def graphicEventsPerContext(self,dataframe):
         groups = dataframe.groupby(['Contexto del evento']).size()
         groups.plot.bar()
         plt.show()
-
-    # graphicEvents(df)
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
 
     # Cambia el tipo de la columna Hora a datetime.
     #
@@ -110,12 +77,6 @@ class MoodleAnalysisLibrary():
         dataframe['Hora'] = pd.to_datetime(dataframe['Hora'])
         return dataframe
 
-    # changeHoraType(df).info()
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
-
     # Devuelve los eventos que se encuentren entre dos fechas dadas.
     #
     # Recibe como parámetro el dataframe y las fechas.
@@ -124,14 +85,6 @@ class MoodleAnalysisLibrary():
         result = (dataframe['Hora'] > initial) & (dataframe['Hora'] <= final)
         dataframe = dataframe.loc[result]
         return dataframe
-
-    # ini = pd.Timestamp(2019, 8, 1)
-    # fin = pd.Timestamp(2019, 8, 29)
-    # print(betweenDates(df,ini,fin))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
 
     # Añade columnas de hora, día y mes.
     #
@@ -143,14 +96,8 @@ class MoodleAnalysisLibrary():
         dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
         return dataframe
 
-    # print(addMontDayHourColumns(df))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
-
     def addDiaNormalizadoColumn(dataframe):
-        dataframe = dataframe.sort_values(by=['Hora'])
+        #dataframe = dataframe.sort_values(by=['Hora'])
         # dataframe.index = dataframe['Hora']
         dataframe['DíaNormalizado'] = dataframe['Hora'].dt.dayofyear
         # dataframe.set_index(pd.Index(['DíaNormalizado']))
@@ -164,129 +111,115 @@ class MoodleAnalysisLibrary():
     # df2 = changeHoraType(df2)
     # coursedf = [df1, df2]
 
-    def numEvents(course):
-        result = 0
-        for c in course:
-            result = len(c) + result
-        return result
+    # Retorna el número de eventos de un dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna el número de eventos del dataframe.
+    def numEvents(self, dataframe):
+        return len(dataframe)
 
-    # print("Número total de eventos "+str(numEvents(coursedf)))
-
-    def numTeachers(dataframe):
+    # Retorna el número de profesores de un dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna el número de profesores del dataframe.
+    def numTeachers(self,dataframe):
         result = 0
         for d in dataframe['Nombre completo del usuario'].unique():
             if (d.isupper() == False and d != '-'):
                 result = result + 1
         return result
 
-    # print(numTeachers(df1))
+    # Retorna el número de participantes de un dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna el número de eventos del dataframe.
+    def numParticipantsPerSubject(self,dataframe):
+        return (dataframe['Nombre completo del usuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
-    def numParticipantsPerSubject(dataframe):
-        return (dataframe['Nombre completo del usuario'].nunique() - MoodleAnalysisLibrary.numTeachers(dataframe))
-
-    # print(numParticipantsPerSubject(df2))
-
-    def numParticipantsPerCourse(course):
-        result = 0
-        for c in course:
-            result = MoodleAnalysisLibrary.numParticipantsPerSubject(c) + result
-        return result
-
-    # print(numParticipantsPerCourse(coursedf))
-
-    def averageEventsPerParticipant(course):
-        result = 0
-        for c in course:
-            result = c.groupby(['Nombre completo del usuario']).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(course)).values), index=(result / len(course)).index,
-                                 columns=['Media de eventos']))
+    # Calcula la media de eventos por participante del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
+    # estando ordenado por la primera.
+    def averageEventsPerParticipant(self, dataframe):
+        result=0
+        result = dataframe.groupby(['Nombre completo del usuario']).size() + result
+        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
         resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,
-                             inplace=True)  # El íncide es el participante si hace esto es para que sea el número y mejorar la apariencia
-        # resultdf.index.name = "Participante"
+        resultdf.reset_index(drop=True,inplace=True)
         resultdf = resultdf.sort_values(by=['Media de eventos'])
         return resultdf
 
-    # print(averageEventsPerParticipant(coursedf))
-
-    def eventsPerMonth(course):
+    # Devuelve el número de eventos por mes del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe ordenado cronológicamente con una columna con el número de eventos y con otra con el mes del año,
+    def eventsPerMonth(self, dataframe):
         result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            # result = c['Hora'].groupby(c.Hora.dt.to_period("M")).agg('count') + result
-            # result = c['Hora'].groupby(c['Hora'].dt.month).agg('count') +result
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%Y-%m')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
+        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"])
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerMonth(coursedf))
-
-    def eventsPerWeek(course):
+    # Devuelve el número de eventos por mes del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con el número de eventos y con otra con la semana del año.
+    def eventsPerWeek(self, dataframe):
         result = 0
-        resultt = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%W')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerWeek(coursedf))
-
-    def eventsPerDay(course):
+    # Devuelve el número de eventos por día del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con el número de eventos y con otra con el día.
+    def eventsPerDay(self, dataframe):
         result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerDay(coursedf).info())
+    # Devuelve el número de eventos por recurso del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con el número de eventos y con otra con el recurso con el que se interactuó.
+    def eventsPerResource(self, dataframe):
+        result = 0
+        result = dataframe['Contexto del evento'].groupby(dataframe['Contexto del evento']).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
+        resultdf['Recurso'] = resultdf.index
+        resultdf.reset_index(drop=True, inplace=True)
+        resultdf = resultdf.sort_values(by=['Número de eventos'])
+        return resultdf
+
+    # Devuelve el número de eventos por hora del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con el número de eventos y con otra con la hora.
+    def eventsPerHour(self, dataframe):
+        result = 0
+        result = dataframe['Hora'].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        resultdf['Hora'] = resultdf.index
+        resultdf.reset_index(drop=True, inplace=True)
+        return resultdf
+
+    def resourcesByNumberOfEvents(self,dataframe, min, max):
+        resultdf = MoodleAnalysisLibrary.eventsPerResource(dataframe)
+        result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
+        resultdf = resultdf.loc[result2]
+        return resultdf
 
     def eventsBetweenDates(course, initial, final):
         resultdf = MoodleAnalysisLibrary.eventsPerDay(course)
         result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
-
-    # print(eventsBetweenDates(coursedf,pd.Timestamp(2018,12,22),pd.Timestamp(2018,12,24)))
-
-    def eventsPerResource(course):
-        result = 0
-        for c in course:
-            result = c['Nombre evento'].groupby(c['Nombre evento']).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
-        resultdf['Recurso'] = resultdf.index
-        resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(by=['Número de eventos'])
-
-        return resultdf
-
-    # print(eventsPerResource(coursedf))
-
-    def resourcesByEvents(course, min, max):
-        resultdf = MoodleAnalysisLibrary.eventsPerResource(course)
-
-        result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
-        resultdf = resultdf.loc[result2]
-        return resultdf
-
-    # print(resourcesByEvents(coursedf,84,100))
-
-    def eventsPerHour(course):
-        result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby((c.Hora.dt.strftime('%H'))).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
-        resultdf['Hora'] = resultdf.index
-        # resultdf['Fecha']=pd.to_datetime(resultdf['Fecha'])
-        resultdf.reset_index(drop=True, inplace=True)
-        return resultdf
-    # print(eventsPerHour(coursedf))

@@ -202,7 +202,7 @@ def update_output(start_date, end_date):
     dash.dependencies.Output('graph-with-range-slider', 'figure'),
     [dash.dependencies.Input('slider', 'value')])
 def update_output(selected_range):
-    dfaux6 = MoodleAnalysisLibrary.resourcesByEvents(coursedf, selected_range[0], selected_range[1])
+    dfaux6 = MoodleAnalysisLibrary.resourcesByNumberOfEvents(coursedf, selected_range[0], selected_range[1])
     return {
         'data': [
             {'x': dfaux6['Número de eventos'], 'y': dfaux6['Recurso'], 'type': 'scatter'},
