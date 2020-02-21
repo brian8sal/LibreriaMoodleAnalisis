@@ -136,18 +136,18 @@ class MoodleAnalysisLibrary():
     def numParticipantsPerSubject(self,dataframe):
         return (dataframe['Nombre completo del usuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
-    # Calcula la media de eventos por participante del dataframe.
+    # Calcula el número de eventos por participante del dataframe.
     #
     # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
+    # Retorna un dataframe con una columna con el número de eventos y con otra con el nombre del participante,
     # estando ordenado por la primera.
-    def averageEventsPerParticipant(self, dataframe):
+    def numEventsPerParticipant(self, dataframe):
         result=0
         result = dataframe.groupby(['Nombre completo del usuario']).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
+        resultdf = (pd.DataFrame(data=((result).values), index=(result).index, columns=['Número de eventos']))
         resultdf['Participante'] = resultdf.index
         resultdf.reset_index(drop=True,inplace=True)
-        resultdf = resultdf.sort_values(by=['Media de eventos'])
+        resultdf = resultdf.sort_values(by=['Número de eventos'])
         return resultdf
 
     # Devuelve el número de eventos por mes del dataframe.
@@ -213,13 +213,28 @@ class MoodleAnalysisLibrary():
         return resultdf
 
     def resourcesByNumberOfEvents(self,dataframe, min, max):
-        resultdf = MoodleAnalysisLibrary.eventsPerResource(dataframe)
+        resultdf = MoodleAnalysisLibrary.eventsPerResource(self,dataframe)
         result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def eventsBetweenDates(course, initial, final):
-        resultdf = MoodleAnalysisLibrary.eventsPerDay(course)
+    def eventsBetweenDates(self, dataframe, initial, final):
+        resultdf = MoodleAnalysisLibrary.eventsPerDay(self,dataframe)
         result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
+        return resultdf
+
+    # Calcula la media de eventos por participante del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
+    # estando ordenado por la primera.
+    ###########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
+    def averageEventsPerParticipant(self, dataframe):
+        result=0
+        result = dataframe.groupby(['Nombre completo del usuario']).size() + result
+        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
+        resultdf['Participante'] = resultdf.index
+        resultdf.reset_index(drop=True,inplace=True)
+        resultdf = resultdf.sort_values(by=['Media de eventos'])
         return resultdf
