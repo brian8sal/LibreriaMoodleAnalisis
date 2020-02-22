@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
-        self.dataframe=MoodleAnalysisLibrary.createDataFrame(name, path)
-        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
@@ -16,7 +16,7 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el nombre del archivo y el path del mismo.
     # Retorna un dataframe.
-    def createDataFrame(name, path) -> pd.DataFrame:
+    def createDataFrame(self,name, path) -> pd.DataFrame:
         for root, directories, files in os.walk(path):
             if name in files:
                 return pd.read_csv(os.path.join(root, name))
@@ -32,7 +32,7 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el dataframe al que añadir la columna.
     # Retorna un dataframe con la columna añadida.
-    def addIDColumn(dataframe) -> pd.DataFrame:
+    def addIDColumn(self, dataframe) -> pd.DataFrame:
         dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
@@ -40,7 +40,7 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el dataframe y las columnas a borrar de este.
     # Retorna un dataframe con las columnas borradas.
-    def deleteColumns(dataframe, columns) -> pd.DataFrame:
+    def deleteColumns(self,dataframe, columns) -> pd.DataFrame:
         dataframe = dataframe.drop(columns, axis='columns')
         return dataframe
 
