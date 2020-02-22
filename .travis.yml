@@ -11,9 +11,6 @@ dist: trusty
 language: python
 python: 3.6
 script: 
-  - "pip install matplotlib"
-  - "pip install pandas"
-  - "cd EjerciciosLog"
   - "python -m unittest"
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
   - sonar-scanner

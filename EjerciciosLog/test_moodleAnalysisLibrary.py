@@ -15,9 +15,7 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_createDataFrameFileName(self):
         dataframe = prueba.createDataFrameFileName("TestingLog1Row.csv")
-        print(dataframe.columns)
         # dataframe1=prueba.createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-        # print(dataframe1.columns)
         self.assertEqual(len(dataframe), 1)
 
     def test_addIDColumn(self):
