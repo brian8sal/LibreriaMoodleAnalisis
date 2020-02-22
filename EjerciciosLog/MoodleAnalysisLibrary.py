@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
-        self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
-        # self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
-        # self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
+        #self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+        self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
+        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
@@ -25,7 +26,7 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el nombre del archivo. *Ha de estar en el path del proyecto
     # Retorna un dataframe.
-    def createDataFrameFileName(name) -> pd.DataFrame:
+    def createDataFrameFileName(self,name) -> pd.DataFrame:
         return pd.read_csv(name)
 
     # Añade una columna con el ID del usuario.

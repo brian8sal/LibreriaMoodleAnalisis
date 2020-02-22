@@ -1,19 +1,24 @@
 import unittest
 import MoodleAnalysisLibrary
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv","C:/Users/sal8b/OneDrive/Escritorio/Beca", ["323", "2", "231"]))
+prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","", []))
 class TestMoodleAnalysisLibrary(unittest.TestCase):
 
-    def test_createDataFrame(self):
-        dataframe=prueba.createDataFrame("TestingLog99Rows.csv","C:/Users/sal8b/OneDrive/Escritorio")
-        dataframe1=prueba.createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-        self.assertEqual(len(dataframe),99)
-        self.assertEqual(len(dataframe1),1842)
+    # def test_createDataFrame(self):
+    #     dataframe=prueba.createDataFrame("TestingLog1Row.csv","C:/Users/sal8b/OneDrive/Escritorio")
+    #     print(dataframe.columns)
+    #     # dataframe1=prueba.createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
+    #     # print(dataframe1.columns)
+    #     self.assertEqual(len(dataframe),1)
+    #     # self.assertEqual(len(dataframe1),1842)
 
-    #
-    # def test_createDataFrameFileName(self):
-    #     self.fail()
-    #
+
+    def test_createDataFrameFileName(self):
+        dataframe = prueba.createDataFrameFileName("TestingLog1Row.csv")
+        print(dataframe.columns)
+        # dataframe1=prueba.createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
+        # print(dataframe1.columns)
+        self.assertEqual(len(dataframe), 1)
 
     def test_addIDColumn(self):
         dataframe=prueba.addIDColumn(prueba.dataframe) #Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
