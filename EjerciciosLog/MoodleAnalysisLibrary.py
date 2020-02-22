@@ -6,8 +6,8 @@ class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
         self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
-        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
+        # self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
+        # self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
@@ -33,7 +33,6 @@ class MoodleAnalysisLibrary():
     # Recibe como parámetro el dataframe al que añadir la columna.
     # Retorna un dataframe con la columna añadida.
     def addIDColumn(self, dataframe) -> pd.DataFrame:
-        dataframe=pd.DataFrame
         dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
