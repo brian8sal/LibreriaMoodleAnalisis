@@ -1,8 +1,8 @@
-from unittest import TestCase
+import unittest
 import MoodleAnalysisLibrary
 
 prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv","C:/Users/sal8b/OneDrive/Escritorio/Beca", ["323", "2", "231"]))
-class TestMoodleAnalysisLibrary(TestCase):
+class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_createDataFrame(self):
         dataframe=prueba.createDataFrame("TestingLog99Rows.csv","C:/Users/sal8b/OneDrive/Escritorio")
@@ -81,4 +81,4 @@ class TestMoodleAnalysisLibrary(TestCase):
     #     self.fail()
 
 if __name__ == '__main__':
-    TestCase.main()
+    unittest.main()
