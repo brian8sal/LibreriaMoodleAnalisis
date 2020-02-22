@@ -33,6 +33,7 @@ class MoodleAnalysisLibrary():
     # Recibe como parámetro el dataframe al que añadir la columna.
     # Retorna un dataframe con la columna añadida.
     def addIDColumn(self, dataframe) -> pd.DataFrame:
+        dataframe=pd.DataFrame
         dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
