@@ -8,9 +8,9 @@ class MoodleAnalysisLibrary():
         #self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
         self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
         self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
+        self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self,self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
 
     # Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
@@ -49,7 +49,7 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el dataframe del que borrar los usuarios y los IDs de estos.
     # Retorna un dataframe con los usuarios borrados.
-    def deleteByID(dataframe, idList) -> pd.DataFrame:
+    def deleteByID(self,dataframe, idList) -> pd.DataFrame:
         for ele in idList:
             dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
         return dataframe
@@ -91,8 +91,8 @@ class MoodleAnalysisLibrary():
     #
     # Recibe como parámetro el dataframe al que añadir las columnas.
     # Retorna un dataframe con las columna añadidas.
-    def addMontDayHourColumns(dataframe):
-        dataframe['HoraDelDia'] = pd.DatetimeIndex(dataframe['Hora']).time
+    def addMontDayHourColumns(self,dataframe):
+        dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe['Hora']).time
         dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe['Hora']).day
         dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
         return dataframe
