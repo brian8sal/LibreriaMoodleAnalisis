@@ -13,43 +13,109 @@ class MoodleAnalysisLibrary():
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self,self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
 
-    # Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
-    #
-    # Recibe como parámetro el nombre del archivo y el path del mismo.
-    # Retorna un dataframe.
     def createDataFrame(self,name, path) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
+
+        Parameters
+        ----------
+        arg1 : str
+            Nombre del fichero.
+        arg2 : str
+            Dirección del fichero.
+
+        Returns
+        -------
+        dataframe
+            Log.
+
+        """
         for root, directories, files in os.walk(path):
             if name in files:
                 return pd.read_csv(os.path.join(root, name))
 
-    # Crea un dataframe a partir de un archivo csv.
-    #
-    # Recibe como parámetro el nombre del archivo. *Ha de estar en el path del proyecto
-    # Retorna un dataframe.
     def createDataFrameFileName(self,name) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Crea un dataframe a partir de un archivo csv.
+
+        Parameters
+        ----------
+        arg1 : str
+            Nombre del fichero.
+
+        Returns
+        -------
+        dataframe
+            Log.
+
+        """
         return pd.read_csv(name)
 
-    # Añade una columna con el ID del usuario.
-    #
-    # Recibe como parámetro el dataframe al que añadir la columna.
-    # Retorna un dataframe con la columna añadida.
     def addIDColumn(self, dataframe) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Añade una columna con el ID del usuario.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log al que añadir la columna.
+
+        Returns
+        -------
+        dataframe
+            Log con la columna añadida.
+
+        """
         dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
-    # Elimina unas columnas del dataframe.
-    #
-    # Recibe como parámetro el dataframe y las columnas a borrar de este.
-    # Retorna un dataframe con las columnas borradas.
-    def deleteColumns(self,dataframe, columns) -> pd.DataFrame:
+    def deleteColumns(self,dataframe,columns) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Elimina unas columnas del dataframe.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que eliminar las columnas.
+        arg2 : array
+            Columnas que eliminar.
+
+        Returns
+        -------
+        dataframe
+            Log con las columnas eliminadas.
+
+        """
         dataframe = dataframe.drop(columns, axis='columns')
         return dataframe
 
-    # Elimina una lista de usuarios dado su ID.
-    #
-    # Recibe como parámetro el dataframe del que borrar los usuarios y los IDs de estos.
-    # Retorna un dataframe con los usuarios borrados.
     def deleteByID(self,dataframe, idList) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Elimina una lista de usuarios dado su ID.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que eliminar los usuarios.
+        arg2 : array
+            Usuarios que eliminar.
+
+        Returns
+        -------
+        dataframe
+            Log con los usuarios eliminados.
+
+        """
         for ele in idList:
             dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
         return dataframe
@@ -104,14 +170,6 @@ class MoodleAnalysisLibrary():
         # dataframe.set_index(pd.Index(['DíaNormalizado']))
         return dataframe
 
-    # print(addDiaNormalizadoColumn(df.sample(10)))
-
-    # df1 = createDataFrameFileName("logs_G668_1819_20191223-1648.csv")
-    # df2 = createDataFrameFileName("2logs_G668_1819_20191223-1648.csv")
-    # df1 = changeHoraType(df1)
-    # df2 = changeHoraType(df2)
-    # coursedf = [df1, df2]
-
     # Retorna el número de eventos de un dataframe.
     #
     # Recibe como parámetro el dataframe.
@@ -135,7 +193,7 @@ class MoodleAnalysisLibrary():
     # Recibe como parámetro el dataframe.
     # Retorna el número de eventos del dataframe.
     def numParticipantsPerSubject(self,dataframe):
-        return (dataframe['Nombre completo del usuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
+        return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
     # Calcula el número de eventos por participante del dataframe.
     #
@@ -143,13 +201,9 @@ class MoodleAnalysisLibrary():
     # Retorna un dataframe con una columna con el número de eventos y con otra con el nombre del participante,
     # estando ordenado por la primera.
     def numEventsPerParticipant(self, dataframe):
-        result=0
-        result = dataframe.groupby(['Nombre completo del usuario']).size() + result
-        resultdf = (pd.DataFrame(data=((result).values), index=(result).index, columns=['Número de eventos']))
-        resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,inplace=True)
-        resultdf = resultdf.sort_values(by=['Número de eventos'])
-        return resultdf
+        result = pd.DataFrame({'Número de eventos': dataframe.groupby(['Nombre completo del usuario', 'IDUsuario']).size()}).reset_index()
+        result = result.sort_values(by=['Número de eventos'])
+        return result
 
     # Devuelve el número de eventos por mes del dataframe.
     #

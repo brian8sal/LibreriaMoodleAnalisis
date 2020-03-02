@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
 
-prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca",[]))
+prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca",[]))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -50,7 +50,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         'font-size': '20px', },
              ),
     html.Div(
-        html.Iframe(srcDoc=prueba.numEventsPerParticipant(prueba.dataframe).to_html(index=False, columns=["Participante", "Número de eventos"]), width='500'),
+        html.Iframe(srcDoc=prueba.numEventsPerParticipant(prueba.dataframe).to_html(index=False, columns=["Nombre completo del usuario", "Número de eventos"]), width='500'),
         style={'textAlign': 'center'}
     ),
     html.Div(children='Número de eventos por recurso ', style={
