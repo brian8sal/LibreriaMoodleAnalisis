@@ -120,44 +120,108 @@ class MoodleAnalysisLibrary():
             dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
         return dataframe
 
-    # Genera una gráfica con los eventos por usuario.
-    #
-    # Recibe como parámetro el dataframe a representar.
     def graphicEventsPerUser(self,dataframe):
+        """
+        Summary line.
+
+        Genera una gráfica con los eventos por usuario.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que hacer la gráfica.
+
+        Returns
+        -------
+
+
+        """
         groups = dataframe.groupby(['IDUsuario']).size()
         groups.plot.bar()
         plt.show()
 
-    # Genera una gráfica con los eventos por contexto.
-    #
-    # Recibe como parámetro el dataframe a representar.
     def graphicEventsPerContext(self,dataframe):
+        """
+        Summary line.
+
+        Genera una gráfica con los eventos por contexto.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que hacer la gráfica.
+
+        Returns
+        -------
+
+
+        """
         groups = dataframe.groupby(['Contexto del evento']).size()
         groups.plot.bar()
         plt.show()
 
-    # Cambia el tipo de la columna Hora a datetime.
-    #
-    # Recibe como parámetro el dataframe cuya columna quiere ser cambiada de tipo.
-    # Retorna un dataframe con la columna con el tipo cambiado.
     def changeHoraType(dataframe):
+        """
+        Summary line.
+
+        Cambia el tipo de la columna Hora a datetime.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log cuya columna quiere ser cambiada de tipo.
+
+        Returns
+        -------
+        dataframe
+            Log con la columna Hora cambiada.
+
+        """
         dataframe['Hora'] = pd.to_datetime(dataframe['Hora'])
         return dataframe
 
-    # Devuelve los eventos que se encuentren entre dos fechas dadas.
-    #
-    # Recibe como parámetro el dataframe y las fechas.
-    # Retorna un dataframe con las filas comprendidas entre las fechas.
     def betweenDates(self,dataframe, initial, final):
+        """
+        Summary line.
+
+        Devuelve los eventos que se encuentren entre dos fechas dadas.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log cuya columna quiere ser cambiada de tipo.
+        arg2 : Timestamp
+            Fecha inicial.
+        arg3 : Timestamp
+            Fecha final.
+
+        Returns
+        -------
+        dataframe
+            Log con los eventos comprendidos.
+
+        """
         result = (dataframe['Hora'] > initial) & (dataframe['Hora'] <= final)
         dataframe = dataframe.loc[result]
         return dataframe
 
-    # Añade columnas de hora, día y mes.
-    #
-    # Recibe como parámetro el dataframe al que añadir las columnas.
-    # Retorna un dataframe con las columna añadidas.
     def addMontDayHourColumns(self,dataframe):
+        """
+        Summary line.
+
+        Añade columnas de hora, día y mes.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log al que añadir columnas.
+
+        Returns
+        -------
+        dataframe
+            Log con las columnas añadidas.
+
+        """
         dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe['Hora']).time
         dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe['Hora']).day
         dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
@@ -170,14 +234,26 @@ class MoodleAnalysisLibrary():
         # dataframe.set_index(pd.Index(['DíaNormalizado']))
         return dataframe
 
-    # Retorna el número de eventos de un dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna el número de eventos del dataframe.
     def numEvents(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos de un dataframe.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los eventos.
+
+        Returns
+        -------
+        int
+            Número de eventos en el log.
+
+        """
         return len(dataframe)
 
-    # Retorna el número de profesores de un dataframe.
+    # Retorna el número de profesores de un dataframe. ***PASARÁ A SER BORRADO
     #
     # Recibe como parámetro el dataframe.
     # Retorna el número de profesores del dataframe.
@@ -188,11 +264,23 @@ class MoodleAnalysisLibrary():
                 result = result + 1
         return result
 
-    # Retorna el número de participantes de un dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna el número de eventos del dataframe.
     def numParticipantsPerSubject(self,dataframe):
+        """
+        Summary line.
+
+        Calcula el número de participantes de un log, sin contar a profesores.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
+
+        Returns
+        -------
+        int
+            Número de participantes en el log.
+
+        """
         return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
     # Calcula el número de eventos por participante del dataframe.

@@ -68,9 +68,14 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numTeachers(self):
         self.assertTrue(prueba1Rows.numTeachers(prueba1Rows.dataframe)==1)
+        self.assertTrue(prueba99Rows.numTeachers(prueba99Rows.dataframe)==1)
+
 
     def test_numParticipantsPerSubject(self):
         self.assertTrue((prueba1Rows.numParticipantsPerSubject(prueba1Rows.dataframe)==0))
+        print(prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe))
+        self.assertTrue((prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe)==13))#12 +1 de el guión
+
 
     def test_numEventsPerParticipant(self):
         self.assertTrue((((prueba1Rows.numEventsPerParticipant(prueba1Rows.dataframe))['Número de eventos'][0])==1))
