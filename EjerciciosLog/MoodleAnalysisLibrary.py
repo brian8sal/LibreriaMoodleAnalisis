@@ -283,21 +283,44 @@ class MoodleAnalysisLibrary():
         """
         return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
-    # Calcula el número de eventos por participante del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con el número de eventos y con otra con el nombre del participante,
-    # estando ordenado por la primera.
     def numEventsPerParticipant(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por participante del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por participante.
+
+        Returns
+        -------
+        series??int
+            Lista con los participantes y su número de participantes.
+
+        """
         result = pd.DataFrame({'Número de eventos': dataframe.groupby(['Nombre completo del usuario', 'IDUsuario']).size()}).reset_index()
         result = result.sort_values(by=['Número de eventos'])
         return result
 
-    # Devuelve el número de eventos por mes del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe ordenado cronológicamente con una columna con el número de eventos y con otra con el mes del año,
     def eventsPerMonth(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por mes del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por mes.
+
+        Returns
+        -------
+        series??int
+            Lista con los meses y su número de participantes.
+
+        """
         result = 0
         result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
         resultdf = pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"])
@@ -305,11 +328,23 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # Devuelve el número de eventos por mes del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con el número de eventos y con otra con la semana del año.
     def eventsPerWeek(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por semana del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por semana.
+
+        Returns
+        -------
+        series??int
+            Lista con las semanas y su número de eventos.
+
+        """
         result = 0
         result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
@@ -317,11 +352,23 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # Devuelve el número de eventos por día del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con el número de eventos y con otra con el día.
     def eventsPerDay(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por día del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por día.
+
+        Returns
+        -------
+        series??int
+            Lista con los días y su número de eventos.
+
+        """
         result = 0
         result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
@@ -330,11 +377,23 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # Devuelve el número de eventos por recurso del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con el número de eventos y con otra con el recurso con el que se interactuó.
     def eventsPerResource(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por recurso del dataframe.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por recurso.
+
+        Returns
+        -------
+        series??int
+            Lista con los recursos y su número de eventos.
+
+        """
         result = 0
         result = dataframe['Contexto del evento'].groupby(dataframe['Contexto del evento']).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
@@ -343,11 +402,23 @@ class MoodleAnalysisLibrary():
         resultdf = resultdf.sort_values(by=['Número de eventos'])
         return resultdf
 
-    # Devuelve el número de eventos por hora del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con el número de eventos y con otra con la hora.
     def eventsPerHour(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por hora del dataframe.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por hora.
+
+        Returns
+        -------
+        series??int
+            Lista con las horas del día y su número de eventos.
+
+        """
         result = 0
         result = dataframe['Hora'].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
@@ -356,6 +427,26 @@ class MoodleAnalysisLibrary():
         return resultdf
 
     def resourcesByNumberOfEvents(self,dataframe, min, max):
+        """
+        Summary line.
+
+        Filtra los eventos que se encuentren en un rango determinado de ventos.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que filtrar los eventos.
+        arg1 : int
+            Límite inferior del rango.
+        arg2 : int
+            Límite superior del rango.
+
+        Returns
+        -------
+        series??int
+            Log con los eventos filtrados.
+
+        """
         resultdf = MoodleAnalysisLibrary.eventsPerResource(self,dataframe)
         result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
         resultdf = resultdf.loc[result2]
