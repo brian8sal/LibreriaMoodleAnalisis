@@ -1,5 +1,8 @@
 import unittest
 import MoodleAnalysisLibrary
+import pandas as pd
+import numpy as np
+
 
 prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","", []))
 prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
@@ -43,9 +46,14 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         dataframe=prueba99Rows.dataframe
         self.assertEqual(dataframe['Hora'].dtype,'datetime64[ns]')# Se hace en el constructor
 
-    # def test_betweenDates(self):
-    #     self.fail()
-    #
+    def test_betweenDates(self):
+        ini = np.datetime64('2019-08-01')
+        fin = np.datetime64('2019-08-29')
+        self.assertEqual(len(prueba99Rows.betweenDates(prueba99Rows.dataframe, ini, fin)), 7)
+        ini = np.datetime64('2019-09-01')
+        fin = np.datetime64('2019-09-10')
+        self.assertEqual(len(prueba99Rows.betweenDates(prueba99Rows.dataframe, ini, fin)), 5)
+
 
     def test_addMontDayHourColumns(self):
         dataframe=prueba1Rows.dataframe
@@ -57,14 +65,9 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         self.assertTrue(('DíaDelMes' in dataframe.columns))
         self.assertTrue(('HoraDelDía' in dataframe.columns))
 
-    # def test_addDiaNormalizadoColumn(self):
-    #     self.fail()
-    #
-
     def test_numEvents(self):
         self.assertTrue(prueba1Rows.numEvents(prueba1Rows.dataframe)==1)
         self.assertTrue(prueba99Rows.numEvents(prueba99Rows.dataframe)==99)
-
 
     def test_numTeachers(self):
         self.assertTrue(prueba1Rows.numTeachers(prueba1Rows.dataframe)==1)
@@ -73,7 +76,6 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numParticipantsPerSubject(self):
         self.assertTrue((prueba1Rows.numParticipantsPerSubject(prueba1Rows.dataframe)==0))
-        print(prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe))
         self.assertTrue((prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe)==13))#12 +1 de el guión
 
 
@@ -96,9 +98,6 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
     #     self.fail()
     #
     # def test_resourcesByNumberOfEvents(self):
-    #     self.fail()
-    #
-    # def test_eventsBetweenDates(self):
     #     self.fail()
     #
     # def test_averageEventsPerParticipant(self):

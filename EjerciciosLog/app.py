@@ -1,8 +1,8 @@
 import pandas as pd
 import MoodleAnalysisLibrary
 
-prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca",["323","2","231"]))
-print(prueba.dataframe)
+prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
+print(prueba.dataframe['Hora'][77])
 prueba.graphicEventsPerContext(prueba.dataframe)
 prueba.graphicEventsPerUser(prueba.dataframe)
 ini = pd.Timestamp(2019, 8, 1)

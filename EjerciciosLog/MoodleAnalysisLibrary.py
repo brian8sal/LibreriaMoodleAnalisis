@@ -177,7 +177,7 @@ class MoodleAnalysisLibrary():
             Log con la columna Hora cambiada.
 
         """
-        dataframe['Hora'] = pd.to_datetime(dataframe['Hora'])
+        dataframe['Hora'] = pd.to_datetime(dataframe['Hora'],dayfirst=True)
         return dataframe
 
     def betweenDates(self,dataframe, initial, final):
