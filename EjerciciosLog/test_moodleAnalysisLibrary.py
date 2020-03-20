@@ -49,7 +49,7 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
     def test_betweenDates(self):
         ini = np.datetime64('2019-08-01')
         fin = np.datetime64('2019-08-29')
-        self.assertEqual(len(prueba99Rows.betweenDates(prueba99Rows.dataframe, ini, fin)), 7)
+        self.assertEqual(len(prueba99Rows.betweenDates(prueba99Rows.dataframe, ini, fin)), 1)
         ini = np.datetime64('2019-09-01')
         fin = np.datetime64('2019-09-10')
         self.assertEqual(len(prueba99Rows.betweenDates(prueba99Rows.dataframe, ini, fin)), 5)
@@ -67,7 +67,8 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numEvents(self):
         self.assertTrue(prueba1Rows.numEvents(prueba1Rows.dataframe)==1)
-        self.assertTrue(prueba99Rows.numEvents(prueba99Rows.dataframe)==99)
+        print(prueba99Rows.numEvents(prueba99Rows.dataframe))
+        self.assertTrue(prueba99Rows.numEvents(prueba99Rows.dataframe)==53)
 
     def test_numTeachers(self):
         self.assertTrue(prueba1Rows.numTeachers(prueba1Rows.dataframe)==1)
@@ -76,7 +77,7 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numParticipantsPerSubject(self):
         self.assertTrue((prueba1Rows.numParticipantsPerSubject(prueba1Rows.dataframe)==0))
-        self.assertTrue((prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe)==13))#12 +1 de el guión
+        self.assertTrue((prueba99Rows.numParticipantsPerSubject(prueba99Rows.dataframe)==12))
 
 
     def test_numEventsPerParticipant(self):

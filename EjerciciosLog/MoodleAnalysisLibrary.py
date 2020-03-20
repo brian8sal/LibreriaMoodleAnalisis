@@ -9,6 +9,7 @@ class MoodleAnalysisLibrary():
         self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
         self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
+        self.dataframe = self.dataframe[~self.dataframe['Nombre completo del usuario'].isin(['-'])] #OJO,PODRÍA PASARSE SU ID COMO ARGUMENTO, POR EL MOMENTO DELETEBYID NO CONTEMPLA NEGATIVOS
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self,self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
@@ -72,7 +73,7 @@ class MoodleAnalysisLibrary():
             Log con la columna añadida.
 
         """
-        dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
+        dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
     def deleteColumns(self,dataframe,columns) -> pd.DataFrame:
@@ -430,7 +431,7 @@ class MoodleAnalysisLibrary():
         """
         Summary line.
 
-        Filtra los eventos que se encuentren en un rango determinado de ventos.
+        Filtra los eventos que se encuentren en un rango determinado de eventos.
 
         Parameters
         ----------
@@ -443,7 +444,7 @@ class MoodleAnalysisLibrary():
 
         Returns
         -------
-        series??int
+        dataframe
             Log con los eventos filtrados.
 
         """
@@ -453,10 +454,33 @@ class MoodleAnalysisLibrary():
         return resultdf
 
     def eventsBetweenDates(self, dataframe, initial, final):
+        """
+        Summary line.
+
+        Calcula el número de eventos en determinado rango de fechas.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos.
+        arg1 : int
+            Límite inferior del rango.
+        arg2 : int
+            Límite superior del rango.
+
+        Returns
+        -------
+        series??int
+            El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
+
+        """
         resultdf = MoodleAnalysisLibrary.eventsPerDay(self,dataframe)
         result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
+
+
+
 
     # Calcula la media de eventos por participante del dataframe.
     #
