@@ -3,18 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
 
-df1 = MoodleAnalysisLibrary.createDataFrameFileName("logs_G668_1819_20191223-1648.csv")
-df2 = MoodleAnalysisLibrary.createDataFrameFileName("2logs_G668_1819_20191223-1648.csv")
-df1 = MoodleAnalysisLibrary.changeHoraType(df1)
-df2 = MoodleAnalysisLibrary.changeHoraType(df2)
-coursedf = [df1, df2]
-dfaux = MoodleAnalysisLibrary.averageEventsPerParticipant(coursedf)
-dfaux2 = MoodleAnalysisLibrary.eventsPerMonth(coursedf)
-dfaux3 = MoodleAnalysisLibrary.eventsPerWeek(coursedf)
-dfaux4 = MoodleAnalysisLibrary.eventsPerDay(coursedf)
-dfaux6 = MoodleAnalysisLibrary.eventsPerResource(coursedf)
-dfaux7 = MoodleAnalysisLibrary.eventsPerHour(coursedf)
-
+prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca",['0','-1']))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -42,26 +31,26 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             'font-family': 'sa'
         }
     ),
-    html.Div(children='Número de eventos: ' + str(MoodleAnalysisLibrary.numEvents(coursedf)), style={
+    html.Div(children='Número de eventos: ' + str(prueba.numEvents(prueba.dataframe)), style={
         'textAlign': 'center',
         'color': colors['text'],
         'font-family': 'sa',
         'font-size': '20px'
     }),
-    html.Div(children='Número de participantes: ' + str(MoodleAnalysisLibrary.numParticipantsPerCourse(coursedf)), style={
+    html.Div(children='Número de participantes: ' + str(prueba.numParticipantsPerSubject(prueba.dataframe)), style={
         'textAlign': 'center',
         'color': colors['text'],
         'font-family': 'sa',
         'font-size': '20px'
     }),
-    html.Div(children='Media de eventos por participante ', style={
+    html.Div(children='Número de eventos por participante ', style={
         'textAlign': 'center',
         'color': colors['text'],
         'font-family': 'sa',
         'font-size': '20px', },
              ),
     html.Div(
-        html.Iframe(srcDoc=dfaux.to_html(index=False, columns=["Participante", "Media de eventos"]), width='500'),
+        html.Iframe(srcDoc=prueba.numEventsPerParticipant(prueba.dataframe).to_html(index=False, columns=["Nombre completo del usuario", "Número de eventos"],), width='500'),
         style={'textAlign': 'center'}
     ),
     html.Div(children='Número de eventos por recurso ', style={
@@ -71,7 +60,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         'font-size': '20px', },
              ),
     html.Div(
-        html.Iframe(srcDoc=dfaux6.to_html(index=False, columns=["Recurso", "Número de eventos"]), width='500'),
+        html.Iframe(srcDoc=prueba.eventsPerResource(prueba.dataframe).to_html(index=False, columns=["Recurso", "Número de eventos"]), width='500'),
         style={'textAlign': 'center'}
     ),
 
@@ -79,7 +68,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='EventosPorMes',
         figure={
             'data': [
-                {'x': dfaux2['Fecha'], 'y': dfaux2['Número de eventos'], 'type': 'scatter'},
+                {'x': prueba.eventsPerMonth(prueba.dataframe)['Fecha'], 'y': prueba.eventsPerMonth(prueba.dataframe)['Número de eventos'], 'type': 'scatter'},
             ],
             'layout': {
                 'title': 'Eventos por mes',
@@ -96,7 +85,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='EventosPorSemana',
         figure={
             'data': [
-                {'x': dfaux3['Fecha'], 'y': dfaux3['Número de eventos'], 'type': 'scatter'},
+                {'x': prueba.eventsPerWeek(prueba.dataframe)['Fecha'], 'y': prueba.eventsPerWeek(prueba.dataframe)['Número de eventos'], 'type': 'scatter'},
             ],
             'layout': {
                 'title': 'Eventos por semana',
@@ -112,7 +101,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='EventosPorDia',
         figure={
             'data': [
-                {'x': dfaux4['Fecha'], 'y': dfaux4['Número de eventos'], 'type': 'plot'},
+                {'x': prueba.eventsPerDay(prueba.dataframe)['Fecha'], 'y': prueba.eventsPerDay(prueba.dataframe)['Número de eventos'], 'type': 'plot'},
             ],
             'layout': {
                 'title': 'Eventos por día',
@@ -128,7 +117,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='EventosPorHora',
         figure={
             'data': [
-                {'x': dfaux7['Hora'], 'y': dfaux7['Número de eventos'], 'type': 'bar'},
+                {'x': prueba.eventsPerHour(prueba.dataframe)['Hora'], 'y': prueba.eventsPerHour(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
             ],
             'layout': {
                 'title': 'Eventos por hora',
@@ -149,26 +138,26 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     dcc.DatePickerRange(
         id='my-date-picker-range',
         display_format='D/M/Y',
-        min_date_allowed=dfaux4['Fecha'].min(),
-        max_date_allowed=dfaux4['Fecha'].max(),
-        start_date=dfaux4['Fecha'].min(),
-        end_date=dfaux4['Fecha'].max(),
+        min_date_allowed=prueba.eventsPerDay(prueba.dataframe)['Fecha'].min(),
+        max_date_allowed=prueba.eventsPerDay(prueba.dataframe)['Fecha'].max(),
+        start_date=prueba.eventsPerDay(prueba.dataframe)['Fecha'].min(),
+        end_date=prueba.eventsPerDay(prueba.dataframe)['Fecha'].max(),
     ),
 
     dcc.Graph(id='graph-with-range-slider'),
 
     dcc.RangeSlider(
         id='slider',
-        marks={i: '{} eventos'.format(i) for i in dfaux6['Número de eventos']},
-        min=dfaux6['Número de eventos'].min(),
-        max=dfaux6['Número de eventos'].max(),
+        marks={i: '{} eventos'.format(i) for i in prueba.eventsPerResource(prueba.dataframe)['Número de eventos']},
+        min=prueba.eventsPerResource(prueba.dataframe)['Número de eventos'].min(),
+        max=prueba.eventsPerResource(prueba.dataframe)['Número de eventos'].max(),
         step=None,#Poner paso y quitar marks, muy contiguas
-        value=[dfaux6['Número de eventos'].min(), dfaux6['Número de eventos'].max()]
+        value=[prueba.eventsPerResource(prueba.dataframe)['Número de eventos'].min(), prueba.eventsPerResource(prueba.dataframe)['Número de eventos'].max()]
     ),
     dcc.Graph(
         figure={
             'data': [
-                {'labels': dfaux6['Recurso'], 'values': dfaux6['Número de eventos'], 'type': 'pie', 'automargin': True,
+                {'labels': prueba.eventsPerResource(prueba.dataframe)['Recurso'], 'values': prueba.eventsPerResource(prueba.dataframe)['Número de eventos'], 'type': 'pie', 'automargin': True,
                  'textinfo': 'none'},
             ],
             'layout': {
@@ -184,7 +173,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
-    dfaux5 = MoodleAnalysisLibrary.eventsBetweenDates(coursedf, start_date, end_date)
+    dfaux5 = prueba.eventsBetweenDates(prueba.dataframe, start_date, end_date)
     return {
         'data': [
             {'x': dfaux5['Fecha'], 'y': dfaux5['Número de eventos'], 'type': 'scatter'},
@@ -202,7 +191,7 @@ def update_output(start_date, end_date):
     dash.dependencies.Output('graph-with-range-slider', 'figure'),
     [dash.dependencies.Input('slider', 'value')])
 def update_output(selected_range):
-    dfaux6 = MoodleAnalysisLibrary.resourcesByEvents(coursedf, selected_range[0], selected_range[1])
+    dfaux6 = prueba.resourcesByNumberOfEvents(prueba.dataframe, selected_range[0], selected_range[1])
     return {
         'data': [
             {'x': dfaux6['Número de eventos'], 'y': dfaux6['Recurso'], 'type': 'scatter'},

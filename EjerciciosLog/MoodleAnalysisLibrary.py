@@ -5,288 +5,494 @@ import matplotlib.pyplot as plt
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
-        self.dataframe=MoodleAnalysisLibrary.createDataFrame(name, path)
-        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.deleteByID(self.dataframe,userstodelete)
+        #self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+        self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
+        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
+        self.dataframe = self.dataframe[~self.dataframe['Nombre completo del usuario'].isin(['-'])] #OJO,PODRÍA PASARSE SU ID COMO ARGUMENTO, POR EL MOMENTO DELETEBYID NO CONTEMPLA NEGATIVOS
         self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self,self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
 
+    def createDataFrame(self,name, path) -> pd.DataFrame:
+        """
+        Summary line.
 
+        Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
 
-    # Crea un dataframe a partir de un archivo csv que se encuentra en determinado path.
-    #
-    # Recibe como parámetro el nombre del archivo y el path del mismo.
-    # Retorna un dataframe.
-    def createDataFrame(name, path) -> pd.DataFrame:
+        Parameters
+        ----------
+        arg1 : str
+            Nombre del fichero.
+        arg2 : str
+            Dirección del fichero.
+
+        Returns
+        -------
+        dataframe
+            Log.
+
+        """
         for root, directories, files in os.walk(path):
             if name in files:
                 return pd.read_csv(os.path.join(root, name))
 
-    # print(createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca"))
+    def createDataFrameFileName(self,name) -> pd.DataFrame:
+        """
+        Summary line.
 
-    # Crea un dataframe a partir de un archivo csv.
-    #
-    # Recibe como parámetro el nombre del archivo. *Ha de estar en el path del proyecto
-    # Retorna un dataframe.
-    def createDataFrameFileName(name) -> pd.DataFrame:
+        Crea un dataframe a partir de un archivo csv.
+
+        Parameters
+        ----------
+        arg1 : str
+            Nombre del fichero.
+
+        Returns
+        -------
+        dataframe
+            Log.
+
+        """
         return pd.read_csv(name)
 
-    # print(createDataFrameFileName("logs_G668_1819_20191223-1648.csv"))
+    def addIDColumn(self, dataframe) -> pd.DataFrame:
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
+        Añade una columna con el ID del usuario.
 
-    # Añade una columna con el ID del usuario.
-    #
-    # Recibe como parámetro el dataframe al que añadir la columna.
-    # Retorna un dataframe con la columna añadida.
-    def addIDColumn(dataframe) -> pd.DataFrame:
-        dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True)
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log al que añadir la columna.
+
+        Returns
+        -------
+        dataframe
+            Log con la columna añadida.
+
+        """
+        dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
-    # print(addIDColumn(df)['IDUsuario'])
+    def deleteColumns(self,dataframe,columns) -> pd.DataFrame:
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
+        Elimina unas columnas del dataframe.
 
-    # Elimina unas columnas del dataframe.
-    #
-    # Recibe como parámetro el dataframe y las columnas a borrar de este.
-    # Retorna un dataframe con las columnas borradas.
-    def deleteColumns(dataframe, columns) -> pd.DataFrame:
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que eliminar las columnas.
+        arg2 : array
+            Columnas que eliminar.
+
+        Returns
+        -------
+        dataframe
+            Log con las columnas eliminadas.
+
+        """
         dataframe = dataframe.drop(columns, axis='columns')
         return dataframe
 
-    # print(deleteColumns(df,list(df)))
+    def deleteByID(self,dataframe, idList) -> pd.DataFrame:
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
+        Elimina una lista de usuarios dado su ID.
 
-    # Elimina una lista de usuarios dado su ID.
-    #
-    # Recibe como parámetro el dataframe del que borrar los usuarios y los IDs de estos.
-    # Retorna un dataframe con los usuarios borrados.
-    def deleteByID(dataframe, idList) -> pd.DataFrame:
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que eliminar los usuarios.
+        arg2 : array
+            Usuarios que eliminar.
+
+        Returns
+        -------
+        dataframe
+            Log con los usuarios eliminados.
+
+        """
         for ele in idList:
             dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
         return dataframe
 
-    listIDs = ["6844", "20105"]
-    # print(deleteByID(df,listIDs))
+    def graphicEventsPerUser(self,dataframe):
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
+        Genera una gráfica con los eventos por usuario.
 
-    # Genera una gráfica con los eventos por usuario.
-    #
-    # Recibe como parámetro el dataframe a representar.
-    def graphicEventsPerUser(dataframe):
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que hacer la gráfica.
+
+        Returns
+        -------
+
+
+        """
         groups = dataframe.groupby(['IDUsuario']).size()
         groups.plot.bar()
         plt.show()
 
-    # graphicEventsPerUser(df)
+    def graphicEventsPerContext(self,dataframe):
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
+        Genera una gráfica con los eventos por contexto.
 
-    # Genera una gráfica con los eventos por contexto.
-    #
-    # Recibe como parámetro el dataframe a representar.
-    def graphicEventsPerContext(dataframe):
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que hacer la gráfica.
+
+        Returns
+        -------
+
+
+        """
         groups = dataframe.groupby(['Contexto del evento']).size()
         groups.plot.bar()
         plt.show()
 
-    # graphicEvents(df)
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-
-    # Cambia el tipo de la columna Hora a datetime.
-    #
-    # Recibe como parámetro el dataframe cuya columna quiere ser cambiada de tipo.
-    # Retorna un dataframe con la columna con el tipo cambiado.
     def changeHoraType(dataframe):
-        dataframe['Hora'] = pd.to_datetime(dataframe['Hora'])
+        """
+        Summary line.
+
+        Cambia el tipo de la columna Hora a datetime.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log cuya columna quiere ser cambiada de tipo.
+
+        Returns
+        -------
+        dataframe
+            Log con la columna Hora cambiada.
+
+        """
+        dataframe['Hora'] = pd.to_datetime(dataframe['Hora'],dayfirst=True)
         return dataframe
 
-    # changeHoraType(df).info()
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
-
-    # Devuelve los eventos que se encuentren entre dos fechas dadas.
-    #
-    # Recibe como parámetro el dataframe y las fechas.
-    # Retorna un dataframe con las filas comprendidas entre las fechas.
     def betweenDates(self,dataframe, initial, final):
+        """
+        Summary line.
+
+        Devuelve los eventos que se encuentren entre dos fechas dadas.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log cuya columna quiere ser cambiada de tipo.
+        arg2 : Timestamp
+            Fecha inicial.
+        arg3 : Timestamp
+            Fecha final.
+
+        Returns
+        -------
+        dataframe
+            Log con los eventos comprendidos.
+
+        """
         result = (dataframe['Hora'] > initial) & (dataframe['Hora'] <= final)
         dataframe = dataframe.loc[result]
         return dataframe
 
-    # ini = pd.Timestamp(2019, 8, 1)
-    # fin = pd.Timestamp(2019, 8, 29)
-    # print(betweenDates(df,ini,fin))
+    def addMontDayHourColumns(self,dataframe):
+        """
+        Summary line.
 
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
+        Añade columnas de hora, día y mes.
 
-    # Añade columnas de hora, día y mes.
-    #
-    # Recibe como parámetro el dataframe al que añadir las columnas.
-    # Retorna un dataframe con las columna añadidas.
-    def addMontDayHourColumns(dataframe):
-        dataframe['HoraDelDia'] = pd.DatetimeIndex(dataframe['Hora']).time
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log al que añadir columnas.
+
+        Returns
+        -------
+        dataframe
+            Log con las columnas añadidas.
+
+        """
+        dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe['Hora']).time
         dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe['Hora']).day
         dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
         return dataframe
 
-    # print(addMontDayHourColumns(df))
-
-    # df = createDataFrame("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca")
-    # df = addIDColumn(df)
-    # df = changeHoraType(df)
-
     def addDiaNormalizadoColumn(dataframe):
-        dataframe = dataframe.sort_values(by=['Hora'])
+        #dataframe = dataframe.sort_values(by=['Hora'])
         # dataframe.index = dataframe['Hora']
         dataframe['DíaNormalizado'] = dataframe['Hora'].dt.dayofyear
         # dataframe.set_index(pd.Index(['DíaNormalizado']))
         return dataframe
 
-    # print(addDiaNormalizadoColumn(df.sample(10)))
+    def numEvents(self, dataframe):
+        """
+        Summary line.
 
-    # df1 = createDataFrameFileName("logs_G668_1819_20191223-1648.csv")
-    # df2 = createDataFrameFileName("2logs_G668_1819_20191223-1648.csv")
-    # df1 = changeHoraType(df1)
-    # df2 = changeHoraType(df2)
-    # coursedf = [df1, df2]
+        Calcula el número de eventos de un dataframe.
 
-    def numEvents(course):
-        result = 0
-        for c in course:
-            result = len(c) + result
-        return result
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los eventos.
 
-    # print("Número total de eventos "+str(numEvents(coursedf)))
+        Returns
+        -------
+        int
+            Número de eventos en el log.
 
-    def numTeachers(dataframe):
+        """
+        return len(dataframe)
+
+    # Retorna el número de profesores de un dataframe. ***PASARÁ A SER BORRADO
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna el número de profesores del dataframe.
+    def numTeachers(self,dataframe):
         result = 0
         for d in dataframe['Nombre completo del usuario'].unique():
             if (d.isupper() == False and d != '-'):
                 result = result + 1
         return result
 
-    # print(numTeachers(df1))
+    def numParticipantsPerSubject(self,dataframe):
+        """
+        Summary line.
 
-    def numParticipantsPerSubject(dataframe):
-        return (dataframe['Nombre completo del usuario'].nunique() - MoodleAnalysisLibrary.numTeachers(dataframe))
+        Calcula el número de participantes de un log, sin contar a profesores.
 
-    # print(numParticipantsPerSubject(df2))
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
 
-    def numParticipantsPerCourse(course):
-        result = 0
-        for c in course:
-            result = MoodleAnalysisLibrary.numParticipantsPerSubject(c) + result
+        Returns
+        -------
+        int
+            Número de participantes en el log.
+
+        """
+        return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
+
+    def numEventsPerParticipant(self, dataframe):
+        """
+        Summary line.
+
+        Calcula el número de eventos por participante del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por participante.
+
+        Returns
+        -------
+        series??int
+            Lista con los participantes y su número de participantes.
+
+        """
+        result = pd.DataFrame({'Número de eventos': dataframe.groupby(['Nombre completo del usuario', 'IDUsuario']).size()}).reset_index()
+        result = result.sort_values(by=['Número de eventos'])
         return result
 
-    # print(numParticipantsPerCourse(coursedf))
+    def eventsPerMonth(self, dataframe):
+        """
+        Summary line.
 
-    def averageEventsPerParticipant(course):
+        Calcula el número de eventos por mes del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por mes.
+
+        Returns
+        -------
+        series??int
+            Lista con los meses y su número de participantes.
+
+        """
         result = 0
-        for c in course:
-            result = c.groupby(['Nombre completo del usuario']).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(course)).values), index=(result / len(course)).index,
-                                 columns=['Media de eventos']))
-        resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,
-                             inplace=True)  # El íncide es el participante si hace esto es para que sea el número y mejorar la apariencia
-        # resultdf.index.name = "Participante"
-        resultdf = resultdf.sort_values(by=['Media de eventos'])
-        return resultdf
-
-    # print(averageEventsPerParticipant(coursedf))
-
-    def eventsPerMonth(course):
-        result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            # result = c['Hora'].groupby(c.Hora.dt.to_period("M")).agg('count') + result
-            # result = c['Hora'].groupby(c['Hora'].dt.month).agg('count') +result
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%Y-%m')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
+        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"])
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerMonth(coursedf))
+    def eventsPerWeek(self, dataframe):
+        """
+        Summary line.
 
-    def eventsPerWeek(course):
+        Calcula el número de eventos por semana del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por semana.
+
+        Returns
+        -------
+        series??int
+            Lista con las semanas y su número de eventos.
+
+        """
         result = 0
-        resultt = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%W')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerWeek(coursedf))
+    def eventsPerDay(self, dataframe):
+        """
+        Summary line.
 
-    def eventsPerDay(course):
+        Calcula el número de eventos por día del log.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por día.
+
+        Returns
+        -------
+        series??int
+            Lista con los días y su número de eventos.
+
+        """
         result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby(c.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    # print(eventsPerDay(coursedf).info())
+    def eventsPerResource(self, dataframe):
+        """
+        Summary line.
 
-    def eventsBetweenDates(course, initial, final):
-        resultdf = MoodleAnalysisLibrary.eventsPerDay(course)
-        result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
-        resultdf = resultdf.loc[result2]
-        return resultdf
+        Calcula el número de eventos por recurso del dataframe.
 
-    # print(eventsBetweenDates(coursedf,pd.Timestamp(2018,12,22),pd.Timestamp(2018,12,24)))
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por recurso.
 
-    def eventsPerResource(course):
+        Returns
+        -------
+        series??int
+            Lista con los recursos y su número de eventos.
+
+        """
         result = 0
-        for c in course:
-            result = c['Nombre evento'].groupby(c['Nombre evento']).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
+        result = dataframe['Contexto del evento'].groupby(dataframe['Contexto del evento']).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         resultdf = resultdf.sort_values(by=['Número de eventos'])
-
         return resultdf
 
-    # print(eventsPerResource(coursedf))
+    def eventsPerHour(self, dataframe):
+        """
+        Summary line.
 
-    def resourcesByEvents(course, min, max):
-        resultdf = MoodleAnalysisLibrary.eventsPerResource(course)
+        Calcula el número de eventos por hora del dataframe.
 
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos por hora.
+
+        Returns
+        -------
+        series??int
+            Lista con las horas del día y su número de eventos.
+
+        """
+        result = 0
+        result = dataframe['Hora'].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        resultdf['Hora'] = resultdf.index
+        resultdf.reset_index(drop=True, inplace=True)
+        return resultdf
+
+    def resourcesByNumberOfEvents(self,dataframe, min, max):
+        """
+        Summary line.
+
+        Filtra los eventos que se encuentren en un rango determinado de eventos.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log del que filtrar los eventos.
+        arg1 : int
+            Límite inferior del rango.
+        arg2 : int
+            Límite superior del rango.
+
+        Returns
+        -------
+        dataframe
+            Log con los eventos filtrados.
+
+        """
+        resultdf = MoodleAnalysisLibrary.eventsPerResource(self,dataframe)
         result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    # print(resourcesByEvents(coursedf,84,100))
+    def eventsBetweenDates(self, dataframe, initial, final):
+        """
+        Summary line.
 
-    def eventsPerHour(course):
-        result = 0
-        for c in course:
-            c = c.sort_values(by=['Hora'])
-            result = c['Hora'].groupby((c.Hora.dt.strftime('%H'))).agg('count') + result
-            resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
-        resultdf['Hora'] = resultdf.index
-        # resultdf['Fecha']=pd.to_datetime(resultdf['Fecha'])
-        resultdf.reset_index(drop=True, inplace=True)
+        Calcula el número de eventos en determinado rango de fechas.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que calcular el número de eventos.
+        arg1 : int
+            Límite inferior del rango.
+        arg2 : int
+            Límite superior del rango.
+
+        Returns
+        -------
+        series??int
+            El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
+
+        """
+        resultdf = MoodleAnalysisLibrary.eventsPerDay(self,dataframe)
+        result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
+        resultdf = resultdf.loc[result2]
         return resultdf
-    # print(eventsPerHour(coursedf))
+
+
+
+
+    # Calcula la media de eventos por participante del dataframe.
+    #
+    # Recibe como parámetro el dataframe.
+    # Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
+    # estando ordenado por la primera.
+    ###########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
+    def averageEventsPerParticipant(self, dataframe):
+        result=0
+        result = dataframe.groupby(['Nombre completo del usuario']).size() + result
+        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
+        resultdf['Participante'] = resultdf.index
+        resultdf.reset_index(drop=True,inplace=True)
+        resultdf = resultdf.sort_values(by=['Media de eventos'])
+        return resultdf
