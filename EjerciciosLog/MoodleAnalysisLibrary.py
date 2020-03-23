@@ -382,7 +382,7 @@ class MoodleAnalysisLibrary():
 
     def eventsPerResource(self, dataframe):
         """
-        Summary line.
+        Summary line. SPRINT00
 
         Calcula el número de eventos por recurso del dataframe.
 

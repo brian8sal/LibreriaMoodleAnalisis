@@ -41,8 +41,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             ],
             'layout': {
                 'title': 'Recurso por rango de eventos',
-                #'yaxis': {'automargin': True},
-                #'xaxis': {'automargin': True},
+                # 'yaxis': {'automargin': True},
+                # 'xaxis': {'automargin': True},
                 'plot_bgcolor': colors['background'],
                 'paper_bgcolor': colors['background'],
                 'font': {
