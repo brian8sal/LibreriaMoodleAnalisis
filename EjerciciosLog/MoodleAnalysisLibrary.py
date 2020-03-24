@@ -286,6 +286,24 @@ class MoodleAnalysisLibrary():
         """
         return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
+    def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
+        data={'Participantes':[0],'No participantes':[0]}
+        df=pd.DataFrame(data)
+        df['Participantes']=dataframe['IDUsuario'].nunique()
+        for fila in dataframeusuarios.iterrows():
+            if fila[1]['Nombre completo del usuario'] not in dataframe['Nombre completo del usuario'].values:
+                # df['Nombre no participante']=fila[1]['Nombre completo del usuario']
+                df['No participantes']=df['No participantes']+1
+        return df
+
+    def list_nonparticipant(self, dataframe, dataframeusuarios):
+        result=list()
+        for fila in dataframeusuarios['Nombre completo del usuario']:
+            if fila not in dataframe['Nombre completo del usuario'].values:
+                result.append(fila)
+        df=pd.DataFrame(result,columns=['Nombre completo del usuario'])
+        return df
+
     def numEventsPerParticipant(self, dataframe):
         """
         Summary line.
