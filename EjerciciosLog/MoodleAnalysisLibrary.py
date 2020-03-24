@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
-        #self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
-        self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
+        if path!="":
+            self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+        else:
+            self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
         self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
         self.dataframe = self.dataframe[~self.dataframe['Nombre completo del usuario'].isin(['-'])] #OJO,PODRÍA PASARSE SU ID COMO ARGUMENTO, POR EL MOMENTO DELETEBYID NO CONTEMPLA NEGATIVOS
@@ -380,7 +382,7 @@ class MoodleAnalysisLibrary():
 
     def eventsPerResource(self, dataframe):
         """
-        Summary line.
+        Summary line. SPRINT00
 
         Calcula el número de eventos por recurso del dataframe.
 
@@ -400,7 +402,7 @@ class MoodleAnalysisLibrary():
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(by=['Número de eventos'])
+        resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
         return resultdf
 
     def eventsPerHour(self, dataframe):
