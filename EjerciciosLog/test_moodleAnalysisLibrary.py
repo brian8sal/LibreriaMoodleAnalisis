@@ -6,6 +6,9 @@ import numpy as np
 
 prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","", []))
 prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
+usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo', 'Pedro', 'JAVI','RODRIGUEZ PÉREZ, DANIEL']}))
+usuariosvacia = (pd.DataFrame({'Nombre completo del usuario': []}))
+
 
 class TestMoodleAnalysisLibrary(unittest.TestCase):
 
@@ -81,6 +84,25 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numEventsPerParticipant(self):
         self.assertTrue((((prueba1Rows.numEventsPerParticipant(prueba1Rows.dataframe))['Número de eventos'][0])==1))
+
+    def test_num_participants_nonparticipants(self):
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuarios))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuarios))['No participantes'][0]==4)
+
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuariosvacia))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuariosvacia))['No participantes'][0]==0)
+
+
+
+    def test_list_nonparticipant(self):
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][0]=='Sanchez Barreiro, Pablo')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][1]=='Pedro')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][2]=='JAVI')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][3]=='RODRIGUEZ PÉREZ, DANIEL')
+
+
+        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99Rows.list_nonparticipant(prueba99Rows.dataframe, usuariosvacia).columns))
+
 
     # def test_eventsPerMonth(self):
     #     self.fail()

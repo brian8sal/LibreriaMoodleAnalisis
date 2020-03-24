@@ -6,7 +6,7 @@ import pandas as pd
 
 prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", ['0', '-1']))
-usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo', 'speos', 'jbdbje']}))
+usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo',"CUADRIELLO GALDÓS, ÁNGELA","CUEVAS RODRIGUEZ, SARA","DE SÁDABA IGAREDA, CELIA","SAL SARRIA, SAÚL","DE SANTIAGO ABASCAL, GABRIELA","CIDÓN HOFFMAN, JAIME"]}))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -82,10 +82,9 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                     'font-family': 'sa'
                 }
             ),
-            html.Iframe(srcDoc=prueba.list_nonparticipant(prueba.dataframe, usuarios).to_html(index=False, columns=[
-                "Nombre completo del usuario"]), ),
+            html.Iframe(srcDoc=prueba.list_nonparticipant(prueba.dataframe, usuarios).to_html(index=False)),
         ],
-        style={'display': 'inline-block'}, )
+        style={'display': 'inline-block', 'white-space': 'nowrap'}, )
     ], style={'text-align': 'center'})
 
 ])

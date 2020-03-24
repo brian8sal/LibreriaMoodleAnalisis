@@ -287,20 +287,61 @@ class MoodleAnalysisLibrary():
         return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
     def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
+        """
+        Summary line.
+
+        Calcula el número de usuarios participantes y el de no participantes.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
+
+        arg2 : dataframe
+            Dataframe en el que contar todos los usuarios (participantes y no participantes).
+
+        Returns
+        -------
+        Dataframe
+            Dataframe con una columna para el número de participantes y otra para el número que no
+            participantes.
+
+        """
         data={'Participantes':[0],'No participantes':[0]}
         df=pd.DataFrame(data)
         df['Participantes']=dataframe['IDUsuario'].nunique()
         for fila in dataframeusuarios.iterrows():
             if fila[1]['Nombre completo del usuario'] not in dataframe['Nombre completo del usuario'].values:
-                # df['Nombre no participante']=fila[1]['Nombre completo del usuario']
                 df['No participantes']=df['No participantes']+1
         return df
 
     def list_nonparticipant(self, dataframe, dataframeusuarios):
+        """
+        Summary line.
+
+        Recoge a los usuarios no participantes
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
+
+        arg2 : dataframe
+            Dataframe con todos los usuarios (participantes y no participantes).
+
+        Returns
+        -------
+        Dataframe
+            Dataframe con una columna con la lista de todos los usuarios no participantes.
+
+        """
         result=list()
         for fila in dataframeusuarios['Nombre completo del usuario']:
             if fila not in dataframe['Nombre completo del usuario'].values:
                 result.append(fila)
+        if(result==[]):
+            df = pd.DataFrame(result, columns=['TODOS HAN PARTICIPADO'])
+            return df
         df=pd.DataFrame(result,columns=['Nombre completo del usuario'])
         return df
 
