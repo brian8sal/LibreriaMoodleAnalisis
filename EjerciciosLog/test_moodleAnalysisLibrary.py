@@ -6,6 +6,9 @@ import numpy as np
 
 prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","", []))
 prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
+usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo', 'Pedro', 'JAVI','RODRIGUEZ PÉREZ, DANIEL']}))
+usuariosvacia = (pd.DataFrame({'Nombre completo del usuario': []}))
+
 
 class TestMoodleAnalysisLibrary(unittest.TestCase):
 
@@ -67,7 +70,6 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
 
     def test_numEvents(self):
         self.assertTrue(prueba1Rows.numEvents(prueba1Rows.dataframe)==1)
-        print(prueba99Rows.numEvents(prueba99Rows.dataframe))
         self.assertTrue(prueba99Rows.numEvents(prueba99Rows.dataframe)==53)
 
     def test_numTeachers(self):
@@ -83,6 +85,25 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
     def test_numEventsPerParticipant(self):
         self.assertTrue((((prueba1Rows.numEventsPerParticipant(prueba1Rows.dataframe))['Número de eventos'][0])==1))
 
+    def test_num_participants_nonparticipants(self):
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuarios))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuarios))['No participantes'][0]==4)
+
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuariosvacia))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,usuariosvacia))['No participantes'][0]==0)
+
+
+
+    def test_list_nonparticipant(self):
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][0]=='Sanchez Barreiro, Pablo')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][1]=='Pedro')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][2]=='JAVI')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,usuarios))['Nombre completo del usuario'][3]=='RODRIGUEZ PÉREZ, DANIEL')
+
+
+        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99Rows.list_nonparticipant(prueba99Rows.dataframe, usuariosvacia).columns))
+
+
     # def test_eventsPerMonth(self):
     #     self.fail()
     #
@@ -92,9 +113,37 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
     # def test_eventsPerDay(self):
     #     self.fail()
     #
-    # def test_eventsPerResource(self):
-    #     self.fail()
-    #
+    def test_eventsPerResource(self):
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[0]['Número de eventos'],32)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[1]['Número de eventos'],13)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[1]['Recurso'], "Foro: Noticias de clase")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[2]['Número de eventos'],4)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[2]['Recurso'], "Carpeta: Recursos del Alumnado")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[3]['Número de eventos'],1)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[3]['Recurso'], "Carpeta: Entrega inicial")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[4]['Número de eventos'],1)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[4]['Recurso'], "Carpeta: Exámenes")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[5]['Número de eventos'],1)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[5]['Recurso'], "Carpeta: Papeleo")
+
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[6]['Número de eventos'],1)
+        self.assertEqual(prueba99Rows.eventsPerResource(prueba99Rows.dataframe).iloc[6]['Recurso'], "Tarea: Entrega inicial")
+
+        self.assertEqual(prueba1Rows.eventsPerResource(prueba1Rows.dataframe).iloc[0]['Número de eventos'],1)
+        self.assertEqual(prueba1Rows.eventsPerResource(prueba1Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
+
+
+
+
+
+
+
     # def test_eventsPerHour(self):
     #     self.fail()
     #

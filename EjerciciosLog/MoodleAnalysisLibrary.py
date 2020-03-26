@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
-        #self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
-        self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
+        if path!="":
+            self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+        else:
+            self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
         self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
         self.dataframe = self.dataframe[~self.dataframe['Nombre completo del usuario'].isin(['-'])] #OJO,PODRÍA PASARSE SU ID COMO ARGUMENTO, POR EL MOMENTO DELETEBYID NO CONTEMPLA NEGATIVOS
@@ -284,6 +286,65 @@ class MoodleAnalysisLibrary():
         """
         return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
 
+    def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
+        """
+        Summary line.
+
+        Calcula el número de usuarios participantes y el de no participantes.
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
+
+        arg2 : dataframe
+            Dataframe en el que contar todos los usuarios (participantes y no participantes).
+
+        Returns
+        -------
+        Dataframe
+            Dataframe con una columna para el número de participantes y otra para el número que no
+            participantes.
+
+        """
+        data={'Participantes':[0],'No participantes':[0]}
+        df=pd.DataFrame(data)
+        df['Participantes']=dataframe['IDUsuario'].nunique()
+        for fila in dataframeusuarios.iterrows():
+            if fila[1]['Nombre completo del usuario'] not in dataframe['Nombre completo del usuario'].values:
+                df['No participantes']=df['No participantes']+1
+        return df
+
+    def list_nonparticipant(self, dataframe, dataframeusuarios):
+        """
+        Summary line.
+
+        Recoge a los usuarios no participantes
+
+        Parameters
+        ----------
+        arg1 : dataframe
+            Log en el que contar los participantes.
+
+        arg2 : dataframe
+            Dataframe con todos los usuarios (participantes y no participantes).
+
+        Returns
+        -------
+        Dataframe
+            Dataframe con una columna con la lista de todos los usuarios no participantes.
+
+        """
+        result=list()
+        for fila in dataframeusuarios['Nombre completo del usuario']:
+            if fila not in dataframe['Nombre completo del usuario'].values:
+                result.append(fila)
+        if(result==[]):
+            df = pd.DataFrame(result, columns=['TODOS HAN PARTICIPADO'])
+            return df
+        df=pd.DataFrame(result,columns=['Nombre completo del usuario'])
+        return df
+
     def numEventsPerParticipant(self, dataframe):
         """
         Summary line.
@@ -380,7 +441,7 @@ class MoodleAnalysisLibrary():
 
     def eventsPerResource(self, dataframe):
         """
-        Summary line.
+        Summary line. SPRINT00
 
         Calcula el número de eventos por recurso del dataframe.
 
@@ -400,7 +461,7 @@ class MoodleAnalysisLibrary():
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(by=['Número de eventos'])
+        resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
         return resultdf
 
     def eventsPerHour(self, dataframe):
