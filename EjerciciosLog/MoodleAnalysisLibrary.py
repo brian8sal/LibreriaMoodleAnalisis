@@ -2,21 +2,26 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
+CONTEXTO = 'Contexto del evento'
+ID_USUARIO = 'IDUsuario'
+NOMBRE_USUARIO = 'Nombre completo del usuario'
+
+
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     def __init__(self, name, path, userstodelete):
         if path!="":
-            self.dataframe=MoodleAnalysisLibrary.createDataFrame(self,name, path)
+            self.dataframe=MoodleAnalysisLibrary.create_data_frame(self, name, path)
         else:
-            self.dataframe=MoodleAnalysisLibrary.createDataFrameFileName(self,name)
-        self.dataframe=MoodleAnalysisLibrary.addIDColumn(self, self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.deleteByID(self,self.dataframe,userstodelete)
-        self.dataframe = self.dataframe[~self.dataframe['Nombre completo del usuario'].isin(['-'])] #OJO,PODRÍA PASARSE SU ID COMO ARGUMENTO, POR EL MOMENTO DELETEBYID NO CONTEMPLA NEGATIVOS
-        self.dataframe=MoodleAnalysisLibrary.changeHoraType(self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.addMontDayHourColumns(self,self.dataframe)
+            self.dataframe=MoodleAnalysisLibrary.create_data_frame_file_fame(self, name)
+        self.dataframe=MoodleAnalysisLibrary.add_ID_column(self, self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.delete_by_ID(self, self.dataframe, userstodelete)
+        self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
+        self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
+        self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
 
-    def createDataFrame(self,name, path) -> pd.DataFrame:
+    def create_data_frame(self, name, path) -> pd.DataFrame:
         """
         Summary line.
 
@@ -24,9 +29,9 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : str
+        name : str
             Nombre del fichero.
-        arg2 : str
+        path : str
             Dirección del fichero.
 
         Returns
@@ -39,7 +44,7 @@ class MoodleAnalysisLibrary():
             if name in files:
                 return pd.read_csv(os.path.join(root, name))
 
-    def createDataFrameFileName(self,name) -> pd.DataFrame:
+    def create_data_frame_file_fame(self, name) -> pd.DataFrame:
         """
         Summary line.
 
@@ -47,7 +52,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : str
+        name : str
             Nombre del fichero.
 
         Returns
@@ -58,7 +63,7 @@ class MoodleAnalysisLibrary():
         """
         return pd.read_csv(name)
 
-    def addIDColumn(self, dataframe) -> pd.DataFrame:
+    def add_ID_column(self, dataframe) -> pd.DataFrame:
         """
         Summary line.
 
@@ -66,7 +71,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log al que añadir la columna.
 
         Returns
@@ -75,10 +80,10 @@ class MoodleAnalysisLibrary():
             Log con la columna añadida.
 
         """
-        dataframe['IDUsuario'] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        dataframe[(ID_USUARIO)] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
-    def deleteColumns(self,dataframe,columns) -> pd.DataFrame:
+    def delete_columns(self, dataframe, columns) -> pd.DataFrame:
         """
         Summary line.
 
@@ -86,9 +91,9 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log del que eliminar las columnas.
-        arg2 : array
+        columns : array
             Columnas que eliminar.
 
         Returns
@@ -100,7 +105,7 @@ class MoodleAnalysisLibrary():
         dataframe = dataframe.drop(columns, axis='columns')
         return dataframe
 
-    def deleteByID(self,dataframe, idList) -> pd.DataFrame:
+    def delete_by_ID(self, dataframe, idList) -> pd.DataFrame:
         """
         Summary line.
 
@@ -108,9 +113,9 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log del que eliminar los usuarios.
-        arg2 : array
+        idList : array
             Usuarios que eliminar.
 
         Returns
@@ -120,10 +125,10 @@ class MoodleAnalysisLibrary():
 
         """
         for ele in idList:
-            dataframe = dataframe[~dataframe['IDUsuario'].isin([ele])]
+            dataframe = dataframe[~dataframe[ID_USUARIO].isin([ele])]
         return dataframe
 
-    def graphicEventsPerUser(self,dataframe):
+    def graphic_events_per_user(self, dataframe):
         """
         Summary line.
 
@@ -131,7 +136,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log del que hacer la gráfica.
 
         Returns
@@ -139,11 +144,11 @@ class MoodleAnalysisLibrary():
 
 
         """
-        groups = dataframe.groupby(['IDUsuario']).size()
+        groups = dataframe.groupby([ID_USUARIO]).size()
         groups.plot.bar()
         plt.show()
 
-    def graphicEventsPerContext(self,dataframe):
+    def graphic_events_per_context(self, dataframe):
         """
         Summary line.
 
@@ -151,7 +156,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log del que hacer la gráfica.
 
         Returns
@@ -159,11 +164,11 @@ class MoodleAnalysisLibrary():
 
 
         """
-        groups = dataframe.groupby(['Contexto del evento']).size()
+        groups = dataframe.groupby([(CONTEXTO)]).size()
         groups.plot.bar()
         plt.show()
 
-    def changeHoraType(dataframe):
+    def change_hora_type(dataframe):
         """
         Summary line.
 
@@ -171,7 +176,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log cuya columna quiere ser cambiada de tipo.
 
         Returns
@@ -183,7 +188,7 @@ class MoodleAnalysisLibrary():
         dataframe['Hora'] = pd.to_datetime(dataframe['Hora'],dayfirst=True)
         return dataframe
 
-    def betweenDates(self,dataframe, initial, final):
+    def between_dates(self, dataframe, initial, final):
         """
         Summary line.
 
@@ -191,11 +196,11 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log cuya columna quiere ser cambiada de tipo.
-        arg2 : Timestamp
+        initial : Timestamp
             Fecha inicial.
-        arg3 : Timestamp
+        final : Timestamp
             Fecha final.
 
         Returns
@@ -208,7 +213,7 @@ class MoodleAnalysisLibrary():
         dataframe = dataframe.loc[result]
         return dataframe
 
-    def addMontDayHourColumns(self,dataframe):
+    def add_mont_day_hour_columns(self, dataframe):
         """
         Summary line.
 
@@ -216,7 +221,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log al que añadir columnas.
 
         Returns
@@ -230,14 +235,16 @@ class MoodleAnalysisLibrary():
         dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
         return dataframe
 
+    """
     def addDiaNormalizadoColumn(dataframe):
         #dataframe = dataframe.sort_values(by=['Hora'])
         # dataframe.index = dataframe['Hora']
         dataframe['DíaNormalizado'] = dataframe['Hora'].dt.dayofyear
         # dataframe.set_index(pd.Index(['DíaNormalizado']))
         return dataframe
+    """
 
-    def numEvents(self, dataframe):
+    def num_events(self, dataframe):
         """
         Summary line.
 
@@ -245,7 +252,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que contar los eventos.
 
         Returns
@@ -255,19 +262,20 @@ class MoodleAnalysisLibrary():
 
         """
         return len(dataframe)
+    """"
+    Retorna el número de profesores de un dataframe. ***PASARÁ A SER BORRADO
 
-    # Retorna el número de profesores de un dataframe. ***PASARÁ A SER BORRADO
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna el número de profesores del dataframe.
-    def numTeachers(self,dataframe):
+    Recibe como parámetro el dataframe.
+    Retorna el número de profesores del dataframe.
+    """""
+    def num_teachers(self, dataframe):
         result = 0
-        for d in dataframe['Nombre completo del usuario'].unique():
+        for d in dataframe[NOMBRE_USUARIO].unique():
             if (d.isupper() == False and d != '-'):
                 result = result + 1
         return result
 
-    def numParticipantsPerSubject(self,dataframe):
+    def num_participants_per_subject(self, dataframe):
         """
         Summary line.
 
@@ -275,7 +283,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que contar los participantes.
 
         Returns
@@ -284,7 +292,7 @@ class MoodleAnalysisLibrary():
             Número de participantes en el log.
 
         """
-        return (dataframe['IDUsuario'].nunique() - MoodleAnalysisLibrary.numTeachers(self,dataframe))
+        return (dataframe[ID_USUARIO].nunique() - MoodleAnalysisLibrary.num_teachers(self, dataframe))
 
     def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
         """
@@ -294,10 +302,10 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que contar los participantes.
 
-        arg2 : dataframe
+        dataframeusuarios : dataframe
             Dataframe en el que contar todos los usuarios (participantes y no participantes).
 
         Returns
@@ -309,9 +317,9 @@ class MoodleAnalysisLibrary():
         """
         data={'Participantes':[0],'No participantes':[0]}
         df=pd.DataFrame(data)
-        df['Participantes']=dataframe['IDUsuario'].nunique()
+        df['Participantes']=dataframe[ID_USUARIO].nunique()
         for fila in dataframeusuarios.iterrows():
-            if fila[1]['Nombre completo del usuario'] not in dataframe['Nombre completo del usuario'].values:
+            if fila[1][NOMBRE_USUARIO] not in dataframe[NOMBRE_USUARIO].values:
                 df['No participantes']=df['No participantes']+1
         return df
 
@@ -323,10 +331,10 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que contar los participantes.
 
-        arg2 : dataframe
+        dataframeusuarios : dataframe
             Dataframe con todos los usuarios (participantes y no participantes).
 
         Returns
@@ -336,16 +344,16 @@ class MoodleAnalysisLibrary():
 
         """
         result=list()
-        for fila in dataframeusuarios['Nombre completo del usuario']:
-            if fila not in dataframe['Nombre completo del usuario'].values:
+        for fila in dataframeusuarios[NOMBRE_USUARIO]:
+            if fila not in dataframe[NOMBRE_USUARIO].values:
                 result.append(fila)
         if(result==[]):
             df = pd.DataFrame(result, columns=['TODOS HAN PARTICIPADO'])
             return df
-        df=pd.DataFrame(result,columns=['Nombre completo del usuario'])
+        df=pd.DataFrame(result,columns=[NOMBRE_USUARIO])
         return df
 
-    def numEventsPerParticipant(self, dataframe):
+    def num_events_per_participant(self, dataframe):
         """
         Summary line.
 
@@ -353,7 +361,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por participante.
 
         Returns
@@ -362,11 +370,11 @@ class MoodleAnalysisLibrary():
             Lista con los participantes y su número de participantes.
 
         """
-        result = pd.DataFrame({'Número de eventos': dataframe.groupby(['Nombre completo del usuario', 'IDUsuario']).size()}).reset_index()
+        result = pd.DataFrame({'Número de eventos': dataframe.groupby([NOMBRE_USUARIO, ID_USUARIO]).size()}).reset_index()
         result = result.sort_values(by=['Número de eventos'])
         return result
 
-    def eventsPerMonth(self, dataframe):
+    def events_per_month(self, dataframe):
         """
         Summary line.
 
@@ -374,7 +382,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por mes.
 
         Returns
@@ -390,7 +398,7 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def eventsPerWeek(self, dataframe):
+    def events_per_week(self, dataframe):
         """
         Summary line.
 
@@ -398,7 +406,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por semana.
 
         Returns
@@ -414,7 +422,7 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def eventsPerDay(self, dataframe):
+    def events_per_day(self, dataframe):
         """
         Summary line.
 
@@ -422,7 +430,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por día.
 
         Returns
@@ -439,7 +447,7 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def eventsPerResource(self, dataframe):
+    def events_per_resource(self, dataframe):
         """
         Summary line. SPRINT00
 
@@ -447,7 +455,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por recurso.
 
         Returns
@@ -457,14 +465,14 @@ class MoodleAnalysisLibrary():
 
         """
         result = 0
-        result = dataframe['Contexto del evento'].groupby(dataframe['Contexto del evento']).agg('count') + result
+        result = dataframe[CONTEXTO].groupby(dataframe[CONTEXTO]).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
         return resultdf
 
-    def eventsPerHour(self, dataframe):
+    def events_per_hour(self, dataframe):
         """
         Summary line.
 
@@ -472,7 +480,7 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos por hora.
 
         Returns
@@ -488,7 +496,7 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def resourcesByNumberOfEvents(self,dataframe, min, max):
+    def resources_by_number_of_events(self, dataframe, min, max):
         """
         Summary line.
 
@@ -496,11 +504,11 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log del que filtrar los eventos.
-        arg1 : int
+        min : int
             Límite inferior del rango.
-        arg2 : int
+        max : int
             Límite superior del rango.
 
         Returns
@@ -509,12 +517,12 @@ class MoodleAnalysisLibrary():
             Log con los eventos filtrados.
 
         """
-        resultdf = MoodleAnalysisLibrary.eventsPerResource(self,dataframe)
+        resultdf = MoodleAnalysisLibrary.events_per_resource(self, dataframe)
         result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def eventsBetweenDates(self, dataframe, initial, final):
+    def events_between_dates(self, dataframe, initial, final):
         """
         Summary line.
 
@@ -522,11 +530,11 @@ class MoodleAnalysisLibrary():
 
         Parameters
         ----------
-        arg1 : dataframe
+        dataframe : dataframe
             Log en el que calcular el número de eventos.
-        arg1 : int
+        initial : int
             Límite inferior del rango.
-        arg2 : int
+        final : int
             Límite superior del rango.
 
         Returns
@@ -535,23 +543,22 @@ class MoodleAnalysisLibrary():
             El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
 
         """
-        resultdf = MoodleAnalysisLibrary.eventsPerDay(self,dataframe)
+        resultdf = MoodleAnalysisLibrary.events_per_day(self, dataframe)
         result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
 
+    """
+    Calcula la media de eventos por participante del dataframe.
 
-
-
-    # Calcula la media de eventos por participante del dataframe.
-    #
-    # Recibe como parámetro el dataframe.
-    # Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
-    # estando ordenado por la primera.
-    ###########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
-    def averageEventsPerParticipant(self, dataframe):
+    Recibe como parámetro el dataframe.
+    Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
+    estando ordenado por la primera.
+    ##########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
+    """
+    def average_events_per_participant(self, dataframe):
         result=0
-        result = dataframe.groupby(['Nombre completo del usuario']).size() + result
+        result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
         resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
         resultdf['Participante'] = resultdf.index
         resultdf.reset_index(drop=True,inplace=True)

@@ -38,8 +38,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.eventsPerResource(prueba.dataframe)['Recurso'],
-                 'y': prueba.eventsPerResource(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
+                {'x': prueba.events_per_resource(prueba.dataframe)['Recurso'],
+                 'y': prueba.events_per_resource(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
             ],
             'layout': {
                 'title': 'Recurso por rango de eventos',
