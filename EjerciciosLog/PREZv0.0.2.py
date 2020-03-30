@@ -42,9 +42,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                  'y': prueba.events_per_resource(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
             ],
             'layout': {
+                'height':'800',
                 'title': 'Recurso por rango de eventos',
-                # 'yaxis': {'automargin': True},
-                # 'xaxis': {'automargin': True},
+                'yaxis': {'automargin': True},
+                'xaxis': {'automargin': True},
                 'plot_bgcolor': colors['background'],
                 'paper_bgcolor': colors['background'],
                 'font': {
