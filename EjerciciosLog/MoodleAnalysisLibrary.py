@@ -9,7 +9,8 @@ NOMBRE_USUARIO = 'Nombre completo del usuario'
 
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
-    def __init__(self, name, path, userstodelete):
+    dataframeUsuarios = pd.DataFrame
+    def __init__(self, name, path, usuarioscsv, userstodelete):
         if path!="":
             self.dataframe=MoodleAnalysisLibrary.create_data_frame(self, name, path)
         else:
@@ -20,6 +21,7 @@ class MoodleAnalysisLibrary():
         self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
+        self.dataframeUsuarios = pd.read_csv(usuarioscsv)
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
