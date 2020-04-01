@@ -5,7 +5,7 @@ import numpy as np
 
 
 prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","", []))
-prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
+prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", ['1']))
 usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo', 'Pedro', 'JAVI','RODRIGUEZ PÉREZ, DANIEL']}))
 usuariosvacia = (pd.DataFrame({'Nombre completo del usuario': []}))
 
@@ -134,9 +134,26 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0]['Número de eventos'], 1)
         self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
-
-
-
+    def test_events_between_dates(self):
+        ini = np.datetime64('2019-08-01')
+        fin = np.datetime64('2019-08-29')
+        dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-08-01']['Número de eventos'].to_string(index=False), " 1")
+        ini = np.datetime64('2019-09-01')
+        fin = np.datetime64('2019-09-10')
+        dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-05']['Número de eventos'].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-02']['Número de eventos'].to_string(index=False), " 1")
+        ini = np.datetime64('2019-09-09')
+        fin = np.datetime64('2019-09-23')
+        dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-22']['Número de eventos'].to_string(index=False), " 4")
+        self.assertEqual(len(dataframe), 2)
+        dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin,True)
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
+        self.assertEqual(len(dataframe), 1)
 
 
 
