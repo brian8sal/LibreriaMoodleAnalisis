@@ -1,13 +1,13 @@
 import dash
+import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
 import pandas as pd
 
 prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
-                                                      "C:/Users/sal8b/OneDrive/Escritorio/Beca", ['0', '323','231']))
-usuarios = (pd.DataFrame({'Nombre completo del usuario': ['Sanchez Barreiro, Pablo',"CUADRIELLO GALDÓS, ÁNGELA","CUEVAS RODRIGUEZ, SARA","DE SÁDABA IGAREDA, CELIA","SAL SARRIA, SAÚL","DE SANTIAGO ABASCAL, GABRIELA","CIDÓN HOFFMAN, JAIME"]}))
-
+                                                      "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
+                                                      ['0', '323','231']))
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -34,6 +34,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             'font-family': 'sa'
         }
     ),
+
     dcc.Graph(
         id='EventosPorRecurso',
         figure={
@@ -60,9 +61,10 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                     'data': [
                         {'labels': ['Participantes', 'No Participantes'],
                          'values': [
-                             prueba.num_participants_nonparticipants(prueba.dataframe, usuarios)['Participantes'][0],
-                             prueba.num_participants_nonparticipants(prueba.dataframe, usuarios)['No participantes'][
-                                 0]], 'type': 'pie',
+                             prueba.num_participants_nonparticipants(prueba.dataframe, prueba.dataframeUsuarios)[
+                                 'Participantes'][0],
+                             prueba.num_participants_nonparticipants(prueba.dataframe, prueba.dataframeUsuarios)[
+                                 'No participantes'][0]], 'type': 'pie',
                          'automargin': True,
                          'textinfo': 'none'},
                     ],
@@ -82,11 +84,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                     'font-family': 'sa'
                 }
             ),
-            html.Iframe(srcDoc=prueba.list_nonparticipant(prueba.dataframe, usuarios).to_html(index=False)),
+            html.Iframe(
+                srcDoc=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).to_html(index=False)),
         ],
         style={'display': 'inline-block', 'white-space': 'nowrap'}, )
     ], style={'text-align': 'center'}),
-
     dcc.Graph(id='graph-events-per-day-students'),
 
     html.Div(children='Introduce el rango de fechas deseado ', style={
@@ -102,6 +104,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
         end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
     ),
+
+
 
 ])
 
