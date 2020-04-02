@@ -7,23 +7,21 @@ import pandas as pd
 
 prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
-                                                      ['0', '323','231']))
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+                                                      ['0', '323', '231']))
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
 colors = {
-    'background': '#FFFFFF',
-    'text': '#000000'
+    'background': '#111111',
+    'text': '#7FDBFF'
 }
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+app.layout = html.Div(children=[
     html.H1(
         children='Log Curso 2018-2019',
         style={
             'textAlign': 'center',
             'color': colors['text'],
-            'font-family': 'sa'
         }
     ),
     html.H2(
@@ -31,10 +29,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
         style={
             'textAlign': 'center',
             'color': colors['text'],
-            'font-family': 'sa'
         }
     ),
-
     dcc.Graph(
         id='EventosPorRecurso',
         figure={
@@ -43,8 +39,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
                  'y': prueba.events_per_resource(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
             ],
             'layout': {
-                'height':'800',
+                'height': '700',
                 'title': 'Recurso por rango de eventos',
+                "titlefont": {
+                    "size": 23
+                },
                 'yaxis': {'automargin': True},
                 'xaxis': {'automargin': True},
                 'plot_bgcolor': colors['background'],
@@ -55,60 +54,90 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
             }
         },
     ),
-    html.Div(children=[
-        html.Div(
-            dcc.Graph(
-                figure={
-                    'data': [
-                        {'labels': ['Participantes', 'No Participantes'],
-                         'values': [
-                             prueba.num_participants_nonparticipants(prueba.dataframe, prueba.dataframeUsuarios)[
-                                 'Participantes'][0],
-                             prueba.num_participants_nonparticipants(prueba.dataframe, prueba.dataframeUsuarios)[
-                                 'No participantes'][0]], 'type': 'pie',
-                         'automargin': True,
-                         'textinfo': 'none'},
-                    ],
-                    'layout': {
-                        'title': 'Eventos por recurso',
-                    }
-                }
-            ), style={'display': 'inline-block'}
-        ),
-
-        html.Div(children=[
-            html.H3(
-                children='Usuarios no participantes',
-                style={
-                    'textAlign': 'center',
-                    'color': colors['text'],
-                    'font-family': 'sa'
-                }
-            ),
-            html.Iframe(
-                srcDoc=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).to_html(index=False)),
-        ],
-        style={'display': 'inline-block', 'white-space': 'nowrap'}, )
-    ], style={'text-align': 'center'}),
     dcc.Graph(id='graph-events-per-day-students'),
 
     html.Div(children='Introduce el rango de fechas deseado ', style={
         'textAlign': 'left',
         'color': colors['text'],
-        'font-size': '15px', },
+        'font-size': '20px'},
+
              ),
     dcc.DatePickerRange(
         id='my-date-picker-range',
         display_format='D/M/Y',
+        style={'font-size': '20px'},
         min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
         max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
         start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
         end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
     ),
+    html.Div(
+        children=[
+            html.Div(
+                className='eight columns',
+                children=[
+                    dcc.Graph(
+                        figure={
+                            'data': [
+                                {'labels': ['Participantes', 'No Participantes'],
+                                 'values': [
+                                     prueba.num_participants_nonparticipants(prueba.dataframe,
+                                                                             prueba.dataframeUsuarios)[
+                                         'Participantes'][0],
+                                     prueba.num_participants_nonparticipants(prueba.dataframe,
+                                                                             prueba.dataframeUsuarios)[
+                                         'No participantes'][0]], 'type': 'pie',
+                                 'automargin': True,
+                                 'textinfo': 'none'
+                                 },
+                            ],
+                            'layout': {
+                                'title': 'Eventos por recurso',
+                                "titlefont": {
+                                    "size": 23
+                                },
+                                'plot_bgcolor': colors['background'],
+                                'paper_bgcolor': colors['background'],
+                                'font': {
+                                    'color': colors['text']
+                                }
+                            }
+                        }
+                    )],
+            ),
 
-
-
+            html.Div(
+                children=[
+                    html.H3(
+                        children='Usuarios no participantes',
+                        style={
+                            'textAlign': 'center',
+                            'color': colors['text'],
+                        }
+                    ),
+                    html.Div(
+                        dash_table.DataTable(
+                            id='table',
+                            columns=[{"name": i, "id": i} for i in
+                                     prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).columns],
+                            data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).to_dict(
+                                'records'),
+                            style_header={'backgroundColor': colors['background']},
+                            style_cell={'textAlign': 'left',
+                                        'backgroundColor': 'rgb(50, 50, 50)',
+                                        'color': colors['text'],
+                                        },
+                            style_table={
+                                'maxHeight': '200px',
+                                'overflowY': 'scroll'
+                            },
+                        ),
+                    ),
+                ],
+                style={'display': 'inline-block'}, )
+        ], style={'text-align': 'center'}),
 ])
+
 
 @app.callback(
     dash.dependencies.Output('graph-events-per-day-students', 'figure'),
@@ -129,6 +158,7 @@ def update_output(start_date, end_date):
             }
         },
     }
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
