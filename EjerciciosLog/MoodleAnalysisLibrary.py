@@ -9,17 +9,21 @@ NOMBRE_USUARIO = 'Nombre completo del usuario'
 
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
-    def __init__(self, name, path, userstodelete):
+    teachers = []
+    dataframe_Usuarios = pd.DataFrame
+    def __init__(self, name, path, usuarioscsv, userstodelete):
         if path!="":
             self.dataframe=MoodleAnalysisLibrary.create_data_frame(self, name, path)
         else:
             self.dataframe=MoodleAnalysisLibrary.create_data_frame_file_fame(self, name)
         self.dataframe=MoodleAnalysisLibrary.add_ID_column(self, self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.delete_by_ID(self, self.dataframe, userstodelete)
+        # self.dataframe=MoodleAnalysisLibrary.delete_by_ID(self, self.dataframe, userstodelete)
+        self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
+        self.dataframe_Usuarios = pd.read_csv(usuarioscsv)
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -127,6 +131,7 @@ class MoodleAnalysisLibrary():
         for ele in idList:
             dataframe = dataframe[~dataframe[ID_USUARIO].isin([ele])]
         return dataframe
+
 
     def graphic_events_per_user(self, dataframe):
         """
@@ -447,6 +452,7 @@ class MoodleAnalysisLibrary():
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
+
     def events_per_resource(self, dataframe):
         """
         Summary line. SPRINT00
@@ -522,9 +528,9 @@ class MoodleAnalysisLibrary():
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, dataframe, initial, final):
+    def events_between_dates(self, dataframe, initial, final, onlystudents=False):
         """
-        Summary line.
+        Summary line. SPRINT01
 
         Calcula el número de eventos en determinado rango de fechas.
 
@@ -536,6 +542,8 @@ class MoodleAnalysisLibrary():
             Límite inferior del rango.
         final : int
             Límite superior del rango.
+        onlystudents : bool
+            Indica si deben contarse solo estudiantes o profesores también
 
         Returns
         -------
@@ -543,10 +551,15 @@ class MoodleAnalysisLibrary():
             El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
 
         """
-        resultdf = MoodleAnalysisLibrary.events_per_day(self, dataframe)
-        result2 = (resultdf['Fecha'] > initial) & (resultdf['Fecha'] <= final)
+        if onlystudents:
+            resultdf = MoodleAnalysisLibrary.delete_by_ID(self, dataframe, self.teachers)
+            resultdf = MoodleAnalysisLibrary.events_per_day(self, resultdf)
+        else:
+            resultdf = MoodleAnalysisLibrary.events_per_day(self, dataframe)
+        result2 = (resultdf['Fecha'] >= initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
+
 
     """
     Calcula la media de eventos por participante del dataframe.
