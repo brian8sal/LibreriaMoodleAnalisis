@@ -35,11 +35,10 @@ app.layout = html.Div(children=[
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)['Recurso'],
-                 'y': prueba.events_per_resource(prueba.dataframe)['Número de eventos'], 'type': 'bar'},
+                {'x': prueba.events_per_resource(prueba.dataframe)['Número de eventos'],
+                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation':'h'},
             ],
             'layout': {
-                'height': '700',
                 'title': 'Recurso por rango de eventos',
                 "titlefont": {
                     "size": 23
