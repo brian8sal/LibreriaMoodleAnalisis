@@ -39,7 +39,7 @@ app.layout = html.Div(children=[
                  'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation':'h'},
             ],
             'layout': {
-                'title': 'Recurso por rango de eventos',
+                'title': 'Recursos por número de eventos',
                 "titlefont": {
                     "size": 23
                 },
@@ -81,10 +81,10 @@ app.layout = html.Div(children=[
                                 {'labels': ['Participantes', 'No Participantes'],
                                  'values': [
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframeUsuarios)[
+                                                                             prueba.dataframe_Usuarios)[
                                          'Participantes'][0],
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframeUsuarios)[
+                                                                             prueba.dataframe_Usuarios)[
                                          'No participantes'][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
@@ -118,8 +118,8 @@ app.layout = html.Div(children=[
                         dash_table.DataTable(
                             id='table',
                             columns=[{"name": i, "id": i} for i in
-                                     prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).columns],
-                            data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframeUsuarios).to_dict(
+                                     prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_Usuarios).columns],
+                            data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_Usuarios).to_dict(
                                 'records'),
                             style_header={'backgroundColor': colors['background']},
                             style_cell={'textAlign': 'left',

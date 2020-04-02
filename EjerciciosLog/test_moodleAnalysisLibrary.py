@@ -79,22 +79,22 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         self.assertTrue((((prueba1Rows.num_events_per_participant(prueba1Rows.dataframe))['Número de eventos'][0]) == 1))
 
     def test_num_participants_nonparticipants(self):
-        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['Participantes'][0]==13)
-        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['No participantes'][0]==4)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['No participantes'][0]==4)
 
-        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframeUsuarios))['Participantes'][0]==13)
-        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframeUsuarios))['No participantes'][0]==0)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframe_Usuarios))['Participantes'][0]==13)
+        self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframe_Usuarios))['No participantes'][0]==0)
 
 
 
     def test_list_nonparticipant(self):
-        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['Nombre completo del usuario'][0]=='Sanchez Barreiro, Pablo')
-        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['Nombre completo del usuario'][1]=='Pedro')
-        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['Nombre completo del usuario'][2]=='JAVI')
-        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframeUsuarios))['Nombre completo del usuario'][3]=='RODRIGUEZ PÉREZ, DANIEL')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['Nombre completo del usuario'][0]=='Sanchez Barreiro, Pablo')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['Nombre completo del usuario'][1]=='Pedro')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['Nombre completo del usuario'][2]=='JAVI')
+        self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_Usuarios))['Nombre completo del usuario'][3]=='RODRIGUEZ PÉREZ, DANIEL')
 
 
-        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99Rows.list_nonparticipant(prueba99RowsSinUsuarios.dataframe, prueba99RowsSinUsuarios.dataframeUsuarios).columns))
+        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99Rows.list_nonparticipant(prueba99RowsSinUsuarios.dataframe, prueba99RowsSinUsuarios.dataframe_Usuarios).columns))
 
 
     def test_eventsPerMonth(self):
