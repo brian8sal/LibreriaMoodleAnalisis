@@ -36,7 +36,7 @@ app.layout = html.Div(children=[
         figure={
             'data': [
                 {'x': prueba.events_per_resource(prueba.dataframe)['Número de eventos'],
-                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation':'h'},
+                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Recursos por número de eventos',
@@ -53,22 +53,25 @@ app.layout = html.Div(children=[
             }
         },
     ),
-    dcc.Graph(id='graph-events-per-day-students'),
+    html.Div(
+        children=[
+            html.Div(children='Introduce el rango de fechas deseado ', style={
+                'textAlign': 'left',
+                'color': colors['text'],
+                'font-size': '20px'},
 
-    html.Div(children='Introduce el rango de fechas deseado ', style={
-        'textAlign': 'left',
-        'color': colors['text'],
-        'font-size': '20px'},
-
-             ),
-    dcc.DatePickerRange(
-        id='my-date-picker-range',
-        display_format='D/M/Y',
-        style={'font-size': '20px'},
-        min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-        max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
-        start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-        end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+                     ),
+            dcc.DatePickerRange(
+                id='my-date-picker-range',
+                display_format='D/M/Y',
+                style={'font-size': '20px'},
+                min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
+                max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+                start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
+                end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+            ),
+            dcc.Graph(id='graph-events-per-day-students'),
+        ],style={'background': 'rgb(50, 50, 50)'}
     ),
     html.Div(
         children=[
@@ -151,7 +154,7 @@ def update_output(start_date, end_date):
         'layout': {
             'title': 'Eventos por rango de días',
             'plot_bgcolor': colors['background'],
-            'paper_bgcolor': colors['background'],
+            'paper_bgcolor': 'rgb(50, 50, 50)',
             'font': {
                 'color': colors['text']
             }
@@ -160,4 +163,4 @@ def update_output(start_date, end_date):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
