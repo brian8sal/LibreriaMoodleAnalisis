@@ -3,7 +3,7 @@ import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
-import pandas as pd
+
 
 prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
@@ -160,4 +160,4 @@ def update_output(start_date, end_date):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()

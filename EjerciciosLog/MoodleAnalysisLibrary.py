@@ -478,6 +478,30 @@ class MoodleAnalysisLibrary():
         resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
         return resultdf
 
+    def participants_per_resource(self, dataframe):
+        """
+        Summary line. SPRINT02
+
+        Calcula el número de participantes por recurso del dataframe.
+
+        Parameters
+        ----------
+        dataframe : dataframe
+            Log en el que calcular el número de participantes por recurso.
+
+        Returns
+        -------
+        series??int
+            Lista con los recursos y su número de eventos.
+
+        """
+        result = dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de participantes']))
+        resultdf['Recurso'] = resultdf.index
+        resultdf.reset_index(drop=True, inplace=True)
+        resultdf = resultdf.sort_values(ascending=False, by=['Número de participantes'])
+        return resultdf
+
     def events_per_hour(self, dataframe):
         """
         Summary line.
