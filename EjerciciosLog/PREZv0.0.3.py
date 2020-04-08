@@ -4,9 +4,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
+prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_BD_20182019_anonymized.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
-                                                      ['0', '323', '231']))
+                                                      ['0','323','231','2']))
 
 app = dash.Dash(__name__)
 
