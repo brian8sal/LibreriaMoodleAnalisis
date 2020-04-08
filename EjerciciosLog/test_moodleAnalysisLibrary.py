@@ -152,6 +152,27 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
         self.assertEqual(len(dataframe), 1)
 
+    def test_participants_per_resource(self):
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0]['Número de participantes'], 13)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1]['Número de participantes'], 2)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1]['Recurso'], "Carpeta: Recursos del Alumnado")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2]['Recurso'], "Carpeta: Entrega inicial")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3]['Recurso'], "Carpeta: Exámenes")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4]['Recurso'], "Carpeta: Papeleo")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5]['Recurso'], "Foro: Noticias de clase")
+
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6]['Recurso'], "Tarea: Entrega inicial")
 
 
     def test_eventsPerHour(self):
