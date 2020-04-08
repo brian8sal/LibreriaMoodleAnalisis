@@ -4,7 +4,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import MoodleAnalysisLibrary
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_BD_20182019_anonymized.csv",
+prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
                                                       ['0','323','231','2']))
 
@@ -100,8 +100,8 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.participants_per_resource(prueba.dataframe)['Número de participantes'],
-                 'y': prueba.participants_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
+                {'x': prueba.events_per_resource(prueba.dataframe)['Número de eventos'],
+                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Paticipantes por recurso',
@@ -118,22 +118,25 @@ app.layout = html.Div(children=[
             }
         },
     ),
-    dcc.Graph(id='graph-events-per-day-students'),
+    html.Div(
+        children=[
+            html.Div(children='Introduce el rango de fechas deseado ', style={
+                'textAlign': 'left',
+                'color': colors['text'],
+                'font-size': '20px'},
 
-    html.Div(children='Introduce el rango de fechas deseado ', style={
-        'textAlign': 'left',
-        'color': colors['text'],
-        'font-size': '20px'},
-
-             ),
-    dcc.DatePickerRange(
-        id='my-date-picker-range',
-        display_format='D/M/Y',
-        style={'font-size': '20px'},
-        min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-        max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
-        start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-        end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+                     ),
+            dcc.DatePickerRange(
+                id='my-date-picker-range',
+                display_format='D/M/Y',
+                style={'font-size': '20px'},
+                min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
+                max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+                start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
+                end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+            ),
+            dcc.Graph(id='graph-events-per-day-students'),
+        ],style={'background': 'rgb(50, 50, 50)'}
     ),
 
 dcc.Graph(
@@ -174,7 +177,7 @@ def update_output(start_date, end_date):
         'layout': {
             'title': 'Eventos por rango de días',
             'plot_bgcolor': colors['background'],
-            'paper_bgcolor': colors['background'],
+            'paper_bgcolor': 'rgb(50, 50, 50)',
             'font': {
                 'color': colors['text']
             }
