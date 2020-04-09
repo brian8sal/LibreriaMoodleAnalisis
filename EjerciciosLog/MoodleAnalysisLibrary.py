@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
 
 CONTEXTO = 'Contexto del evento'
 ID_USUARIO = 'IDUsuario'
@@ -151,7 +150,6 @@ class MoodleAnalysisLibrary():
         """
         groups = dataframe.groupby([ID_USUARIO]).size()
         groups.plot.bar()
-        plt.show()
 
     def graphic_events_per_context(self, dataframe):
         """
@@ -171,7 +169,6 @@ class MoodleAnalysisLibrary():
         """
         groups = dataframe.groupby([(CONTEXTO)]).size()
         groups.plot.bar()
-        plt.show()
 
     def change_hora_type(dataframe):
         """

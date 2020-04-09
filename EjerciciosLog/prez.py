@@ -1,15 +1,36 @@
 import dash
-import dash_table
-import dash_core_components as dcc
 import dash_html_components as html
+import dash_core_components as dcc
 import MoodleAnalysisLibrary
+import dash_table
+import os
+import sys
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
-                                                      "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
-                                                      ['0','323','231','2']))
+log=input("Introduza el nombre del fichero log, no olvides el .csv ")
+usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .csv ")
+print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
+idprofesores = list(map(str, input().split()))
 
-app = dash.Dash(__name__)
 
+
+prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary(log,"",usuarios,idprofesores))
+
+def find_data_file(filename):
+    if getattr(sys, 'frozen', False):
+        datadir = os.path.dirname(sys.executable)
+    else:
+        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/Despliegue/assets")
+        print(datadir)
+    return os.path.join(datadir, filename)
+
+
+app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
+
+server = app.server
+colors = {
+    'background': '#111111',
+    'text': '#7FDBFF'
+}
 colors = {
     'background': '#111111',
     'text': '#7FDBFF'
