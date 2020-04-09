@@ -1,8 +1,9 @@
 import pandas as pd
 import MoodleAnalysisLibrary
 
-prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","", []))
-print(prueba.dataframe['Hora'][77])
+prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
+                                                      "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
+                                                      ['0', '323', '231']))
 prueba.graphic_events_per_context(prueba.dataframe)
 prueba.graphic_events_per_user(prueba.dataframe)
 ini = pd.Timestamp(2019, 8, 1)
@@ -17,3 +18,4 @@ print(prueba.events_per_week(prueba.dataframe))
 print(prueba.events_per_day(prueba.dataframe))
 print(prueba.events_per_resource(prueba.dataframe))
 print(prueba.events_per_hour(prueba.dataframe))
+print(prueba.participants_per_resource(prueba.dataframe))

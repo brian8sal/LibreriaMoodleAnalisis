@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
 
 CONTEXTO = 'Contexto del evento'
 ID_USUARIO = 'IDUsuario'
@@ -10,7 +9,7 @@ NOMBRE_USUARIO = 'Nombre completo del usuario'
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
     teachers = []
-    dataframe_Usuarios = pd.DataFrame
+    dataframe_usuarios = pd.DataFrame
     def __init__(self, name, path, usuarioscsv, userstodelete):
         if path!="":
             self.dataframe=MoodleAnalysisLibrary.create_data_frame(self, name, path)
@@ -23,7 +22,7 @@ class MoodleAnalysisLibrary():
         self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=['Hora'])
-        self.dataframe_Usuarios = pd.read_csv(usuarioscsv)
+        self.dataframe_usuarios = pd.read_csv(usuarioscsv)
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -151,7 +150,6 @@ class MoodleAnalysisLibrary():
         """
         groups = dataframe.groupby([ID_USUARIO]).size()
         groups.plot.bar()
-        plt.show()
 
     def graphic_events_per_context(self, dataframe):
         """
@@ -171,7 +169,6 @@ class MoodleAnalysisLibrary():
         """
         groups = dataframe.groupby([(CONTEXTO)]).size()
         groups.plot.bar()
-        plt.show()
 
     def change_hora_type(dataframe):
         """
@@ -476,6 +473,30 @@ class MoodleAnalysisLibrary():
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
+        return resultdf
+
+    def participants_per_resource(self, dataframe):
+        """
+        Summary line. SPRINT02
+
+        Calcula el número de participantes por recurso del dataframe.
+
+        Parameters
+        ----------
+        dataframe : dataframe
+            Log en el que calcular el número de participantes por recurso.
+
+        Returns
+        -------
+        series??int
+            Lista con los recursos y su número de eventos.
+
+        """
+        result = dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de participantes']))
+        resultdf['Recurso'] = resultdf.index
+        resultdf.reset_index(drop=True, inplace=True)
+        resultdf = resultdf.sort_values(ascending=False, by=['Número de participantes'])
         return resultdf
 
     def events_per_hour(self, dataframe):
