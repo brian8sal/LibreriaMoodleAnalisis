@@ -65,8 +65,8 @@ app.layout = html.Div(children=[
                     dash_table.DataTable(
                         id='table',
                         columns=[{"name": i, "id": i} for i in
-                                 prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_Usuarios).columns],
-                        data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_Usuarios).to_dict(
+                                 prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_usuarios).columns],
+                        data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_usuarios).to_dict(
                             'records'),
                         style_header={'backgroundColor': colors['background']},
                         style_cell={'textAlign': 'left',
@@ -91,10 +91,10 @@ app.layout = html.Div(children=[
                                 {'labels': ['Participantes', 'No Participantes'],
                                  'values': [
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframe_Usuarios)[
+                                                                             prueba.dataframe_usuarios)[
                                          'Participantes'][0],
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframe_Usuarios)[
+                                                                             prueba.dataframe_usuarios)[
                                          'No participantes'][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
