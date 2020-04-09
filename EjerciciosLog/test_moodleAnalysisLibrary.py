@@ -3,6 +3,10 @@ import MoodleAnalysisLibrary
 import pandas as pd
 import numpy as np
 
+NUM_PARTICIPANTES = 'Número de participantes'
+
+NUM_EVENTOS = 'Número de eventos'
+
 prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","","UsuariosTest.csv", []))
 prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
 prueba99RowsSinUsuarios = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","","UsuariosTestVacio.csv", []))
@@ -135,43 +139,50 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         ini = np.datetime64('2019-08-01')
         fin = np.datetime64('2019-08-29')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-08-01']['Número de eventos'].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-08-01'][NUM_EVENTOS].to_string(index=False), " 1")
         ini = np.datetime64('2019-09-01')
         fin = np.datetime64('2019-09-10')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-05']['Número de eventos'].to_string(index=False), " 1")
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-02']['Número de eventos'].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-05'][NUM_EVENTOS].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-02'][NUM_EVENTOS].to_string(index=False), " 1")
         ini = np.datetime64('2019-09-09')
         fin = np.datetime64('2019-09-23')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-22']['Número de eventos'].to_string(index=False), " 4")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-22'][NUM_EVENTOS].to_string(index=False), " 4")
         self.assertEqual(len(dataframe), 2)
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin,True)
-        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09']['Número de eventos'].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe['Fecha'] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
         self.assertEqual(len(dataframe), 1)
 
     def test_participants_per_resource(self):
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0]['Número de participantes'], 13)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0][
+                             NUM_PARTICIPANTES], 13)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1]['Número de participantes'], 2)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1][
+                             NUM_PARTICIPANTES], 2)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1]['Recurso'], "Carpeta: Recursos del Alumnado")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2][
+                             NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2]['Recurso'], "Carpeta: Entrega inicial")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3][
+                             NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3]['Recurso'], "Carpeta: Exámenes")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4][
+                             NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4]['Recurso'], "Carpeta: Papeleo")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5][
+                             NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5]['Recurso'], "Foro: Noticias de clase")
 
-        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6]['Número de participantes'], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6][
+                             NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6]['Recurso'], "Tarea: Entrega inicial")
 
 

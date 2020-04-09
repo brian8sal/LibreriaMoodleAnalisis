@@ -6,6 +6,8 @@ import dash_table
 import os
 import sys
 
+NUM_EVENTOS = 'Número de eventos'
+
 log=input("Introduza el nombre del fichero log, no olvides el .csv ")
 usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .csv ")
 print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
@@ -29,11 +31,8 @@ app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 server = app.server
 colors = {
     'background': '#111111',
-    'text': '#7FDBFF'
-}
-colors = {
-    'background': '#111111',
-    'text': '#7FDBFF'
+    'text': '#7FDBFF',
+    'grey': 'rgb(50, 50, 50)'
 }
 
 app.layout = html.Div(children=[
@@ -71,7 +70,7 @@ app.layout = html.Div(children=[
                             'records'),
                         style_header={'backgroundColor': colors['background']},
                         style_cell={'textAlign': 'left',
-                                    'backgroundColor': 'rgb(50, 50, 50)',
+                                    'backgroundColor': colors['grey'] ,
                                     'color': colors['text'],
                                     },
                         style_table={
@@ -121,7 +120,7 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)['Número de eventos'],
+                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
                  'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -157,14 +156,14 @@ app.layout = html.Div(children=[
                 end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
             ),
             dcc.Graph(id='graph-events-per-day-students'),
-        ],style={'background': 'rgb(50, 50, 50)'}
+        ],style={'background': colors['grey']}
     ),
 
 dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)['Número de eventos'],
+                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
                  'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -193,12 +192,12 @@ def update_output(start_date, end_date):
     dfaux5 = prueba.events_between_dates(prueba.dataframe, start_date, end_date, True)
     return {
         'data': [
-            {'x': dfaux5['Fecha'], 'y': dfaux5['Número de eventos'], 'type': 'scatter'},
+            {'x': dfaux5['Fecha'], 'y': dfaux5[NUM_EVENTOS], 'type': 'scatter'},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
             'plot_bgcolor': colors['background'],
-            'paper_bgcolor': 'rgb(50, 50, 50)',
+            'paper_bgcolor': colors['grey'],
             'font': {
                 'color': colors['text']
             }
