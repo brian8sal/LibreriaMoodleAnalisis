@@ -3,6 +3,8 @@ import MoodleAnalysisLibrary
 import pandas as pd
 import numpy as np
 
+NUM_EVENTOS = 'Número de eventos'
+
 NUM_PARTICIPANTES = 'Número de participantes'
 
 NUM_EVENTOS = 'Número de eventos'
@@ -111,28 +113,28 @@ class TestMoodleAnalysisLibrary(unittest.TestCase):
         self.assertEqual(0,0)
 
     def test_eventsPerResource(self):
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0]['Número de eventos'], 32)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0][NUM_EVENTOS], 32)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1]['Número de eventos'], 13)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1][NUM_EVENTOS], 13)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1]['Recurso'], "Foro: Noticias de clase")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2]['Número de eventos'], 4)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2][NUM_EVENTOS], 4)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2]['Recurso'], "Carpeta: Recursos del Alumnado")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3]['Número de eventos'], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3][NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3]['Recurso'], "Carpeta: Entrega inicial")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4]['Número de eventos'], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4][NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4]['Recurso'], "Carpeta: Exámenes")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5]['Número de eventos'], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5][NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5]['Recurso'], "Carpeta: Papeleo")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6]['Número de eventos'], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6][NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6]['Recurso'], "Tarea: Entrega inicial")
 
-        self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0]['Número de eventos'], 1)
+        self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0][NUM_EVENTOS], 1)
         self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0]['Recurso'], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
     def test_events_between_dates(self):
