@@ -120,8 +120,8 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
-                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
+                {'x': prueba.participants_per_resource(prueba.dataframe)['Número de participantes'],
+                 'y': prueba.participants_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Paticipantes por recurso',
