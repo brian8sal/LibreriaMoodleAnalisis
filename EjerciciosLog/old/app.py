@@ -1,7 +1,7 @@
 import pandas as pd
-import MoodleAnalysisLibrary
+import Maadle
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv",
+prueba = (Maadle.Maadle("logs_G668_1819_20191223-1648.csv",
                                                       "C:/Users/sal8b/OneDrive/Escritorio/Beca", "Usuarios.csv",
                                                       ['0', '323', '231']))
 prueba.graphic_events_per_context(prueba.dataframe)

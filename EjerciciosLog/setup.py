@@ -20,11 +20,11 @@ options = {
 executables = [
     Executable('server.py',
                base='console',
-               targetName='PREZ.exe')
+               targetName='Prez.exe')
 ]
 
 setup(
-    name='PREZ',
+    name='Prez',
     packages=find_packages(),
     version='0.0.3',
     description='rig',

@@ -11,21 +11,21 @@ NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 
-class MoodleAnalysisLibrary():
+class Maadle():
     dataframe = pd.DataFrame
     teachers = []
     dataframe_usuarios = pd.DataFrame
     def __init__(self, name, path, usuarioscsv, userstodelete):
         if path!="":
-            self.dataframe=MoodleAnalysisLibrary.create_data_frame(self, name, path)
+            self.dataframe=Maadle.create_data_frame(self, name, path)
         else:
-            self.dataframe=MoodleAnalysisLibrary.create_data_frame_file_fame(self, name)
-        self.dataframe=MoodleAnalysisLibrary.add_ID_column(self, self.dataframe)
-        # self.dataframe=MoodleAnalysisLibrary.delete_by_ID(self, self.dataframe, userstodelete)
+            self.dataframe=Maadle.create_data_frame_file_fame(self, name)
+        self.dataframe=Maadle.add_ID_column(self, self.dataframe)
+        # self.dataframe=Maadle.delete_by_ID(self, self.dataframe, userstodelete)
         self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
-        self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
-        self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
+        self.dataframe=Maadle.change_hora_type(self.dataframe)
+        self.dataframe=Maadle.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.dataframe_usuarios = pd.read_csv(usuarioscsv)
 
@@ -299,7 +299,7 @@ class MoodleAnalysisLibrary():
             Número de participantes en el log.
 
         """
-        return (dataframe[ID_USUARIO].nunique() - MoodleAnalysisLibrary.num_teachers(self, dataframe))
+        return (dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self, dataframe))
 
     def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
         """
@@ -549,7 +549,7 @@ class MoodleAnalysisLibrary():
             Log con los eventos filtrados.
 
         """
-        resultdf = MoodleAnalysisLibrary.events_per_resource(self, dataframe)
+        resultdf = Maadle.events_per_resource(self, dataframe)
         result2 = (resultdf[NUM_EVENTOS] > min) & (resultdf[NUM_EVENTOS] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
@@ -578,10 +578,10 @@ class MoodleAnalysisLibrary():
 
         """
         if onlystudents:
-            resultdf = MoodleAnalysisLibrary.delete_by_ID(self, dataframe, self.teachers)
-            resultdf = MoodleAnalysisLibrary.events_per_day(self, resultdf)
+            resultdf = Maadle.delete_by_ID(self, dataframe, self.teachers)
+            resultdf = Maadle.events_per_day(self, resultdf)
         else:
-            resultdf = MoodleAnalysisLibrary.events_per_day(self, dataframe)
+            resultdf = Maadle.events_per_day(self, dataframe)
         result2 = (resultdf['Fecha'] >= initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
