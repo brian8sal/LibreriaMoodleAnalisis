@@ -1,10 +1,15 @@
 import os
 import pandas as pd
 
-CONTEXTO = 'Contexto del evento'
 ID_USUARIO = 'IDUsuario'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
-
+NUM_PARTICIPANTES = 'Número de participantes'
+DESCRIPCION = 'Descripción'
+FECHA_HORA = 'Hora'
+CONTEXTO = 'Contexto del evento'
+NUM_EVENTOS = 'Número de eventos'
+NO_PARTICIPANTES = 'No participantes'
+PARTICIPANTES = 'Participantes'
 
 class MoodleAnalysisLibrary():
     dataframe = pd.DataFrame
@@ -21,7 +26,7 @@ class MoodleAnalysisLibrary():
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe=MoodleAnalysisLibrary.change_hora_type(self.dataframe)
         self.dataframe=MoodleAnalysisLibrary.add_mont_day_hour_columns(self, self.dataframe)
-        self.dataframe = self.dataframe.sort_values(by=['Hora'])
+        self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.dataframe_usuarios = pd.read_csv(usuarioscsv)
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
@@ -83,7 +88,7 @@ class MoodleAnalysisLibrary():
             Log con la columna añadida.
 
         """
-        dataframe[(ID_USUARIO)] = dataframe['Descripción'].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        dataframe[(ID_USUARIO)] = dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
     def delete_columns(self, dataframe, columns) -> pd.DataFrame:
@@ -187,7 +192,7 @@ class MoodleAnalysisLibrary():
             Log con la columna Hora cambiada.
 
         """
-        dataframe['Hora'] = pd.to_datetime(dataframe['Hora'],dayfirst=True)
+        dataframe[FECHA_HORA] = pd.to_datetime(dataframe[FECHA_HORA],dayfirst=True)
         return dataframe
 
     def between_dates(self, dataframe, initial, final):
@@ -211,7 +216,7 @@ class MoodleAnalysisLibrary():
             Log con los eventos comprendidos.
 
         """
-        result = (dataframe['Hora'] > initial) & (dataframe['Hora'] <= final)
+        result = (dataframe[FECHA_HORA] > initial) & (dataframe[FECHA_HORA] <= final)
         dataframe = dataframe.loc[result]
         return dataframe
 
@@ -232,9 +237,9 @@ class MoodleAnalysisLibrary():
             Log con las columnas añadidas.
 
         """
-        dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe['Hora']).time
-        dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe['Hora']).day
-        dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe['Hora']).month
+        dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).time
+        dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).day
+        dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).month
         return dataframe
 
     """
@@ -317,12 +322,12 @@ class MoodleAnalysisLibrary():
             participantes.
 
         """
-        data={'Participantes':[0],'No participantes':[0]}
+        data={PARTICIPANTES:[0], NO_PARTICIPANTES:[0]}
         df=pd.DataFrame(data)
-        df['Participantes']=dataframe[ID_USUARIO].nunique()
+        df[PARTICIPANTES]=dataframe[ID_USUARIO].nunique()
         for fila in dataframeusuarios.iterrows():
             if fila[1][NOMBRE_USUARIO] not in dataframe[NOMBRE_USUARIO].values:
-                df['No participantes']=df['No participantes']+1
+                df[NO_PARTICIPANTES]= df[NO_PARTICIPANTES] + 1
         return df
 
     def list_nonparticipant(self, dataframe, dataframeusuarios):
@@ -372,8 +377,8 @@ class MoodleAnalysisLibrary():
             Lista con los participantes y su número de participantes.
 
         """
-        result = pd.DataFrame({'Número de eventos': dataframe.groupby([NOMBRE_USUARIO, ID_USUARIO]).size()}).reset_index()
-        result = result.sort_values(by=['Número de eventos'])
+        result = pd.DataFrame({NUM_EVENTOS: dataframe.groupby([NOMBRE_USUARIO, ID_USUARIO]).size()}).reset_index()
+        result = result.sort_values(by=[NUM_EVENTOS])
         return result
 
     def events_per_month(self, dataframe):
@@ -394,8 +399,8 @@ class MoodleAnalysisLibrary():
 
         """
         result = 0
-        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
-        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"])
+        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
+        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS])
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
@@ -418,8 +423,8 @@ class MoodleAnalysisLibrary():
 
         """
         result = 0
-        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
@@ -442,8 +447,8 @@ class MoodleAnalysisLibrary():
 
         """
         result = 0
-        result = dataframe['Hora'].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
+        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
@@ -469,10 +474,10 @@ class MoodleAnalysisLibrary():
         """
         result = 0
         result = dataframe[CONTEXTO].groupby(dataframe[CONTEXTO]).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de eventos']))
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(ascending=False,by=['Número de eventos'])
+        resultdf = resultdf.sort_values(ascending=False,by=[NUM_EVENTOS])
         return resultdf
 
     def participants_per_resource(self, dataframe):
@@ -493,10 +498,10 @@ class MoodleAnalysisLibrary():
 
         """
         result = dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=['Número de participantes']))
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_PARTICIPANTES]))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(ascending=False, by=['Número de participantes'])
+        resultdf = resultdf.sort_values(ascending=False, by=[NUM_PARTICIPANTES])
         return resultdf
 
     def events_per_hour(self, dataframe):
@@ -517,9 +522,9 @@ class MoodleAnalysisLibrary():
 
         """
         result = 0
-        result = dataframe['Hora'].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=["Número de eventos"]))
-        resultdf['Hora'] = resultdf.index
+        result = dataframe[FECHA_HORA].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
+        resultdf[FECHA_HORA] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
@@ -545,7 +550,7 @@ class MoodleAnalysisLibrary():
 
         """
         resultdf = MoodleAnalysisLibrary.events_per_resource(self, dataframe)
-        result2 = (resultdf['Número de eventos'] > min) & (resultdf['Número de eventos'] <= max)
+        result2 = (resultdf[NUM_EVENTOS] > min) & (resultdf[NUM_EVENTOS] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
 
