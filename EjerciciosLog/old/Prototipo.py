@@ -1,9 +1,9 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import MoodleAnalysisLibrary
+import Maadle
 
-prueba=(MoodleAnalysisLibrary.MoodleAnalysisLibrary("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca",['0','-1']))
+prueba=(Maadle.Maadle("logs_G668_1819_20191223-1648.csv", "C:/Users/sal8b/OneDrive/Escritorio/Beca", ['0', '-1']))
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 

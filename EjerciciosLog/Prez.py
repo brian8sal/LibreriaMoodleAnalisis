@@ -1,7 +1,7 @@
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-import MoodleAnalysisLibrary
+import Maadle
 import dash_table
 import os
 import sys
@@ -20,7 +20,7 @@ idprofesores = list(map(str, input().split()))
 
 
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary(log,"",usuarios,idprofesores))
+prueba = (Maadle.Maadle(log,"",usuarios,idprofesores))
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):

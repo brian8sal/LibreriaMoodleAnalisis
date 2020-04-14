@@ -1,14 +1,10 @@
 import unittest
-import MoodleAnalysisLibrary
-import pandas as pd
+import Maadle
 import numpy as np
 
 FECHA = 'Fecha'
-
 NO_PARTICIPANTES = 'No participantes'
-
 PARTICIPANTES = 'Participantes'
-
 RECURSO = 'Recurso'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
 NUM_EVENTOS = 'Número de eventos'
@@ -18,16 +14,14 @@ ID_USUARIO = 'IDUsuario'
 NUM_PARTICIPANTES = 'Número de participantes'
 NUM_EVENTOS = 'Número de eventos'
 
-prueba1Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog1Row.csv","","UsuariosTest.csv", []))
-prueba99Rows = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
-prueba99RowsSinUsuarios = (MoodleAnalysisLibrary.MoodleAnalysisLibrary("TestingLog99Rows.csv","","UsuariosTestVacio.csv", []))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","UsuariosTest.csv", []))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTestVacio.csv", []))
 
-class TestMoodleAnalysisLibrary(unittest.TestCase):
+class Test_Maadle(unittest.TestCase):
 
     def test_createDataFrame(self):
         self.assertEqual(0,0)
-
-
 
     def test_createDataFrameFileName(self):
         dataframe = prueba1Rows.create_data_frame_file_fame("TestingLog1Row.csv")
