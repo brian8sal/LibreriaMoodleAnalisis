@@ -18,7 +18,7 @@ prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","UsuariosTest.csv", []))
 prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
 prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTestVacio.csv", []))
 
-class test_Maalde(unittest.TestCase):
+class Test_Maadle(unittest.TestCase):
 
     def test_createDataFrame(self):
         self.assertEqual(0,0)
