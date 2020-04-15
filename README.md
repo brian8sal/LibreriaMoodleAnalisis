@@ -23,3 +23,6 @@ El proyecto se desarrolla en el directorio EjerciciosLog, contenedor de lo sigui
 	la privacidad.
 	-UsuariosTest.csv: Este fichero se creó con el fin de poder realizar pruebas. Busca albergar el nombre de todos los usuarios de un curso de Moodle. No solo 
 	el de los usuarios activos en el curso sino todos en general.
+
+Por otro lado, podemos encontrar otro directorio llamado Documentos, en él encontraremos la memoria del proyecto así como un cuestionario para la toma de requisitos
+de la herramienta.
