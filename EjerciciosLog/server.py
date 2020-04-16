@@ -1,5 +1,5 @@
 from waitress import serve
 
-from prez import server
+from Prez import server
 
 serve(server)

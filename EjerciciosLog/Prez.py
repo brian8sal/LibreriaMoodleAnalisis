@@ -1,11 +1,16 @@
 import dash
 import dash_html_components as html
 import dash_core_components as dcc
-import MoodleAnalysisLibrary
+import Maadle
 import dash_table
 import os
 import sys
 
+RECURSO = 'Recurso'
+FECHA = 'Fecha'
+NUM_PARTICIPANTES = 'Número de participantes'
+NO_PARTICIPANTES = 'No participantes'
+PARTICIPANTES = 'Participantes'
 NUM_EVENTOS = 'Número de eventos'
 
 log=input("Introduza el nombre del fichero log, no olvides el .csv ")
@@ -15,7 +20,7 @@ idprofesores = list(map(str, input().split()))
 
 
 
-prueba = (MoodleAnalysisLibrary.MoodleAnalysisLibrary(log,"",usuarios,idprofesores))
+prueba = (Maadle.Maadle(log,"",usuarios,idprofesores))
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
@@ -88,14 +93,14 @@ app.layout = html.Div(children=[
                         id='pie-chart-participants-users',
                         figure={
                             'data': [
-                                {'labels': ['Participantes', 'No Participantes'],
+                                {'labels': [PARTICIPANTES, NO_PARTICIPANTES],
                                  'values': [
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         'Participantes'][0],
+                                         PARTICIPANTES][0],
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         'No participantes'][0]], 'type': 'pie',
+                                         NO_PARTICIPANTES][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
                                  },
@@ -120,11 +125,11 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
-                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
+                {'x': prueba.participants_per_resource(prueba.dataframe)[NUM_PARTICIPANTES],
+                 'y': prueba.participants_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
-                'title': 'Paticipantes por recurso',
+                'title': 'Participantes por recurso',
                 "titlefont": {
                     "size": 23
                 },
@@ -150,10 +155,10 @@ app.layout = html.Div(children=[
                 id='my-date-picker-range',
                 display_format='D/M/Y',
                 style={'font-size': '20px'},
-                min_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-                max_date_allowed=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
-                start_date=prueba.events_per_day(prueba.dataframe)['Fecha'].min(),
-                end_date=prueba.events_per_day(prueba.dataframe)['Fecha'].max(),
+                min_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
+                max_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].max(),
+                start_date=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
+                end_date=prueba.events_per_day(prueba.dataframe)[FECHA].max(),
             ),
             dcc.Graph(id='graph-events-per-day-students'),
         ],style={'background': colors['grey']}
@@ -164,7 +169,7 @@ dcc.Graph(
         figure={
             'data': [
                 {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
-                 'y': prueba.events_per_resource(prueba.dataframe)['Recurso'], 'type': 'bar', 'orientation': 'h'},
+                 'y': prueba.events_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Recursos por número de eventos',
@@ -192,7 +197,7 @@ def update_output(start_date, end_date):
     dfaux5 = prueba.events_between_dates(prueba.dataframe, start_date, end_date, True)
     return {
         'data': [
-            {'x': dfaux5['Fecha'], 'y': dfaux5[NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux5[FECHA], 'y': dfaux5[NUM_EVENTOS], 'type': 'scatter'},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
