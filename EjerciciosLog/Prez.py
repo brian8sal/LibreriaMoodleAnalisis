@@ -41,15 +41,9 @@ colors = {
 }
 
 app.layout = html.Div(children=[
-    html.H1(
-        children='Log Curso 2018-2019',
-        style={
-            'textAlign': 'center',
-            'color': colors['text'],
-        }
-    ),
+
     html.H2(
-        children='Métodos de Desarrollo',
+        children=prueba.dataframe["Contexto del evento"].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
