@@ -43,7 +43,7 @@ colors = {
 app.layout = html.Div(children=[
 
     html.H2(
-        children=prueba.dataframe["Contexto del evento"].iloc[0],
+        children=prueba.dataframe[prueba.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
