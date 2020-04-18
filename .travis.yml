@@ -19,5 +19,5 @@ script:
   - "pip install coverage"
   - "coverage run Test_Maadle.py"
   - "coverage report"
-  - "coverage xml -i"
+  - "coverage xml"
   - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
