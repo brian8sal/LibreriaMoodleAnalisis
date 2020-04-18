@@ -16,4 +16,8 @@ script:
   - "pip install pandas"
   - "cd EjerciciosLog"
   - "python -m unittest"
+  - "pip install coverage"
+  - "coverage run Test_Maadle.py"
+  - "coverage report"
+  - "coverage xml -i"
   - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
