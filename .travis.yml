@@ -21,4 +21,4 @@ script:
   - "coverage run Test_Maadle.py"
   - "coverage report Maadle.py"
   - "coverage xml -i Maadle.py"
-  - sonar-scanner
+  - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
