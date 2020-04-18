@@ -17,3 +17,7 @@ script:
   - "pip install pandas"
   - "cd EjerciciosLog"
   - "python -m unittest"
+  - "pip install coverage"
+  - "coverage run Test_Maadle.py"
+  - "coverage report Maadle.py"
+  - "coverage xml Test_Maadle.py"
