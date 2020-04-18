@@ -12,13 +12,8 @@ language: python
 python: 3.6
 script: 
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
-  
   - "pip install matplotlib"
   - "pip install pandas"
   - "cd EjerciciosLog"
   - "python -m unittest"
-  - "pip install coverage"
-  - "coverage run Test_Maadle.py"
-  - "coverage report Maadle.py"
-  - "coverage xml -i Maadle.py"
   - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
