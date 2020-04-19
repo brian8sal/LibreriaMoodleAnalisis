@@ -16,5 +16,8 @@ script:
   - "pip install pandas"
   - "cd EjerciciosLog"
   - "python -m unittest"
+  - "pip install nose"
   - "pip install coverage"
+  - "nosetests --with-coverage --cover-package=. --cover-branches --cover-xml"
+  - "sed -i 's/filename="/filename=".\//g' coverage.xml"
   - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
