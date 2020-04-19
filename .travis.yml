@@ -17,6 +17,7 @@ script:
   - "cd EjerciciosLog"
   - "python -m unittest"
   - "pip install coverage"
+  - "cd EjerciciosLog"
   - "coverage run -m unittest discover"
   - "coverage report"
   - "coverage xml -i"
