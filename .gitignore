@@ -1,3 +1,5 @@
 EjerciciosLog/venv/
 EjerciciosLog/.idea/
 EjerciciosLog/__pycache__/
+EjerciciosLog/.coverage
+EjerciciosLog/coverage.xml
