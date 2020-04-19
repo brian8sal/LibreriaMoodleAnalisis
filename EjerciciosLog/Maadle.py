@@ -21,7 +21,6 @@ class Maadle():
         else:
             self.dataframe=Maadle.create_data_frame_file_fame(self, name)
         self.dataframe=Maadle.add_ID_column(self, self.dataframe)
-        # self.dataframe=Maadle.delete_by_ID(self, self.dataframe, userstodelete)
         self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe=Maadle.change_hora_type(self.dataframe)
