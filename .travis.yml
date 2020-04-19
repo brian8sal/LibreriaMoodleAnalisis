@@ -17,6 +17,6 @@ script:
   - "cd EjerciciosLog"
   - "python -m unittest"
   - "pip install coverage"
-  - "coverage run EjerciciosLog/Test_Maadle.py"
+  - "coverage run EjerciciosLog/Maadle.py"
   - "coverage xml -i"
   - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis
