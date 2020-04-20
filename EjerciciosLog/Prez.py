@@ -14,7 +14,7 @@ PARTICIPANTES = 'Participantes'
 NUM_EVENTOS = 'Número de eventos'
 
 log=input("Introduza el nombre del fichero log, no olvides el .csv ")
-usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .csv ")
+usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
 print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
 idprofesores = list(map(str, input().split()))
 

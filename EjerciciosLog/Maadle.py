@@ -15,19 +15,18 @@ class Maadle():
     dataframe = pd.DataFrame
     teachers = []
     dataframe_usuarios = pd.DataFrame
-    def __init__(self, name, path, usuarioscsv, userstodelete):
+    def __init__(self, name, path, usuariosxls, userstodelete):
         if path!="":
             self.dataframe=Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe=Maadle.create_data_frame_file_fame(self, name)
         self.dataframe=Maadle.add_ID_column(self, self.dataframe)
-        # self.dataframe=Maadle.delete_by_ID(self, self.dataframe, userstodelete)
         self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe=Maadle.change_hora_type(self.dataframe)
         self.dataframe=Maadle.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
-        self.dataframe_usuarios = pd.read_csv(usuarioscsv)
+        self.dataframe_usuarios = pd.read_excel(usuariosxls, sheet_name='Usuarios')
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
