@@ -13,14 +13,21 @@ NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 NUM_EVENTOS = 'Número de eventos'
 
-log=input("Introduza el nombre del fichero log, no olvides el .csv ")
-usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
-print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
-idprofesores = list(map(str, input().split()))
+while True:
+    try:
+        log=input("Introduza el nombre del fichero log, no olvides el .csv ")
+        usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
+        print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
+        idprofesores = list(map(str, input().split()))
 
+        prueba = (Maadle.Maadle(log, "", usuarios, idprofesores))
 
+    except FileNotFoundError:
+        print("Vuelve a intentarlo, puede que haya escrito mal los nombres de los archivos o que estos no se encuentren en el directorio del programa")
+        continue
+    else:
+        break
 
-prueba = (Maadle.Maadle(log,"",usuarios,idprofesores))
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
