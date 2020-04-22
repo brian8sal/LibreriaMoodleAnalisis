@@ -14,6 +14,7 @@ script:
   # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
   - "pip install matplotlib"
   - "pip install pandas"
+  - "pip install xlrd"
   - "cd EjerciciosLog"
   - "python -m unittest"
   - "pip install coverage"
