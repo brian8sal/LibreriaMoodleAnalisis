@@ -1,0 +1,41 @@
+Portada
+Índice Contenido
+Índice Imágenes/Figuras
+
+Resumen
+Abstract 
+Palabras Clave
+
+Introducción Temática [Datos/Información y Análisis de Datos]
+Introducción a la Metodología de Trabajo y Herramientas [Metodología Ágil/Python/Pandas/Dash/Travis/SonarCloud/Scrumdesk/Git]
+Introducción a Moodle
+
+Ingeniería de Requisitos
+	Visión del Proyecto
+		Introducción
+		Definición
+	Contexto del Proyecto
+		Introducción
+		Dominio con mapa mental
+		Mención Ley Oficial de Protección de Datos
+		Actores y Utilizacion
+		Tecnología [Herramientas?]
+		Desarrollo Software [Herramientas?]
+	Diagrama de Objetivos
+
+Ingeniería de Software
+	Métodos de Desarrollo
+		Introducción
+		Metodologías Ágiles
+		Entorno Git/SonarCloud/Travis
+		Lenguaje Python/Pandas/Dash
+	Desarrollo *Mostrar proceso desde Historia de usuario hasta pull request*
+		Introducción
+		Maadle
+		Prez
+		Despliegue
+		
+
+	
+
+
