@@ -3,16 +3,7 @@ import Maadle
 import numpy as np
 
 FECHA = 'Fecha'
-NO_PARTICIPANTES = 'No participantes'
-PARTICIPANTES = 'Participantes'
 RECURSO = 'Recurso'
-NOMBRE_USUARIO = 'Nombre completo del usuario'
-NUM_EVENTOS = 'Número de eventos'
-FECHA_HORA = 'Hora'
-DESCRIPCION = 'Descripción'
-ID_USUARIO = 'IDUsuario'
-NUM_PARTICIPANTES = 'Número de participantes'
-NUM_EVENTOS = 'Número de eventos'
 
 prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","UsuariosTest.csv", []))
 prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
@@ -31,25 +22,25 @@ class Test_Maadle(unittest.TestCase):
 
     def test_addIDColumn(self):
         dataframe=prueba1Rows.add_ID_column(prueba1Rows.dataframe) #Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
-        self.assertTrue(ID_USUARIO in dataframe.columns)
+        self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
         dataframe=prueba99Rows.add_ID_column(prueba1Rows.dataframe) #Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
-        self.assertTrue(ID_USUARIO in dataframe.columns)
+        self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
 
     def test_deleteColumns(self):
-        dataframe=prueba1Rows.delete_columns(prueba1Rows.dataframe, [DESCRIPCION])
-        self.assertFalse(DESCRIPCION in dataframe.columns)
+        dataframe=prueba1Rows.delete_columns(prueba1Rows.dataframe, [Maadle.DESCRIPCION])
+        self.assertFalse(Maadle.DESCRIPCION in dataframe.columns)
 
     def test_deleteByID(self):
         dataframe=prueba1Rows.dataframe
-        self.assertTrue("0" in dataframe[ID_USUARIO].values)
+        self.assertTrue("0" in dataframe[Maadle.ID_USUARIO].values)
         dataframe=prueba1Rows.delete_by_ID(prueba1Rows.dataframe, ["0"])
-        self.assertTrue("0" not in dataframe[ID_USUARIO].values)
+        self.assertTrue("0" not in dataframe[Maadle.ID_USUARIO].values)
 
     def test_changeHoraType(self):
         dataframe=prueba1Rows.dataframe
-        self.assertEqual(dataframe[FECHA_HORA].dtype, 'datetime64[ns]')# Se hace en el constructor
+        self.assertEqual(dataframe[Maadle.FECHA_HORA].dtype, 'datetime64[ns]')# Se hace en el constructor
         dataframe=prueba99Rows.dataframe
-        self.assertEqual(dataframe[FECHA_HORA].dtype, 'datetime64[ns]')# Se hace en el constructor
+        self.assertEqual(dataframe[Maadle.FECHA_HORA].dtype, 'datetime64[ns]')# Se hace en el constructor
 
     def test_betweenDates(self):
         ini = np.datetime64('2019-08-01')
@@ -85,30 +76,30 @@ class Test_Maadle(unittest.TestCase):
 
 
     def test_numEventsPerParticipant(self):
-        self.assertTrue((((prueba1Rows.num_events_per_participant(prueba1Rows.dataframe))[NUM_EVENTOS][0]) == 1))
+        self.assertTrue((((prueba1Rows.num_events_per_participant(prueba1Rows.dataframe))[Maadle.NUM_EVENTOS][0]) == 1))
 
     def test_num_participants_nonparticipants(self):
         self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            PARTICIPANTES][0] == 13)
+                            Maadle.PARTICIPANTES][0] == 13)
         self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            NO_PARTICIPANTES][0] == 4)
+                            Maadle.NO_PARTICIPANTES][0] == 4)
 
         self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframe_usuarios))[
-                            PARTICIPANTES][0] == 13)
+                            Maadle.PARTICIPANTES][0] == 13)
         self.assertTrue((prueba99Rows.num_participants_nonparticipants(prueba99RowsSinUsuarios.dataframe,prueba99RowsSinUsuarios.dataframe_usuarios))[
-                            NO_PARTICIPANTES][0] == 0)
+                            Maadle.NO_PARTICIPANTES][0] == 0)
 
 
 
     def test_list_nonparticipant(self):
         self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            NOMBRE_USUARIO][0] == 'Sanchez Barreiro, Pablo')
+                            Maadle.NOMBRE_USUARIO][0] == 'Sanchez Barreiro, Pablo')
         self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            NOMBRE_USUARIO][1] == 'Pedro')
+                            Maadle.NOMBRE_USUARIO][1] == 'Pedro')
         self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            NOMBRE_USUARIO][2] == 'JAVI')
+                            Maadle.NOMBRE_USUARIO][2] == 'JAVI')
         self.assertTrue((prueba99Rows.list_nonparticipant(prueba99Rows.dataframe,prueba99Rows.dataframe_usuarios))[
-                            NOMBRE_USUARIO][3] == 'RODRIGUEZ PÉREZ, DANIEL')
+                            Maadle.NOMBRE_USUARIO][3] == 'RODRIGUEZ PÉREZ, DANIEL')
 
 
         self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99Rows.list_nonparticipant(prueba99RowsSinUsuarios.dataframe, prueba99RowsSinUsuarios.dataframe_usuarios).columns))
@@ -124,78 +115,78 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(0,0)
 
     def test_eventsPerResource(self):
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0][NUM_EVENTOS], 32)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0][Maadle.NUM_EVENTOS], 32)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[0][RECURSO], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1][NUM_EVENTOS], 13)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1][Maadle.NUM_EVENTOS], 13)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[1][RECURSO], "Foro: Noticias de clase")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2][NUM_EVENTOS], 4)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2][Maadle.NUM_EVENTOS], 4)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[2][RECURSO], "Carpeta: Recursos del Alumnado")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3][NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3][Maadle.NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[3][RECURSO], "Carpeta: Entrega inicial")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4][NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4][Maadle.NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[4][RECURSO], "Carpeta: Exámenes")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5][NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5][Maadle.NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[5][RECURSO], "Carpeta: Papeleo")
 
-        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6][NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6][Maadle.NUM_EVENTOS], 1)
         self.assertEqual(prueba99Rows.events_per_resource(prueba99Rows.dataframe).iloc[6][RECURSO], "Tarea: Entrega inicial")
 
-        self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0][NUM_EVENTOS], 1)
+        self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0][Maadle.NUM_EVENTOS], 1)
         self.assertEqual(prueba1Rows.events_per_resource(prueba1Rows.dataframe).iloc[0][RECURSO], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
     def test_events_between_dates(self):
         ini = np.datetime64('2019-08-01')
         fin = np.datetime64('2019-08-29')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-08-01'][NUM_EVENTOS].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-08-01'][Maadle.NUM_EVENTOS].to_string(index=False), " 1")
         ini = np.datetime64('2019-09-01')
         fin = np.datetime64('2019-09-10')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-05'][NUM_EVENTOS].to_string(index=False), " 1")
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-02'][NUM_EVENTOS].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-05'][Maadle.NUM_EVENTOS].to_string(index=False), " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-02'][Maadle.NUM_EVENTOS].to_string(index=False), " 1")
         ini = np.datetime64('2019-09-09')
         fin = np.datetime64('2019-09-23')
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-22'][NUM_EVENTOS].to_string(index=False), " 4")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-22'][Maadle.NUM_EVENTOS].to_string(index=False), " 4")
         self.assertEqual(len(dataframe), 2)
         dataframe=prueba99Rows.events_between_dates(prueba99Rows.dataframe, ini, fin,True)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][NUM_EVENTOS].to_string(index=False), " 3")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
         self.assertEqual(len(dataframe), 1)
 
     def test_participants_per_resource(self):
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0][
-                             NUM_PARTICIPANTES], 13)
+                             Maadle.NUM_PARTICIPANTES], 13)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[0][RECURSO], "Curso: G000 - Curso de Testing - Curso 2018-2019")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1][
-                             NUM_PARTICIPANTES], 2)
+                             Maadle.NUM_PARTICIPANTES], 2)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[1][RECURSO], "Carpeta: Recursos del Alumnado")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2][
-                             NUM_PARTICIPANTES], 1)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[2][RECURSO], "Carpeta: Entrega inicial")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3][
-                             NUM_PARTICIPANTES], 1)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[3][RECURSO], "Carpeta: Exámenes")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4][
-                             NUM_PARTICIPANTES], 1)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[4][RECURSO], "Carpeta: Papeleo")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5][
-                             NUM_PARTICIPANTES], 1)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[5][RECURSO], "Foro: Noticias de clase")
 
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6][
-                             NUM_PARTICIPANTES], 1)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource(prueba99Rows.dataframe).iloc[6][RECURSO], "Tarea: Entrega inicial")
 
 

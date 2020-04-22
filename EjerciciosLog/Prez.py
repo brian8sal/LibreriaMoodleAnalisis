@@ -8,10 +8,6 @@ import sys
 
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
-NUM_PARTICIPANTES = 'Número de participantes'
-NO_PARTICIPANTES = 'No participantes'
-PARTICIPANTES = 'Participantes'
-NUM_EVENTOS = 'Número de eventos'
 
 log=input("Introduza el nombre del fichero log, no olvides el .csv ")
 usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .csv ")
@@ -41,15 +37,9 @@ colors = {
 }
 
 app.layout = html.Div(children=[
-    html.H1(
-        children='Log Curso 2018-2019',
-        style={
-            'textAlign': 'center',
-            'color': colors['text'],
-        }
-    ),
+
     html.H2(
-        children='Métodos de Desarrollo',
+        children=prueba.dataframe[prueba.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
@@ -93,14 +83,14 @@ app.layout = html.Div(children=[
                         id='pie-chart-participants-users',
                         figure={
                             'data': [
-                                {'labels': [PARTICIPANTES, NO_PARTICIPANTES],
+                                {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
                                  'values': [
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         PARTICIPANTES][0],
+                                         Maadle.PARTICIPANTES][0],
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         NO_PARTICIPANTES][0]], 'type': 'pie',
+                                         Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
                                  },
@@ -125,7 +115,7 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.participants_per_resource(prueba.dataframe)[NUM_PARTICIPANTES],
+                {'x': prueba.participants_per_resource(prueba.dataframe)[Maadle.NUM_PARTICIPANTES],
                  'y': prueba.participants_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -168,7 +158,7 @@ dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
+                {'x': prueba.events_per_resource(prueba.dataframe)[Maadle.NUM_EVENTOS],
                  'y': prueba.events_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -197,7 +187,7 @@ def update_output(start_date, end_date):
     dfaux5 = prueba.events_between_dates(prueba.dataframe, start_date, end_date, True)
     return {
         'data': [
-            {'x': dfaux5[FECHA], 'y': dfaux5[NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
