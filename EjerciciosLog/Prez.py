@@ -8,19 +8,22 @@ import sys
 
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
-NUM_PARTICIPANTES = 'Número de participantes'
-NO_PARTICIPANTES = 'No participantes'
-PARTICIPANTES = 'Participantes'
-NUM_EVENTOS = 'Número de eventos'
 
-log=input("Introduza el nombre del fichero log, no olvides el .csv ")
-usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .csv ")
-print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
-idprofesores = list(map(str, input().split()))
+while True:
+    try:
+        log=input("Introduza el nombre del fichero log, no olvides el .csv ")
+        usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
+        print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
+        idprofesores = list(map(str, input().split()))
 
+        prueba = (Maadle.Maadle(log, "", usuarios, idprofesores))
 
+    except FileNotFoundError:
+        print("Vuelve a intentarlo, puede que haya escrito mal los nombres de los archivos o que estos no se encuentren en el directorio del programa")
+        continue
+    else:
+        break
 
-prueba = (Maadle.Maadle(log,"",usuarios,idprofesores))
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
@@ -41,15 +44,9 @@ colors = {
 }
 
 app.layout = html.Div(children=[
-    html.H1(
-        children='Log Curso 2018-2019',
-        style={
-            'textAlign': 'center',
-            'color': colors['text'],
-        }
-    ),
+
     html.H2(
-        children='Métodos de Desarrollo',
+        children=prueba.dataframe[prueba.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
@@ -93,14 +90,14 @@ app.layout = html.Div(children=[
                         id='pie-chart-participants-users',
                         figure={
                             'data': [
-                                {'labels': [PARTICIPANTES, NO_PARTICIPANTES],
+                                {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
                                  'values': [
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         PARTICIPANTES][0],
+                                         Maadle.PARTICIPANTES][0],
                                      prueba.num_participants_nonparticipants(prueba.dataframe,
                                                                              prueba.dataframe_usuarios)[
-                                         NO_PARTICIPANTES][0]], 'type': 'pie',
+                                         Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
                                  },
@@ -125,7 +122,7 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.participants_per_resource(prueba.dataframe)[NUM_PARTICIPANTES],
+                {'x': prueba.participants_per_resource(prueba.dataframe)[Maadle.NUM_PARTICIPANTES],
                  'y': prueba.participants_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -168,7 +165,7 @@ dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)[NUM_EVENTOS],
+                {'x': prueba.events_per_resource(prueba.dataframe)[Maadle.NUM_EVENTOS],
                  'y': prueba.events_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
@@ -197,7 +194,7 @@ def update_output(start_date, end_date):
     dfaux5 = prueba.events_between_dates(prueba.dataframe, start_date, end_date, True)
     return {
         'data': [
-            {'x': dfaux5[FECHA], 'y': dfaux5[NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
