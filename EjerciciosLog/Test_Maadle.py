@@ -5,9 +5,9 @@ import numpy as np
 FECHA = 'Fecha'
 RECURSO = 'Recurso'
 
-prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","UsuariosTest.csv", []))
-prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTest.csv", ['1']))
-prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosTestVacio.csv", []))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","Usuarios.xls", []))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","Usuarios.xls", ['1']))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosVacio.xls", []))
 
 class Test_Maadle(unittest.TestCase):
 
