@@ -152,6 +152,7 @@ app.layout = html.Div(children=[
                 id='my-date-picker-range',
                 display_format='D/M/Y',
                 style={'font-size': '20px'},
+                first_day_of_week=1,
                 min_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
                 max_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].max(),
                 start_date=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
