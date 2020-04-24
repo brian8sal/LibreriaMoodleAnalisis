@@ -29,7 +29,7 @@ def find_data_file(filename):
     if getattr(sys, 'frozen', False):
         datadir = os.path.dirname(sys.executable)
     else:
-        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/Despliegue/assets")
+        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/assets")
         print(datadir)
     return os.path.join(datadir, filename)
 
