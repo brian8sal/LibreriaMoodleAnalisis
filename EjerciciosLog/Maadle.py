@@ -11,21 +11,23 @@ NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 
-class Maadle():
+
+class Maadle:
     dataframe = pd.DataFrame
     teachers = []
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
     def __init__(self, name, path, usuariosxls, userstodelete):
-        if path!="":
-            self.dataframe=Maadle.create_data_frame(self, name, path)
+
+        if path != "":
+            self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
-            self.dataframe=Maadle.create_data_frame_file_fame(self, name)
-        self.dataframe=Maadle.add_ID_column(self, self.dataframe)
+            self.dataframe = Maadle.create_data_frame_file_fame(self, name)
+        self.dataframe = Maadle.add_ID_column(self)
         self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
-        self.dataframe=Maadle.change_hora_type(self.dataframe)
-        self.dataframe=Maadle.add_mont_day_hour_columns(self, self.dataframe)
+        self.dataframe = Maadle.change_hora_type(self)
+        self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
@@ -76,7 +78,7 @@ class Maadle():
         """
         return pd.read_csv(name)
 
-    def add_ID_column(self, dataframe) -> pd.DataFrame:
+    def add_ID_column(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -84,8 +86,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log al que añadir la columna.
 
         Returns
         -------
@@ -93,10 +93,11 @@ class Maadle():
             Log con la columna añadida.
 
         """
-        dataframe[(ID_USUARIO)] = dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        dataframe = self.dataframe
+        dataframe[(ID_USUARIO)] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
-    def delete_columns(self, dataframe, columns) -> pd.DataFrame:
+    def delete_columns(self, columns) -> pd.DataFrame:
         """
         Summary line.
 
@@ -104,8 +105,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log del que eliminar las columnas.
         columns : array
             Columnas que eliminar.
 
@@ -115,10 +114,10 @@ class Maadle():
             Log con las columnas eliminadas.
 
         """
-        dataframe = dataframe.drop(columns, axis='columns')
+        dataframe = self.dataframe.drop(columns, axis='columns')
         return dataframe
 
-    def delete_by_ID(self, dataframe, idList) -> pd.DataFrame:
+    def delete_by_ID(self, idList) -> pd.DataFrame:
         """
         Summary line.
 
@@ -126,8 +125,7 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log del que eliminar los usuarios.
+
         idList : array
             Usuarios que eliminar.
 
@@ -138,11 +136,10 @@ class Maadle():
 
         """
         for ele in idList:
-            dataframe = dataframe[~dataframe[ID_USUARIO].isin([ele])]
+            dataframe = self.dataframe[~self.dataframe[ID_USUARIO].isin([ele])]
         return dataframe
 
-
-    def graphic_events_per_user(self, dataframe):
+    def graphic_events_per_user(self):
         """
         Summary line.
 
@@ -150,18 +147,16 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log del que hacer la gráfica.
 
         Returns
         -------
 
 
         """
-        groups = dataframe.groupby([ID_USUARIO]).size()
+        groups = self.dataframe.groupby([ID_USUARIO]).size()
         groups.plot.bar()
 
-    def graphic_events_per_context(self, dataframe):
+    def graphic_events_per_context(self):
         """
         Summary line.
 
@@ -169,18 +164,16 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log del que hacer la gráfica.
 
         Returns
         -------
 
 
         """
-        groups = dataframe.groupby([(CONTEXTO)]).size()
+        groups = self.dataframe.groupby([(CONTEXTO)]).size
         groups.plot.bar()
 
-    def change_hora_type(dataframe):
+    def change_hora_type(self):
         """
         Summary line.
 
@@ -188,8 +181,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log cuya columna quiere ser cambiada de tipo.
 
         Returns
         -------
@@ -197,10 +188,11 @@ class Maadle():
             Log con la columna Hora cambiada.
 
         """
-        dataframe[FECHA_HORA] = pd.to_datetime(dataframe[FECHA_HORA],dayfirst=True)
+        dataframe = self.dataframe
+        dataframe[FECHA_HORA] = pd.to_datetime(self.dataframe[FECHA_HORA], dayfirst=True)
         return dataframe
 
-    def between_dates(self, dataframe, initial, final):
+    def between_dates(self, initial, final):
         """
         Summary line.
 
@@ -208,8 +200,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log cuya columna quiere ser cambiada de tipo.
         initial : Timestamp
             Fecha inicial.
         final : Timestamp
@@ -221,11 +211,11 @@ class Maadle():
             Log con los eventos comprendidos.
 
         """
-        result = (dataframe[FECHA_HORA] > initial) & (dataframe[FECHA_HORA] <= final)
-        dataframe = dataframe.loc[result]
+        result = (self.dataframe[FECHA_HORA] > initial) & (self.dataframe[FECHA_HORA] <= final)
+        dataframe = self.dataframe.loc[result]
         return dataframe
 
-    def add_mont_day_hour_columns(self, dataframe):
+    def add_mont_day_hour_columns(self):
         """
         Summary line.
 
@@ -233,8 +223,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log al que añadir columnas.
 
         Returns
         -------
@@ -242,9 +230,10 @@ class Maadle():
             Log con las columnas añadidas.
 
         """
-        dataframe['HoraDelDía'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).time
-        dataframe['DíaDelMes'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).day
-        dataframe['MesDelAño'] = pd.DatetimeIndex(dataframe[FECHA_HORA]).month
+        dataframe = self.dataframe
+        dataframe['HoraDelDía'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).time
+        dataframe['DíaDelMes'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).day
+        dataframe['MesDelAño'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).month
         return dataframe
 
     """
@@ -256,7 +245,7 @@ class Maadle():
         return dataframe
     """
 
-    def num_events(self, dataframe):
+    def num_events(self):
         """
         Summary line.
 
@@ -264,8 +253,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que contar los eventos.
 
         Returns
         -------
@@ -273,21 +260,22 @@ class Maadle():
             Número de eventos en el log.
 
         """
-        return len(dataframe)
+        return len(self.dataframe)
+
     """"
     Retorna el número de profesores de un dataframe. ***PASARÁ A SER BORRADO
 
     Recibe como parámetro el dataframe.
     Retorna el número de profesores del dataframe.
     """""
-    def num_teachers(self, dataframe):
+    def num_teachers(self):
         result = 0
-        for d in dataframe[NOMBRE_USUARIO].unique():
-            if (d.isupper() == False and d != '-'):
+        for d in self.dataframe[NOMBRE_USUARIO].unique():
+            if d.isupper() == False and d != '-':
                 result = result + 1
         return result
 
-    def num_participants_per_subject(self, dataframe):
+    def num_participants_per_subject(self):
         """
         Summary line.
 
@@ -295,8 +283,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que contar los participantes.
 
         Returns
         -------
@@ -304,9 +290,9 @@ class Maadle():
             Número de participantes en el log.
 
         """
-        return (dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self, dataframe))
+        return (self.dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self))
 
-    def num_participants_nonparticipants(self, dataframe, dataframeusuarios):
+    def num_participants_nonparticipants(self):
         """
         Summary line.
 
@@ -314,11 +300,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que contar los participantes.
-
-        dataframeusuarios : dataframe
-            Dataframe en el que contar todos los usuarios (participantes y no participantes).
 
         Returns
         -------
@@ -329,13 +310,13 @@ class Maadle():
         """
         data={PARTICIPANTES:[0], NO_PARTICIPANTES:[0]}
         df=pd.DataFrame(data)
-        df[PARTICIPANTES]=dataframe[ID_USUARIO].nunique()
-        for fila in dataframeusuarios.iterrows():
-            if fila[1][NOMBRE_USUARIO] not in dataframe[NOMBRE_USUARIO].values:
+        df[PARTICIPANTES]=self.dataframe[ID_USUARIO].nunique()
+        for fila in self.dataframe_usuarios.iterrows():
+            if fila[1][NOMBRE_USUARIO] not in self.dataframe[NOMBRE_USUARIO].values:
                 df[NO_PARTICIPANTES]= df[NO_PARTICIPANTES] + 1
         return df
 
-    def list_nonparticipant(self, dataframe, dataframeusuarios):
+    def list_nonparticipant(self):
         """
         Summary line.
 
@@ -343,11 +324,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que contar los participantes.
-
-        dataframeusuarios : dataframe
-            Dataframe con todos los usuarios (participantes y no participantes).
 
         Returns
         -------
@@ -356,8 +332,8 @@ class Maadle():
 
         """
         result=list()
-        for fila in dataframeusuarios[NOMBRE_USUARIO]:
-            if fila not in dataframe[NOMBRE_USUARIO].values:
+        for fila in self.dataframe_usuarios[NOMBRE_USUARIO]:
+            if fila not in self.dataframe[NOMBRE_USUARIO].values:
                 result.append(fila)
         if(result==[]):
             df = pd.DataFrame(result, columns=['TODOS HAN PARTICIPADO'])
@@ -365,7 +341,7 @@ class Maadle():
         df=pd.DataFrame(result,columns=[NOMBRE_USUARIO])
         return df
 
-    def num_events_per_participant(self, dataframe):
+    def num_events_per_participant(self):
         """
         Summary line.
 
@@ -373,8 +349,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por participante.
 
         Returns
         -------
@@ -382,11 +356,11 @@ class Maadle():
             Lista con los participantes y su número de participantes.
 
         """
-        result = pd.DataFrame({NUM_EVENTOS: dataframe.groupby([NOMBRE_USUARIO, ID_USUARIO]).size()}).reset_index()
+        result = pd.DataFrame({NUM_EVENTOS: self.dataframe.groupby([NOMBRE_USUARIO, ID_USUARIO]).size()}).reset_index()
         result = result.sort_values(by=[NUM_EVENTOS])
         return result
 
-    def events_per_month(self, dataframe):
+    def events_per_month(self):
         """
         Summary line.
 
@@ -394,8 +368,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por mes.
 
         Returns
         -------
@@ -404,13 +376,13 @@ class Maadle():
 
         """
         result = 0
-        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
+        result = self.dataframe[FECHA_HORA].groupby(self.dataframe.Hora.dt.strftime('%Y-%m')).agg('count') + result
         resultdf = pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS])
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_week(self, dataframe):
+    def events_per_week(self):
         """
         Summary line.
 
@@ -418,8 +390,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por semana.
 
         Returns
         -------
@@ -428,13 +398,13 @@ class Maadle():
 
         """
         result = 0
-        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%W')).agg('count') + result
+        result = self.dataframe[FECHA_HORA].groupby(self.dataframe.Hora.dt.strftime('%W')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day(self, dataframe):
+    def events_per_day(self):
         """
         Summary line.
 
@@ -442,8 +412,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por día.
 
         Returns
         -------
@@ -452,7 +420,7 @@ class Maadle():
 
         """
         result = 0
-        result = dataframe[FECHA_HORA].groupby(dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        result = self.dataframe[FECHA_HORA].groupby(self.dataframe.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
@@ -460,7 +428,7 @@ class Maadle():
         return resultdf
 
 
-    def events_per_resource(self, dataframe):
+    def events_per_resource(self):
         """
         Summary line. SPRINT00
 
@@ -468,8 +436,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por recurso.
 
         Returns
         -------
@@ -478,14 +444,14 @@ class Maadle():
 
         """
         result = 0
-        result = dataframe[CONTEXTO].groupby(dataframe[CONTEXTO]).agg('count') + result
+        result = self.dataframe[CONTEXTO].groupby(self.dataframe[CONTEXTO]).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         resultdf = resultdf.sort_values(ascending=False,by=[NUM_EVENTOS])
         return resultdf
 
-    def participants_per_resource(self, dataframe):
+    def participants_per_resource(self):
         """
         Summary line. SPRINT02
 
@@ -493,8 +459,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de participantes por recurso.
 
         Returns
         -------
@@ -502,14 +466,14 @@ class Maadle():
             Lista con los recursos y su número de eventos.
 
         """
-        result = dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
+        result = self.dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_PARTICIPANTES]))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         resultdf = resultdf.sort_values(ascending=False, by=[NUM_PARTICIPANTES])
         return resultdf
 
-    def events_per_hour(self, dataframe):
+    def events_per_hour(self):
         """
         Summary line.
 
@@ -517,8 +481,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos por hora.
 
         Returns
         -------
@@ -527,13 +489,13 @@ class Maadle():
 
         """
         result = 0
-        result = dataframe[FECHA_HORA].groupby((dataframe.Hora.dt.strftime('%H'))).agg('count') + result
+        result = self.dataframe[FECHA_HORA].groupby((self.dataframe.Hora.dt.strftime('%H'))).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf[FECHA_HORA] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def resources_by_number_of_events(self, dataframe, min, max):
+    def resources_by_number_of_events(self, min, max):
         """
         Summary line.
 
@@ -541,8 +503,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log del que filtrar los eventos.
         min : int
             Límite inferior del rango.
         max : int
@@ -554,12 +514,12 @@ class Maadle():
             Log con los eventos filtrados.
 
         """
-        resultdf = Maadle.events_per_resource(self, dataframe)
+        resultdf = Maadle.events_per_resource(self)
         result2 = (resultdf[NUM_EVENTOS] > min) & (resultdf[NUM_EVENTOS] <= max)
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, dataframe, initial, final, onlystudents=False):
+    def events_between_dates(self, initial, final, onlystudents=False):
         """
         Summary line. SPRINT01
 
@@ -567,8 +527,6 @@ class Maadle():
 
         Parameters
         ----------
-        dataframe : dataframe
-            Log en el que calcular el número de eventos.
         initial : int
             Límite inferior del rango.
         final : int
@@ -583,10 +541,12 @@ class Maadle():
 
         """
         if onlystudents:
-            resultdf = Maadle.delete_by_ID(self, dataframe, self.teachers)
-            resultdf = Maadle.events_per_day(self, resultdf)
+            aux = self.dataframe
+            self.dataframe = Maadle.delete_by_ID(self, self.teachers)
+            resultdf = Maadle.events_per_day(self)
+            self.dataframe = aux
         else:
-            resultdf = Maadle.events_per_day(self, dataframe)
+            resultdf = Maadle.events_per_day(self)
         result2 = (resultdf['Fecha'] >= initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
