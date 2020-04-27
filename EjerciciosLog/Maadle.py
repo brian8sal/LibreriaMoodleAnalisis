@@ -15,6 +15,7 @@ class Maadle():
     dataframe = pd.DataFrame
     teachers = []
     dataframe_usuarios = pd.DataFrame
+    dataframe_recursos = pd.DataFrame
     def __init__(self, name, path, usuariosxls, userstodelete):
         if path!="":
             self.dataframe=Maadle.create_data_frame(self, name, path)
@@ -26,6 +27,11 @@ class Maadle():
         self.dataframe=Maadle.change_hora_type(self.dataframe)
         self.dataframe=Maadle.add_mont_day_hour_columns(self, self.dataframe)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
+        self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
+        self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
+        with pd.ExcelWriter('ConfigPrez.xlsx') as writer:
+            self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
+            self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
         self.dataframe_usuarios = pd.read_excel(usuariosxls, sheet_name='Usuarios')
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
