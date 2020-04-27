@@ -1,5 +1,8 @@
 import os
 import pandas as pd
+import openpyxl
+
+CONGIG_PREZ = 'ConfigPrez.xlsx'
 
 ID_USUARIO = 'IDUsuario'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
@@ -17,7 +20,7 @@ class Maadle:
     teachers = []
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
-    def __init__(self, name, path, usuariosxls, userstodelete):
+    def __init__(self, name, path, config, userstodelete):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
@@ -31,10 +34,15 @@ class Maadle:
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
-        with pd.ExcelWriter('ConfigPrez.xlsx') as writer:
-            self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
-            self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
-        self.dataframe_usuarios = pd.read_excel(usuariosxls, sheet_name='Usuarios')
+        self.dataframe_recursos['Alias'] =self.dataframe[CONTEXTO].unique()
+        if not os.path.isfile(config):
+            with pd.ExcelWriter(config) as writer:
+                self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
+                self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
+        self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
+        self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
+        for i in range(self.dataframe_recursos['Contexto del evento'].size):
+            self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
