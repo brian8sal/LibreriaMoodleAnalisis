@@ -15,6 +15,11 @@ while True:
         usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
         print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
         idprofesores = list(map(str, input().split()))
+        print(len(idprofesores))
+        soloalumnos = True
+        if len(idprofesores) is 0:
+            idprofesores.append("x")
+            soloalumnos = False
 
         prueba = (Maadle.Maadle(log, "", usuarios, idprofesores))
 
@@ -67,8 +72,8 @@ app.layout = html.Div(children=[
                     dash_table.DataTable(
                         id='table',
                         columns=[{"name": i, "id": i} for i in
-                                 prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_usuarios).columns],
-                        data=prueba.list_nonparticipant(prueba.dataframe, prueba.dataframe_usuarios).to_dict(
+                                 prueba.list_nonparticipant().columns],
+                        data=prueba.list_nonparticipant().to_dict(
                             'records'),
                         style_header={'backgroundColor': colors['background']},
                         style_cell={'textAlign': 'left',
@@ -92,11 +97,9 @@ app.layout = html.Div(children=[
                             'data': [
                                 {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
                                  'values': [
-                                     prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframe_usuarios)[
+                                     prueba.num_participants_nonparticipants()[
                                          Maadle.PARTICIPANTES][0],
-                                     prueba.num_participants_nonparticipants(prueba.dataframe,
-                                                                             prueba.dataframe_usuarios)[
+                                     prueba.num_participants_nonparticipants()[
                                          Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
@@ -122,8 +125,8 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.participants_per_resource(prueba.dataframe)[Maadle.NUM_PARTICIPANTES],
-                 'y': prueba.participants_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                {'x': prueba.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
+                 'y': prueba.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Participantes por recurso',
@@ -152,10 +155,10 @@ app.layout = html.Div(children=[
                 id='my-date-picker-range',
                 display_format='D/M/Y',
                 style={'font-size': '20px'},
-                min_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
-                max_date_allowed=prueba.events_per_day(prueba.dataframe)[FECHA].max(),
-                start_date=prueba.events_per_day(prueba.dataframe)[FECHA].min(),
-                end_date=prueba.events_per_day(prueba.dataframe)[FECHA].max(),
+                min_date_allowed=prueba.events_per_day()[FECHA].min(),
+                max_date_allowed=prueba.events_per_day()[FECHA].max(),
+                start_date=prueba.events_per_day()[FECHA].min(),
+                end_date=prueba.events_per_day()[FECHA].max(),
             ),
             dcc.Graph(id='graph-events-per-day-students'),
         ],style={'background': colors['grey']}
@@ -165,8 +168,8 @@ dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource(prueba.dataframe)[Maadle.NUM_EVENTOS],
-                 'y': prueba.events_per_resource(prueba.dataframe)[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                {'x': prueba.events_per_resource()[Maadle.NUM_EVENTOS],
+                 'y': prueba.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Recursos por número de eventos',
@@ -191,7 +194,8 @@ dcc.Graph(
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
-    dfaux5 = prueba.events_between_dates(prueba.dataframe, start_date, end_date, True)
+
+    dfaux5 = prueba.events_between_dates(start_date, end_date, soloalumnos)
     return {
         'data': [
             {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
