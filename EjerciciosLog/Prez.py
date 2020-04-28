@@ -30,7 +30,10 @@ while True:
         prezz = (Maadle.Maadle(log, "", config, idprofesores))
 
     except FileNotFoundError:
-        print("Vuelve a intentarlo, puede que haya escrito mal los nombres de los archivos o que estos no se encuentren en el directorio del programa")
+        print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
+        continue
+    except ValueError:
+        print("Vuelve a intentarlo, el nombre proporcionado para el fichero de configuración no es válido")
         continue
     else:
         break
