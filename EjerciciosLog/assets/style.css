@@ -249,7 +249,8 @@ textarea,
 select {
   height: 38px;
   padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
-  background-color: #fff;
+  background-color: #111111;
+  color: #7FDBFF;
   border: 1px solid #D1D1D1;
   border-radius: 4px;
   box-shadow: none;
@@ -416,3 +417,67 @@ there.
 
 /* Larger than Desktop HD */
 @media (min-width: 1200px) {}
+
+
+/* Calendar */
+.DateRangePickerInput {
+    background-color: black;
+    display: inline-block;
+}
+.CalendarMonth {
+    background: black;
+    text-align: center;
+    vertical-align: top;
+}
+.DayPickerNavigation_button__default {
+    border: 1px solid #e4e7e7;
+    background-color: black;
+    color: #757575;
+}
+.DayPicker_transitionContainer {
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    background: black;
+}
+.CalendarMonthGrid {
+    background: black;
+    text-align: left;
+    z-index: 0;
+}
+.CalendarDay__blocked_out_of_range, .CalendarDay__blocked_out_of_range:active, .CalendarDay__blocked_out_of_range:hover {
+    background: gray;
+    border: 1px solid #e4e7e7;
+    color: #cacccd;
+}
+.DayPicker_weekHeader {
+    color: #7FDBFF;
+    text-align: left;
+}
+.CalendarMonth_caption {
+    color: #7FDBFF;
+    font-size: 18px;
+    text-align: center;
+    caption-side: initial;
+}
+.DayPickerNavigation_svg__horizontal {
+    height: 19px;
+    width: 19px;
+    fill: white;
+    display: block;
+}
+.DayPicker__horizontal {
+    background: black;
+}
+.CalendarMonth_table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 1px solid #e4e7e7;
+}
+.DateInput_fangShape {
+    fill: black;
+}
+.DateInput_fangStroke {
+    stroke: black;
+    fill: transparent;
+}

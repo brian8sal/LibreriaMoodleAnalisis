@@ -34,7 +34,7 @@ def find_data_file(filename):
     if getattr(sys, 'frozen', False):
         datadir = os.path.dirname(sys.executable)
     else:
-        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/Despliegue/assets")
+        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/assets")
         print(datadir)
     return os.path.join(datadir, filename)
 
@@ -155,6 +155,7 @@ app.layout = html.Div(children=[
                 id='my-date-picker-range',
                 display_format='D/M/Y',
                 style={'font-size': '20px'},
+                first_day_of_week=1,
                 min_date_allowed=prueba.events_per_day()[FECHA].min(),
                 max_date_allowed=prueba.events_per_day()[FECHA].max(),
                 start_date=prueba.events_per_day()[FECHA].min(),
