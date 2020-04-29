@@ -11,20 +11,29 @@ FECHA = 'Fecha'
 
 while True:
     try:
-        log=input("Introduza el nombre del fichero log, no olvides el .csv ")
-        usuarios=input("Introduza el nombre del fichero de usuarios, no olvides el .xls ")
+        log=input("Introduza el nombre del fichero log ")
+        log = log+".csv"
         print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
         idprofesores = list(map(str, input().split()))
-        print(len(idprofesores))
+        config=input("Introduza el nombre del fichero de configuración, si no hay uno, se creará ")
+        config = config+".xlsx"
         soloalumnos = True
         if len(idprofesores) is 0:
             idprofesores.append("x")
             soloalumnos = False
 
-        prueba = (Maadle.Maadle(log, "", usuarios, idprofesores))
+        if not os.path.isfile(Maadle.CONGIG_PREZ):
+            prezz = (Maadle.Maadle(log, "", config, idprofesores))
+
+        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro  ")
+
+        prezz = (Maadle.Maadle(log, "", config, idprofesores))
 
     except FileNotFoundError:
-        print("Vuelve a intentarlo, puede que haya escrito mal los nombres de los archivos o que estos no se encuentren en el directorio del programa")
+        print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
+        continue
+    except ValueError:
+        print("Vuelve a intentarlo, el nombre proporcionado para el fichero de configuración no es válido")
         continue
     else:
         break
@@ -35,7 +44,6 @@ def find_data_file(filename):
         datadir = os.path.dirname(sys.executable)
     else:
         datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/assets")
-        print(datadir)
     return os.path.join(datadir, filename)
 
 
@@ -51,7 +59,7 @@ colors = {
 app.layout = html.Div(children=[
 
     html.H2(
-        children=prueba.dataframe[prueba.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
+        children=prezz.dataframe[prezz.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
@@ -72,8 +80,8 @@ app.layout = html.Div(children=[
                     dash_table.DataTable(
                         id='table',
                         columns=[{"name": i, "id": i} for i in
-                                 prueba.list_nonparticipant().columns],
-                        data=prueba.list_nonparticipant().to_dict(
+                                 prezz.list_nonparticipant().columns],
+                        data=prezz.list_nonparticipant().to_dict(
                             'records'),
                         style_header={'backgroundColor': colors['background']},
                         style_cell={'textAlign': 'left',
@@ -97,9 +105,9 @@ app.layout = html.Div(children=[
                             'data': [
                                 {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
                                  'values': [
-                                     prueba.num_participants_nonparticipants()[
+                                     prezz.num_participants_nonparticipants()[
                                          Maadle.PARTICIPANTES][0],
-                                     prueba.num_participants_nonparticipants()[
+                                     prezz.num_participants_nonparticipants()[
                                          Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
                                  'automargin': True,
                                  'textinfo': 'none'
@@ -125,8 +133,8 @@ app.layout = html.Div(children=[
         id='ParticipantesPorRecurso',
         figure={
             'data': [
-                {'x': prueba.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
-                 'y': prueba.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                {'x': prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
+                 'y': prezz.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Participantes por recurso',
@@ -156,10 +164,10 @@ app.layout = html.Div(children=[
                 display_format='D/M/Y',
                 style={'font-size': '20px'},
                 first_day_of_week=1,
-                min_date_allowed=prueba.events_per_day()[FECHA].min(),
-                max_date_allowed=prueba.events_per_day()[FECHA].max(),
-                start_date=prueba.events_per_day()[FECHA].min(),
-                end_date=prueba.events_per_day()[FECHA].max(),
+                min_date_allowed=prezz.events_per_day()[FECHA].min(),
+                max_date_allowed=prezz.events_per_day()[FECHA].max(),
+                start_date=prezz.events_per_day()[FECHA].min(),
+                end_date=prezz.events_per_day()[FECHA].max(),
             ),
             dcc.Graph(id='graph-events-per-day-students'),
         ],style={'background': colors['grey']}
@@ -169,8 +177,8 @@ dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
-                {'x': prueba.events_per_resource()[Maadle.NUM_EVENTOS],
-                 'y': prueba.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
+                 'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
             ],
             'layout': {
                 'title': 'Recursos por número de eventos',
@@ -196,7 +204,7 @@ dcc.Graph(
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
 
-    dfaux5 = prueba.events_between_dates(start_date, end_date, soloalumnos)
+    dfaux5 = prezz.events_between_dates(start_date, end_date, soloalumnos)
     return {
         'data': [
             {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},

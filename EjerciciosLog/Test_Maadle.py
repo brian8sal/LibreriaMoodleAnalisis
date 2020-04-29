@@ -5,9 +5,11 @@ import numpy as np
 FECHA = 'Fecha'
 RECURSO = 'Recurso'
 
-prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv","","Usuarios.xls", []))
-prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv","","Usuarios.xls", ['1']))
-prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv","","UsuariosVacio.xls", []))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx", []))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx", ['1']))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx", []))
+prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx", []))
+
 
 class Test_Maadle(unittest.TestCase):
 
@@ -86,7 +88,7 @@ class Test_Maadle(unittest.TestCase):
 
         self.assertTrue((prueba99RowsSinUsuarios.num_participants_nonparticipants())[
                             Maadle.PARTICIPANTES][0] == 13)
-        self.assertTrue((prueba99RowsSinUsuarios.num_participants_nonparticipants())[
+        self.assertTrue((prueba99RowsTodosUsuarios.num_participants_nonparticipants())[
                             Maadle.NO_PARTICIPANTES][0] == 0)
 
 
@@ -100,7 +102,7 @@ class Test_Maadle(unittest.TestCase):
                             Maadle.NOMBRE_USUARIO][2] == 'JAVI')
         self.assertTrue((prueba99Rows.list_nonparticipant())[
                             Maadle.NOMBRE_USUARIO][3] == 'RODRIGUEZ PÉREZ, DANIEL')
-        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99RowsSinUsuarios.list_nonparticipant().columns))
+        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99RowsTodosUsuarios.list_nonparticipant().columns))
 
 
     def test_eventsPerMonth(self):
