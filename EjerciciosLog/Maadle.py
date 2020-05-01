@@ -50,7 +50,6 @@ class Maadle:
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
 
-        print(self.dataframe)
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
         Summary line.
