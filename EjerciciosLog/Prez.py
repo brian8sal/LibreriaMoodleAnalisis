@@ -22,11 +22,12 @@ while True:
             idprofesores.append("x")
             soloalumnos = False
 
-        if not os.path.isfile(Maadle.CONGIG_PREZ):
+        if not os.path.isfile(config):
             prezz = (Maadle.Maadle(log, "", config, idprofesores))
 
-        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro  ")
+        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro ")
 
+        # Creación de una función de actualizado
         prezz = (Maadle.Maadle(log, "", config, idprofesores))
 
     except FileNotFoundError:

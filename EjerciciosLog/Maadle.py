@@ -35,15 +35,22 @@ class Maadle:
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
         self.dataframe_recursos['Alias'] =self.dataframe[CONTEXTO].unique()
+        self.dataframe_usuarios['Incluido'] = 'X'
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
                 self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
                 self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
         self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
-        for i in range(self.dataframe_recursos['Contexto del evento'].size):
+        for i in range(self.dataframe_recursos[CONTEXTO].size):
             self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
+        ele = []
+        for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
+            if(pd.isna(self.dataframe_usuarios['Incluido'][i])):
+                ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
+        self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
 
+        print(self.dataframe)
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
         Summary line.
