@@ -46,9 +46,11 @@ class Maadle:
             self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
-            if(pd.isna(self.dataframe_usuarios['Incluido'][i])):
+            if(pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
+        self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
+
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
