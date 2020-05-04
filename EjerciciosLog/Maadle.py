@@ -560,6 +560,22 @@ class Maadle:
         return resultdf
 
     def events_per_day_per_user(self, usuario):
+        """
+        Summary line.
+
+        Calcula el número de eventos de un usuario concreto por día del log.
+
+        Parameters
+        ----------
+        usuario : String
+            Nombre del usuario a analizar.
+
+        Returns
+        -------
+        series
+            Lista con los días y su número de eventos.
+
+        """
         result = 0
         df = self.dataframe[[FECHA_HORA,NOMBRE_USUARIO]]
         df = df[df[NOMBRE_USUARIO].str.contains(usuario)]
