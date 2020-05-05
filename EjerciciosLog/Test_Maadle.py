@@ -5,10 +5,10 @@ import numpy as np
 FECHA = 'Fecha'
 RECURSO = 'Recurso'
 
-prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx", []))
-prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx", ['1']))
-prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx", []))
-prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx", []))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx"))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx"))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx"))
+prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx"))
 
 
 class Test_Maadle(unittest.TestCase):
@@ -156,9 +156,7 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-22'][Maadle.NUM_EVENTOS].to_string(index=False), " 4")
         self.assertEqual(len(dataframe), 2)
-        dataframe=prueba99Rows.events_between_dates(ini, fin,True)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
-        self.assertEqual(len(dataframe), 1)
+
 
     def test_participants_per_resource(self):
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[0][

@@ -11,23 +11,18 @@ FECHA = 'Fecha'
 
 while True:
     try:
-        log=input("Introduza el nombre del fichero log ")
+        log=input("Introduzca el nombre del fichero log ")
         log = log+".csv"
-        print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
-        idprofesores = list(map(str, input().split()))
-        config=input("Introduza el nombre del fichero de configuración, si no hay uno, se creará ")
+        config=input("Introduzca el nombre del fichero de configuración, si no hay uno, se creará ")
         config = config+".xlsx"
-        soloalumnos = True
-        if len(idprofesores) is 0:
-            idprofesores.append("x")
-            soloalumnos = False
 
-        if not os.path.isfile(Maadle.CONGIG_PREZ):
-            prezz = (Maadle.Maadle(log, "", config, idprofesores))
+        if not os.path.isfile(config):
+            prezz = (Maadle.Maadle(log, "", config))
 
-        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro  ")
+        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro ")
 
-        prezz = (Maadle.Maadle(log, "", config, idprofesores))
+        # Creación de una función de actualizado
+        prezz = (Maadle.Maadle(log, "", config))
 
     except FileNotFoundError:
         print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
@@ -204,7 +199,7 @@ dcc.Graph(
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
 
-    dfaux5 = prezz.events_between_dates(start_date, end_date, soloalumnos)
+    dfaux5 = prezz.events_between_dates(start_date, end_date)
     return {
         'data': [
             {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
