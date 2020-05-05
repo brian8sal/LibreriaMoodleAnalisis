@@ -481,3 +481,20 @@ there.
     stroke: black;
     fill: transparent;
 }
+
+/* Dropdown */
+.Select.has-value.is-clearable.Select--single > .Select-control .Select-value {
+    padding-right: 42px;
+    background: black;
+    border: 1px solid white;
+}
+
+.Select, .Select div, .Select input, .Select span {
+    box-sizing: border-box;
+    color: #7FDBFF;
+    background: black;
+}
+
+Select.has-value.Select--single > .Select-control .Select-value .Select-value-label, .Select.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {
+    color: #7FDBFF;
+}

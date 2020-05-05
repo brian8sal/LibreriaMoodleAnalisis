@@ -559,6 +559,32 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
+    def events_per_day_per_user(self, usuario):
+        """
+        Summary line.
+
+        Calcula el número de eventos de un usuario concreto por día del log.
+
+        Parameters
+        ----------
+        usuario : String
+            Nombre del usuario a analizar.
+
+        Returns
+        -------
+        series
+            Lista con los días y su número de eventos.
+
+        """
+        result = 0
+        df = self.dataframe[[FECHA_HORA,NOMBRE_USUARIO]]
+        df = df[df[NOMBRE_USUARIO].str.contains(usuario)]
+        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
+        resultdf['Fecha'] = resultdf.index
+        resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
+        resultdf.reset_index(drop=True, inplace=True)
+        return resultdf
 
     """
     Calcula la media de eventos por participante del dataframe.

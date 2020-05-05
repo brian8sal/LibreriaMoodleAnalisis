@@ -152,7 +152,6 @@ app.layout = html.Div(children=[
                 'textAlign': 'left',
                 'color': colors['text'],
                 'font-size': '20px'},
-
                      ),
             dcc.DatePickerRange(
                 id='my-date-picker-range',
@@ -190,6 +189,22 @@ dcc.Graph(
             }
         },
     ),
+html.Div(children=[
+        html.Div(children='Seleccione a un usuario ', style={
+        'textAlign': 'left',
+        'color': colors['text'],
+        'font-size': '20px'},
+             ),
+        dcc.Dropdown(
+            id='users-dropdown',
+            options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.NOMBRE_USUARIO].unique()
+            ],
+            searchable=True,
+            placeholder="Seleccione a un usuario",
+            value=prezz.dataframe_usuarios[Maadle.NOMBRE_USUARIO][0]
+        ),
+        dcc.Graph(id='graph-events-per-day-per-student')
+    ], style={'background': colors['grey']}),
 ])
 
 
@@ -213,6 +228,26 @@ def update_output(start_date, end_date):
             }
         },
     }
+
+@app.callback(
+    dash.dependencies.Output('graph-events-per-day-per-student', 'figure'),
+    [dash.dependencies.Input('users-dropdown', 'value')])
+def update_output(value):
+    dfaux6 = prezz.events_per_day_per_user(value)
+    return {
+        'data': [
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+        ],
+        'layout': {
+            'title': 'Eventos por rango de días por alumno',
+            'plot_bgcolor': colors['background'],
+            'paper_bgcolor': colors['grey'],
+            'font': {
+                'color': colors['text']
+            }
+        },
+    }
+
 
 
 if __name__ == '__main__':

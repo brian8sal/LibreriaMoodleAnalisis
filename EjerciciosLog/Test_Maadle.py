@@ -187,6 +187,23 @@ class Test_Maadle(unittest.TestCase):
                              Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[6][RECURSO], "Tarea: Entrega inicial")
 
+    def test_events_per_day_per_user(self):
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][0], 4)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][1], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][1], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUEVAS RODRIGUEZ, SARA")[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CIMAS CAMPOS, NOIVE")[Maadle.NUM_EVENTOS][0], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CIMAS CAMPOS, NOIVE")[Maadle.NUM_EVENTOS][1], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][0], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][1], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][2], 3)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][3], 4)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][4], 8)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][5], 3)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][6], 6)
 
     def test_eventsPerHour(self):
         self.assertEqual(0,0)
