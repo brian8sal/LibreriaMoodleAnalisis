@@ -5,10 +5,10 @@ import numpy as np
 FECHA = 'Fecha'
 RECURSO = 'Recurso'
 
-prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx", []))
-prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx", ['1']))
-prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx", []))
-prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx", []))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx"))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx"))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx"))
+prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx"))
 
 
 class Test_Maadle(unittest.TestCase):
@@ -156,9 +156,7 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-22'][Maadle.NUM_EVENTOS].to_string(index=False), " 4")
         self.assertEqual(len(dataframe), 2)
-        dataframe=prueba99Rows.events_between_dates(ini, fin,True)
-        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False), " 3")
-        self.assertEqual(len(dataframe), 1)
+
 
     def test_participants_per_resource(self):
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[0][
@@ -189,6 +187,23 @@ class Test_Maadle(unittest.TestCase):
                              Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[6][RECURSO], "Tarea: Entrega inicial")
 
+    def test_events_per_day_per_user(self):
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][0], 4)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][1], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][1], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CUEVAS RODRIGUEZ, SARA")[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CIMAS CAMPOS, NOIVE")[Maadle.NUM_EVENTOS][0], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("CIMAS CAMPOS, NOIVE")[Maadle.NUM_EVENTOS][1], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][0], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][1], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][2], 3)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][3], 4)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][4], 8)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][5], 3)
+        self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][6], 6)
 
     def test_eventsPerHour(self):
         self.assertEqual(0,0)

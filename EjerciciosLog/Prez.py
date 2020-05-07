@@ -11,23 +11,18 @@ FECHA = 'Fecha'
 
 while True:
     try:
-        log=input("Introduza el nombre del fichero log ")
+        log=input("Introduzca el nombre del fichero log ")
         log = log+".csv"
-        print("Introduza los ids de los usuarios a eliminar separados por un espacio ",end="")
-        idprofesores = list(map(str, input().split()))
-        config=input("Introduza el nombre del fichero de configuración, si no hay uno, se creará ")
+        config=input("Introduzca el nombre del fichero de configuración, si no hay uno, se creará ")
         config = config+".xlsx"
-        soloalumnos = True
-        if len(idprofesores) is 0:
-            idprofesores.append("x")
-            soloalumnos = False
 
-        if not os.path.isfile(Maadle.CONGIG_PREZ):
-            prezz = (Maadle.Maadle(log, "", config, idprofesores))
+        if not os.path.isfile(config):
+            prezz = (Maadle.Maadle(log, "", config))
 
-        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro  ")
+        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro ")
 
-        prezz = (Maadle.Maadle(log, "", config, idprofesores))
+        # Creación de una función de actualizado
+        prezz = (Maadle.Maadle(log, "", config))
 
     except FileNotFoundError:
         print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
@@ -157,7 +152,6 @@ app.layout = html.Div(children=[
                 'textAlign': 'left',
                 'color': colors['text'],
                 'font-size': '20px'},
-
                      ),
             dcc.DatePickerRange(
                 id='my-date-picker-range',
@@ -195,6 +189,22 @@ dcc.Graph(
             }
         },
     ),
+html.Div(children=[
+        html.Div(children='Seleccione a un usuario ', style={
+        'textAlign': 'left',
+        'color': colors['text'],
+        'font-size': '20px'},
+             ),
+        dcc.Dropdown(
+            id='users-dropdown',
+            options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.NOMBRE_USUARIO].unique()
+            ],
+            searchable=True,
+            placeholder="Seleccione a un usuario",
+            value=prezz.dataframe_usuarios[Maadle.NOMBRE_USUARIO][0]
+        ),
+        dcc.Graph(id='graph-events-per-day-per-student')
+    ], style={'background': colors['grey']}),
 ])
 
 
@@ -204,7 +214,7 @@ dcc.Graph(
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
 
-    dfaux5 = prezz.events_between_dates(start_date, end_date, soloalumnos)
+    dfaux5 = prezz.events_between_dates(start_date, end_date)
     return {
         'data': [
             {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
@@ -218,6 +228,26 @@ def update_output(start_date, end_date):
             }
         },
     }
+
+@app.callback(
+    dash.dependencies.Output('graph-events-per-day-per-student', 'figure'),
+    [dash.dependencies.Input('users-dropdown', 'value')])
+def update_output(value):
+    dfaux6 = prezz.events_per_day_per_user(value)
+    return {
+        'data': [
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+        ],
+        'layout': {
+            'title': 'Eventos por rango de días por alumno',
+            'plot_bgcolor': colors['background'],
+            'paper_bgcolor': colors['grey'],
+            'font': {
+                'color': colors['text']
+            }
+        },
+    }
+
 
 
 if __name__ == '__main__':

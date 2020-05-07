@@ -17,17 +17,15 @@ PARTICIPANTES = 'Participantes'
 
 class Maadle:
     dataframe = pd.DataFrame
-    teachers = []
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
-    def __init__(self, name, path, config, userstodelete):
+    def __init__(self, name, path, config):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
         self.dataframe = Maadle.add_ID_column(self)
-        self.teachers = userstodelete
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
@@ -35,14 +33,22 @@ class Maadle:
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
         self.dataframe_recursos['Alias'] =self.dataframe[CONTEXTO].unique()
+        self.dataframe_usuarios['Incluido'] = 'X'
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
                 self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
                 self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
         self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
-        for i in range(self.dataframe_recursos['Contexto del evento'].size):
+        for i in range(self.dataframe_recursos[CONTEXTO].size):
             self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
+        ele = []
+        for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
+            if(pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace()):
+                ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
+        self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
+        self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
+
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -527,7 +533,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, initial, final, onlystudents=False):
+    def events_between_dates(self, initial, final):
         """
         Summary line. SPRINT01
 
@@ -548,17 +554,37 @@ class Maadle:
             El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
 
         """
-        if onlystudents:
-            aux = self.dataframe
-            self.dataframe = Maadle.delete_by_ID(self, self.teachers)
-            resultdf = Maadle.events_per_day(self)
-            self.dataframe = aux
-        else:
-            resultdf = Maadle.events_per_day(self)
+        resultdf = Maadle.events_per_day(self)
         result2 = (resultdf['Fecha'] >= initial) & (resultdf['Fecha'] <= final)
         resultdf = resultdf.loc[result2]
         return resultdf
 
+    def events_per_day_per_user(self, usuario):
+        """
+        Summary line.
+
+        Calcula el número de eventos de un usuario concreto por día del log.
+
+        Parameters
+        ----------
+        usuario : String
+            Nombre del usuario a analizar.
+
+        Returns
+        -------
+        series
+            Lista con los días y su número de eventos.
+
+        """
+        result = 0
+        df = self.dataframe[[FECHA_HORA,NOMBRE_USUARIO]]
+        df = df[df[NOMBRE_USUARIO].str.contains(usuario)]
+        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
+        resultdf['Fecha'] = resultdf.index
+        resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
+        resultdf.reset_index(drop=True, inplace=True)
+        return resultdf
 
     """
     Calcula la media de eventos por participante del dataframe.
