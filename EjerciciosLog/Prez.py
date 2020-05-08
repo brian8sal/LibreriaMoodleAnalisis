@@ -33,7 +33,14 @@ while True:
     else:
         break
 
-app = dash.Dash(__name__, assets_folder='assets/')
+def find_data_file(filename):
+    if getattr(sys, 'frozen', False):
+        datadir = os.path.dirname(sys.executable)
+    else:
+        datadir = os.path.realpath('.')
+    return os.path.join(datadir, filename)
+
+app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 
 server = app.server
 colors = {
