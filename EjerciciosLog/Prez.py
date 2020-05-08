@@ -4,35 +4,30 @@ import dash_core_components as dcc
 import Maadle
 import dash_table
 import os
-import sys
+from tkinter import *
+from tkinter import filedialog
 
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
-while True:
-    try:
-        log=input("Introduzca el nombre del fichero log ")
-        log = log+".csv"
-        config=input("Introduzca el nombre del fichero de configuración, si no hay uno, se creará ")
-        config = config+".xlsx"
+def clickedBtnLog():
+    window.log=filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
+def clickedBtnConfig():
+    window.config=filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("xlsx files","*.xlsx"),("all files","*.*")))
 
-        if not os.path.isfile(config):
-            prezz = (Maadle.Maadle(log, "", config))
+window = Tk()
 
-        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro ")
+window.title("Prez")
 
-        # Creación de una función de actualizado
-        prezz = (Maadle.Maadle(log, "", config))
+btnLog = Button(window, text="Seleccione el fichero log", command=clickedBtnLog)
+btnConfig = Button(window, text="Seleccione el fichero de configuración", command=clickedBtnConfig)
 
-    except FileNotFoundError:
-        print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
-        continue
-    except ValueError:
-        print("Vuelve a intentarlo, el nombre proporcionado para el fichero de configuración no es válido")
-        continue
-    else:
-        break
+btnLog.grid(column=1, row=0)
+btnConfig.grid(column=1, row=1)
 
+window.mainloop()
+
+prezz = (Maadle.Maadle(window.log, "", window.config))
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):

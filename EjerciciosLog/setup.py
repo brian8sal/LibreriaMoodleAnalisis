@@ -10,7 +10,7 @@ options = {
         'packages': [
             'dash', 'plotly',
         ],
-        'excludes': ['tkinter'],
+        'excludes': [],
         'include_files': [
           'assets/'
         ],
