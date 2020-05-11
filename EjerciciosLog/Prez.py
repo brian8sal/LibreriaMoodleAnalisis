@@ -10,20 +10,28 @@ from tkinter import filedialog
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
-def clickedBtnLog():
+def clicked_btn_log():
     window.log=filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("csv files","*.csv"),("all files","*.*")))
-def clickedBtnConfig():
+def clicked_btn_config():
     window.config=filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("xlsx files","*.xlsx"),("all files","*.*")))
+def clicked_btn_create():
+    window.config=txt.get()
+    window.config=window.config+'.xlsx'
 
 window = Tk()
 
 window.title("Prez")
 
-btnLog = Button(window, text="Seleccione el fichero log", command=clickedBtnLog)
-btnConfig = Button(window, text="Seleccione el fichero de configuración", command=clickedBtnConfig)
+btn_log = Button(window, text="Seleccione el fichero log", command=clicked_btn_log)
+btn_config = Button(window, text="Seleccione el fichero de configuración", command=clicked_btn_config)
+btn_create = Button(window, text="Crear un fichero de configuración", command=clicked_btn_create)
 
-btnLog.grid(column=1, row=0)
-btnConfig.grid(column=1, row=1)
+
+btn_log.grid(column=1, row=0)
+btn_config.grid(column=1, row=1)
+btn_create.grid(column=2, row=1)
+txt = Entry(window, width=10)
+txt.grid(column=2, row=0)
 
 window.mainloop()
 
