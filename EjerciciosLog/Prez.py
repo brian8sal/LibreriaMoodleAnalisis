@@ -40,8 +40,8 @@ def clicked_btn_accept():
 
 
 window = Tk()
-
 window.title("Prez")
+window.iconbitmap("assets/LogoPrez.ico")
 
 btn_log = Button(window, text="Seleccione el fichero log", command=clicked_btn_log)
 btn_config = Button(window, text="Seleccione el fichero de configuración", command=clicked_btn_config)
