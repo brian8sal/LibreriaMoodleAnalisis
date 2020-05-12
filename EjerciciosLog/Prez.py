@@ -4,6 +4,7 @@ import dash_core_components as dcc
 import Maadle
 import dash_table
 import os
+import webbrowser
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
@@ -36,6 +37,7 @@ def clicked_btn_accept():
     elif not isinstance(window.config, str) or window.config=="":
         messagebox.showerror("Error", "Seleccione o cree un fichero de configuración")
     else:
+        webbrowser.open_new("http://localhost:8080")
         window.destroy()
 
 
@@ -48,7 +50,7 @@ btn_config = Button(window, text="Seleccione el fichero de configuración", comm
 btn_create = Button(window, text="Crear un fichero de configuración", command=clicked_btn_create)
 btn_accept = Button(window, text="Aceptar", command=clicked_btn_accept)
 
-txt_config_name = Entry(window, width=10)
+txt_config_name = Entry(window)
 
 btn_log.pack(fill=X)
 txt_config_name.pack(fill=X)
@@ -278,4 +280,4 @@ def update_output(value):
 
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=8080)
