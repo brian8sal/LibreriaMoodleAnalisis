@@ -10,7 +10,7 @@ options = {
         'packages': [
             'dash', 'plotly',
         ],
-        'excludes': ['tkinter'],
+        'excludes': [],
         'include_files': [
           'assets/'
         ],
@@ -20,6 +20,7 @@ options = {
 executables = [
     Executable('server.py',
                base='console',
+               icon="assets/LogoPrez.ico",
                targetName='Prez.exe')
 ]
 

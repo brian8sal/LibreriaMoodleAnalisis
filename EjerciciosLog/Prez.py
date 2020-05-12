@@ -4,34 +4,63 @@ import dash_core_components as dcc
 import Maadle
 import dash_table
 import os
-import sys
+import webbrowser
+from tkinter import *
+from tkinter import filedialog
+from tkinter import messagebox
 
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
-while True:
-    try:
-        log=input("Introduzca el nombre del fichero log ")
-        log = log+".csv"
-        config=input("Introduzca el nombre del fichero de configuración, si no hay uno, se creará ")
-        config = config+".xlsx"
 
-        if not os.path.isfile(config):
-            prezz = (Maadle.Maadle(log, "", config))
+def clicked_btn_log():
+    window.log = filedialog.askopenfilename(initialdir=".", title="Select file",
+                                            filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
 
-        usuarios=input("Si quiere hacer cambios en el fichero de configuración hágalos ahora y pulse Intro ")
 
-        # Creación de una función de actualizado
-        prezz = (Maadle.Maadle(log, "", config))
+def clicked_btn_config():
+    window.config = filedialog.askopenfilename(initialdir=".", title="Select file",
+                                               filetypes=(("xlsx files", "*.xlsx"), ("all files", "*.*")))
 
-    except FileNotFoundError:
-        print("Vuelve a intentarlo, puede que haya escrito mal el nombre del log o que no se encuentre en el directorio del programa")
-        continue
-    except ValueError:
-        print("Vuelve a intentarlo, el nombre proporcionado para el fichero de configuración no es válido")
-        continue
+
+def clicked_btn_create():
+    window.config = txt_config_name.get()
+    if window.config.isspace() or window.config == "":
+        messagebox.showerror("Error", "Escriba un nombre para el fichero de configuración")
     else:
-        break
+        window.config = window.config + '.xlsx'
+
+
+def clicked_btn_accept():
+    if not hasattr(window, 'log') or window.log == "":
+        messagebox.showerror("Error", "Seleccione un fichero log")
+    elif not isinstance(window.config, str) or window.config=="":
+        messagebox.showerror("Error", "Seleccione o cree un fichero de configuración")
+    else:
+        webbrowser.open_new("http://localhost:8080")
+        window.destroy()
+
+
+window = Tk()
+window.title("Prez")
+window.iconbitmap("assets/LogoPrez.ico")
+
+btn_log = Button(window, text="Seleccione el fichero log", command=clicked_btn_log)
+btn_config = Button(window, text="Seleccione el fichero de configuración", command=clicked_btn_config)
+btn_create = Button(window, text="Crear un fichero de configuración", command=clicked_btn_create)
+btn_accept = Button(window, text="Aceptar", command=clicked_btn_accept)
+
+txt_config_name = Entry(window)
+
+btn_log.pack(fill=X)
+txt_config_name.pack(fill=X)
+btn_create.pack(fill=X)
+btn_config.pack(fill=X)
+btn_accept.pack(fill=X)
+
+window.mainloop()
+
+prezz = (Maadle.Maadle(window.log, "", window.config))
 
 
 def find_data_file(filename):
@@ -54,7 +83,8 @@ colors = {
 app.layout = html.Div(children=[
 
     html.H2(
-        children=prezz.dataframe[prezz.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
+        children=
+        prezz.dataframe[prezz.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
@@ -80,7 +110,7 @@ app.layout = html.Div(children=[
                             'records'),
                         style_header={'backgroundColor': colors['background']},
                         style_cell={'textAlign': 'left',
-                                    'backgroundColor': colors['grey'] ,
+                                    'backgroundColor': colors['grey'],
                                     'color': colors['text'],
                                     },
                         style_table={
@@ -164,10 +194,10 @@ app.layout = html.Div(children=[
                 end_date=prezz.events_per_day()[FECHA].max(),
             ),
             dcc.Graph(id='graph-events-per-day-students'),
-        ],style={'background': colors['grey']}
+        ], style={'background': colors['grey']}
     ),
 
-dcc.Graph(
+    dcc.Graph(
         id='EventosPorRecurso',
         figure={
             'data': [
@@ -189,16 +219,16 @@ dcc.Graph(
             }
         },
     ),
-html.Div(children=[
+    html.Div(children=[
         html.Div(children='Seleccione a un usuario ', style={
-        'textAlign': 'left',
-        'color': colors['text'],
-        'font-size': '20px'},
-             ),
+            'textAlign': 'left',
+            'color': colors['text'],
+            'font-size': '20px'},
+                 ),
         dcc.Dropdown(
             id='users-dropdown',
             options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.NOMBRE_USUARIO].unique()
-            ],
+                     ],
             searchable=True,
             placeholder="Seleccione a un usuario",
             value=prezz.dataframe_usuarios[Maadle.NOMBRE_USUARIO][0]
@@ -213,7 +243,6 @@ html.Div(children=[
     [dash.dependencies.Input('my-date-picker-range', 'start_date'),
      dash.dependencies.Input('my-date-picker-range', 'end_date')])
 def update_output(start_date, end_date):
-
     dfaux5 = prezz.events_between_dates(start_date, end_date)
     return {
         'data': [
@@ -228,6 +257,7 @@ def update_output(start_date, end_date):
             }
         },
     }
+
 
 @app.callback(
     dash.dependencies.Output('graph-events-per-day-per-student', 'figure'),
@@ -249,6 +279,5 @@ def update_output(value):
     }
 
 
-
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=8080)
