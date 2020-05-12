@@ -62,14 +62,12 @@ window.mainloop()
 
 prezz = (Maadle.Maadle(window.log, "", window.config))
 
-
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
         datadir = os.path.dirname(sys.executable)
     else:
-        datadir = os.path.dirname("C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/assets")
+        datadir = os.path.realpath('.')
     return os.path.join(datadir, filename)
-
 
 app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 
