@@ -218,20 +218,20 @@ app.layout = html.Div(children=[
         },
     ),
     html.Div(children=[
-        html.Div(children='Seleccione a un usuario ', style={
+        html.Div(children='Seleccione un recurso ', style={
             'textAlign': 'left',
             'color': colors['text'],
             'font-size': '20px'},
                  ),
         dcc.Dropdown(
-            id='users-dropdown',
-            options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.NOMBRE_USUARIO].unique()
+            id='resources-dropdown',
+            options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
                      ],
             searchable=True,
             placeholder="Seleccione a un usuario",
-            value=prezz.dataframe_usuarios[Maadle.NOMBRE_USUARIO][0]
+            value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
         ),
-        dcc.Graph(id='graph-events-per-day-per-student')
+        dcc.Graph(id='graph-events-per-day-per-resource')
     ], style={'background': colors['grey']}),
 ])
 
@@ -264,10 +264,10 @@ def update_output(value):
     dfaux6 = prezz.events_per_day_per_user(value)
     return {
         'data': [
-            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar'},
         ],
         'layout': {
-            'title': 'Eventos por rango de días por alumno',
+            'title': 'Eventos por rango de días por alumnos',
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
             'font': {
@@ -275,6 +275,26 @@ def update_output(value):
             }
         },
     }
+
+@app.callback(
+    dash.dependencies.Output('graph-events-per-day-per-resource', 'figure'),
+    [dash.dependencies.Input('resources-dropdown', 'value')])
+def update_output(value):
+    dfaux7 = prezz.events_per_day_per_resource(value)
+    return {
+        'data': [
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar'},
+        ],
+        'layout': {
+            'title': 'Eventos por rango de días por recurso',
+            'plot_bgcolor': colors['background'],
+            'paper_bgcolor': colors['grey'],
+            'font': {
+                'color': colors['text']
+            }
+        },
+    }
+
 
 
 if __name__ == '__main__':
