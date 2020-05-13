@@ -34,7 +34,7 @@ def clicked_btn_create():
 def clicked_btn_accept():
     if not hasattr(window, 'log') or window.log == "":
         messagebox.showerror("Error", "Seleccione un fichero log")
-    elif not isinstance(window.config, str) or window.config=="":
+    elif not isinstance(window.config, str) or window.config == "":
         messagebox.showerror("Error", "Seleccione o cree un fichero de configuración")
     else:
         webbrowser.open_new("http://localhost:8080")
@@ -62,12 +62,14 @@ window.mainloop()
 
 prezz = (Maadle.Maadle(window.log, "", window.config))
 
+
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
         datadir = os.path.dirname(sys.executable)
     else:
         datadir = os.path.realpath('.')
     return os.path.join(datadir, filename)
+
 
 app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 
@@ -233,6 +235,23 @@ app.layout = html.Div(children=[
         ),
         dcc.Graph(id='graph-events-per-day-per-student')
     ], style={'background': colors['grey']}),
+
+    html.Div(children=[
+        html.Div(children='Seleccione un recurso ', style={
+            'textAlign': 'left',
+            'color': colors['text'],
+            'font-size': '20px'},
+                 ),
+        dcc.Dropdown(
+            id='resources-dropdown',
+            options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
+                     ],
+            searchable=True,
+            placeholder="Seleccione a un usuario",
+            value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
+        ),
+        dcc.Graph(id='graph-events-per-day-per-resource')
+    ], style={'background': colors['grey']}),
 ])
 
 
@@ -264,10 +283,30 @@ def update_output(value):
     dfaux6 = prezz.events_per_day_per_user(value)
     return {
         'data': [
-            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar'},
         ],
         'layout': {
-            'title': 'Eventos por rango de días por alumno',
+            'title': 'Eventos por rango de días por alumnos',
+            'plot_bgcolor': colors['background'],
+            'paper_bgcolor': colors['grey'],
+            'font': {
+                'color': colors['text']
+            }
+        },
+    }
+
+
+@app.callback(
+    dash.dependencies.Output('graph-events-per-day-per-resource', 'figure'),
+    [dash.dependencies.Input('resources-dropdown', 'value')])
+def update_output(value):
+    dfaux7 = prezz.events_per_day_per_resource(value)
+    return {
+        'data': [
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar'},
+        ],
+        'layout': {
+            'title': 'Eventos por rango de días por recurso',
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
             'font': {
