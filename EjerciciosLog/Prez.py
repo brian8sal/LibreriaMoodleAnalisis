@@ -251,7 +251,7 @@ app.layout = html.Div(children=[
             value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
         ),
         dcc.Graph(id='graph-events-per-day-per-resource')
-    ], style={'background': colors['grey']}),
+    ], style={'background': colors['background']}),
 ])
 
 
@@ -308,7 +308,7 @@ def update_output(value):
         'layout': {
             'title': 'Eventos por rango de días por recurso',
             'plot_bgcolor': colors['background'],
-            'paper_bgcolor': colors['grey'],
+            'paper_bgcolor': colors['background'],
             'font': {
                 'color': colors['text']
             }
