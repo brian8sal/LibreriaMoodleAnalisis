@@ -441,7 +441,7 @@ class Maadle:
 
     def events_per_resource(self):
         """
-        Summary line. SPRINT00
+        Summary line.
 
         Calcula el número de eventos por recurso del dataframe.
 
@@ -464,7 +464,7 @@ class Maadle:
 
     def participants_per_resource(self):
         """
-        Summary line. SPRINT02
+        Summary line.
 
         Calcula el número de participantes por recurso del dataframe.
 
@@ -532,7 +532,7 @@ class Maadle:
 
     def events_between_dates(self, initial, final):
         """
-        Summary line. SPRINT01
+        Summary line.
 
         Calcula el número de eventos en determinado rango de fechas.
 
