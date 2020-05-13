@@ -34,6 +34,8 @@ class Maadle:
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
         self.dataframe_recursos['Alias'] =self.dataframe[CONTEXTO].unique()
         self.dataframe_usuarios['Incluido'] = 'X'
+        self.dataframe_usuarios = self.dataframe_usuarios.sort_values([NOMBRE_USUARIO])
+        print(self.dataframe_usuarios)
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
                 self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
