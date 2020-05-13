@@ -1,8 +1,8 @@
 import os
 import pandas as pd
+import openpyxl
 
 CONGIG_PREZ = 'ConfigPrez.xlsx'
-
 ID_USUARIO = 'IDUsuario'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
 NUM_PARTICIPANTES = 'Número de participantes'
@@ -29,9 +29,9 @@ class Maadle:
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
-        self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(),columns =[NOMBRE_USUARIO])
-        self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(),columns =[CONTEXTO])
-        self.dataframe_recursos['Alias'] =self.dataframe[CONTEXTO].unique()
+        self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
+        self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(), columns=[CONTEXTO])
+        self.dataframe_recursos['Alias'] = self.dataframe[CONTEXTO].unique()
         self.dataframe_usuarios['Incluido'] = 'X'
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
@@ -43,11 +43,10 @@ class Maadle:
             self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
-            if(pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace()):
+            if pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace():
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
-
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -107,7 +106,7 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[(ID_USUARIO)] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
         return dataframe
 
     def delete_columns(self, columns) -> pd.DataFrame:
@@ -183,7 +182,7 @@ class Maadle:
 
 
         """
-        groups = self.dataframe.groupby([(CONTEXTO)]).size
+        groups = self.dataframe.groupby([CONTEXTO]).size
         groups.plot.bar()
 
     def change_hora_type(self):
@@ -303,7 +302,7 @@ class Maadle:
             Número de participantes en el log.
 
         """
-        return (self.dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self))
+        return self.dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self)
 
     def num_participants_nonparticipants(self):
         """
@@ -321,12 +320,12 @@ class Maadle:
             participantes.
 
         """
-        data={PARTICIPANTES:[0], NO_PARTICIPANTES:[0]}
-        df=pd.DataFrame(data)
-        df[PARTICIPANTES]=self.dataframe[ID_USUARIO].nunique()
+        data = {PARTICIPANTES: [0], NO_PARTICIPANTES: [0]}
+        df = pd.DataFrame(data)
+        df[PARTICIPANTES] = self.dataframe[ID_USUARIO].nunique()
         for fila in self.dataframe_usuarios.iterrows():
             if fila[1][NOMBRE_USUARIO] not in self.dataframe[NOMBRE_USUARIO].values:
-                df[NO_PARTICIPANTES]= df[NO_PARTICIPANTES] + 1
+                df[NO_PARTICIPANTES] = df[NO_PARTICIPANTES] + 1
         return df
 
     def list_nonparticipant(self):
@@ -344,14 +343,14 @@ class Maadle:
             Dataframe con una columna con la lista de todos los usuarios no participantes.
 
         """
-        result=list()
+        result = list()
         for fila in self.dataframe_usuarios[NOMBRE_USUARIO]:
             if fila not in self.dataframe[NOMBRE_USUARIO].values:
                 result.append(fila)
-        if(result==[]):
+        if result == []:
             df = pd.DataFrame(result, columns=['TODOS HAN PARTICIPADO'])
             return df
-        df=pd.DataFrame(result,columns=[NOMBRE_USUARIO])
+        df = pd.DataFrame(result, columns=[NOMBRE_USUARIO])
         return df
 
     def num_events_per_participant(self):
@@ -440,7 +439,6 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-
     def events_per_resource(self):
         """
         Summary line. SPRINT00
@@ -461,7 +459,7 @@ class Maadle:
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Recurso'] = resultdf.index
         resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(ascending=False,by=[NUM_EVENTOS])
+        resultdf = resultdf.sort_values(ascending=False, by=[NUM_EVENTOS])
         return resultdf
 
     def participants_per_resource(self):
@@ -575,7 +573,7 @@ class Maadle:
 
         """
         result = 0
-        df = self.dataframe[[FECHA_HORA,NOMBRE_USUARIO]]
+        df = self.dataframe[[FECHA_HORA, NOMBRE_USUARIO]]
         df = df[df[NOMBRE_USUARIO].str.contains(usuario)]
         result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
@@ -602,7 +600,7 @@ class Maadle:
 
         """
         result = 0
-        df = self.dataframe[[FECHA_HORA,CONTEXTO]]
+        df = self.dataframe[[FECHA_HORA, CONTEXTO]]
         df = df[df[CONTEXTO].str.contains(resource)]
         result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
