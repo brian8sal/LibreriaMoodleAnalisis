@@ -22,4 +22,4 @@ script:
   - "coverage run -m unittest Test_Maadle.py"
   - "coverage report"
   - "coverage xml -i"
-  - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.coverage.exclusions=EjerciciosLog/Prez.py
+  - sonar-scanner -Dsonar.projectKey=brian8sal_LibreriaMoodleAnalisis -Dsonar.python.coverage.reportPaths=coverage.xml
