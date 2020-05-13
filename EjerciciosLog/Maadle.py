@@ -617,6 +617,7 @@ class Maadle:
     estando ordenado por la primera.
     ##########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
     """
+    """
     def average_events_per_participant(self, dataframe):
         result=0
         result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
@@ -625,3 +626,4 @@ class Maadle:
         resultdf.reset_index(drop=True,inplace=True)
         resultdf = resultdf.sort_values(by=['Media de eventos'])
         return resultdf
+    """
