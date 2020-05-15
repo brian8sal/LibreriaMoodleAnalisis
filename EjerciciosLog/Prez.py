@@ -83,8 +83,7 @@ colors = {
 app.layout = html.Div(children=[
 
     html.H2(
-        children=
-        prezz.nombre_curso,
+        children=prezz.nombre_curso,
         style={
             'textAlign': 'center',
             'color': colors['text'],

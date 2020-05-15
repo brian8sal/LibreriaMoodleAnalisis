@@ -25,7 +25,8 @@ class Maadle:
             self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
-        self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
+        if len(self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento']) != 0:
+            self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
         self.dataframe = Maadle.add_ID_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
