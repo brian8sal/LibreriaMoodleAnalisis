@@ -18,12 +18,14 @@ class Maadle:
     dataframe = pd.DataFrame
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
+    nombre_curso = 'Curso de Moodle'
     def __init__(self, name, path, config):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
+        self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
         self.dataframe = Maadle.add_ID_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
