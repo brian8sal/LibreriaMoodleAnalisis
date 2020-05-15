@@ -84,7 +84,7 @@ app.layout = html.Div(children=[
 
     html.H2(
         children=
-        prezz.dataframe[prezz.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
+        self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0],
         style={
             'textAlign': 'center',
             'color': colors['text'],
