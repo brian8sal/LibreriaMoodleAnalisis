@@ -231,7 +231,7 @@ app.layout = html.Div(children=[
                      ],
             searchable=True,
             placeholder="Seleccione a un usuario",
-            value=prezz.dataframe_usuarios[Maadle.NOMBRE_USUARIO][0]
+            value=prezz.dataframe[Maadle.NOMBRE_USUARIO].unique()[0]
         ),
         dcc.Graph(id='graph-events-per-day-per-student')
     ], style={'background': colors['grey']}),
