@@ -35,7 +35,7 @@ class Maadle:
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(), columns=[CONTEXTO])
         self.dataframe_recursos['Alias'] = self.dataframe[CONTEXTO].unique()
-        self.dataframe_usuarios['Incluido'] = 'X'
+        self.dataframe_usuarios['Excluido'] = ''
         self.dataframe_usuarios = self.dataframe_usuarios.sort_values([NOMBRE_USUARIO])
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
@@ -47,7 +47,7 @@ class Maadle:
             self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
-            if pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace():
+            if not (pd.isna(self.dataframe_usuarios['Excluido'][i]) or self.dataframe_usuarios['Excluido'][i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
