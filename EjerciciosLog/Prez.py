@@ -43,7 +43,7 @@ def clicked_btn_accept():
 
 window = Tk()
 window.title("Prez")
-window.iconbitmap("assets/LogoPrez.ico")
+window.iconbitmap("assets/favicon.ico")
 
 btn_log = Button(window, text="Seleccione el fichero log", command=clicked_btn_log)
 btn_config = Button(window, text="Seleccione el fichero de configuración", command=clicked_btn_config)
@@ -72,7 +72,7 @@ def find_data_file(filename):
 
 
 app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
-
+app.title = 'Prez'
 server = app.server
 colors = {
     'background': '#111111',
