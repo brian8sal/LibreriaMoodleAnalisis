@@ -14,53 +14,92 @@ FECHA = 'Fecha'
 
 
 def clicked_btn_log():
-    window.log = filedialog.askopenfilename(initialdir=".", title="Select file",
-                                            filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
+    windowLog.log = filedialog.askopenfilename(initialdir=".", title="Select file",
+                                               filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
 
 
 def clicked_btn_config():
-    window.config = filedialog.askopenfilename(initialdir=".", title="Select file",
-                                               filetypes=(("xlsx files", "*.xlsx"), ("all files", "*.*")))
+    windowConfig.config = filedialog.askopenfilename(initialdir=".", title="Select file",
+                                                  filetypes=(("xlsx files", "*.xlsx"), ("all files", "*.*")))
 
 
 def clicked_btn_create():
-    window.config = txt_config_name.get()
-    if window.config.isspace() or window.config == "":
+    windowCreateConfig.config = txt_config_name.get()
+    if windowCreateConfig.config.isspace() or windowCreateConfig.config == "":
         messagebox.showerror("Error", "Escriba un nombre para el fichero de configuración")
     else:
-        window.config = window.config + '.xlsx'
+        windowCreateConfig.config = windowCreateConfig.config + '.xlsx'
+        windowCreateConfig.destroy()
 
 
 def clicked_btn_accept():
-    if not hasattr(window, 'log') or window.log == "":
-        messagebox.showerror("Error", "Seleccione un fichero log")
-    elif not isinstance(window.config, str) or window.config == "":
-        messagebox.showerror("Error", "Seleccione o cree un fichero de configuración")
+    if not isinstance(windowConfig.config, str) or windowConfig.config == "":
+        if windowCreateConfig.config != "":
+            windowConfig.config = windowCreateConfig.config
+            webbrowser.open_new("http://localhost:8080")
+            windowConfig.destroy()
+        else:
+            messagebox.showerror("Error", "Seleccione un fichero de configuración")
     else:
         webbrowser.open_new("http://localhost:8080")
-        window.destroy()
+        windowConfig.destroy()
 
 
-window = Tk()
-window.title("Prez")
-window.iconbitmap("assets/favicon.ico")
+def clicked_btn_siguiente():
+    if not hasattr(windowLog, 'log') or windowLog.log == "":
+        messagebox.showerror("Error", "Seleccione un fichero log")
+    else:
+        windowLog.destroy()
 
-btn_log = Button(window, text="Seleccione el fichero log", command=clicked_btn_log)
-btn_config = Button(window, text="Seleccione el fichero de configuración", command=clicked_btn_config)
-btn_create = Button(window, text="Crear un fichero de configuración", command=clicked_btn_create)
-btn_accept = Button(window, text="Aceptar", command=clicked_btn_accept)
 
-txt_config_name = Entry(window)
+def clicked_btn_skip():
+        windowCreateConfig.destroy()
+
+
+windowLog = Tk()
+windowLog.title("Prez")
+windowLog.iconbitmap("assets/favicon.ico")
+
+btn_log = Button(windowLog, text="Seleccione el fichero log", command=clicked_btn_log)
+btn_siguiente = Button(windowLog, text="Siguiente", command=clicked_btn_siguiente)
 
 btn_log.pack(fill=X)
+btn_siguiente.pack(fill=X)
+
+windowLog.mainloop()
+
+windowCreateConfig = Tk()
+windowCreateConfig.title("Prez")
+windowCreateConfig.iconbitmap("assets/favicon.ico")
+
+btn_create = Button(windowCreateConfig, text="Crear", command=clicked_btn_create)
+btn_skip = Button(windowCreateConfig, text="Saltar este paso", command=clicked_btn_skip)
+
+
+txt_config_name = Entry(windowCreateConfig)
+
 txt_config_name.pack(fill=X)
 btn_create.pack(fill=X)
+btn_skip.pack(fill=X)
+
+
+windowCreateConfig.mainloop()
+
+windowConfig = Tk()
+windowConfig.title("Prez")
+windowConfig.iconbitmap("assets/favicon.ico")
+
+btn_config = Button(windowConfig, text="Seleccione el fichero de configuración", command=clicked_btn_config)
+btn_accept = Button(windowConfig, text="Aceptar", command=clicked_btn_accept)
+
+txt_config_name = Entry(windowConfig)
+
 btn_config.pack(fill=X)
 btn_accept.pack(fill=X)
 
-window.mainloop()
+windowConfig.mainloop()
 
-prezz = (Maadle.Maadle(window.log, "", window.config))
+prezz = (Maadle.Maadle(windowLog.log, "", windowConfig.config))
 
 
 def find_data_file(filename):
