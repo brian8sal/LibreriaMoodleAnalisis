@@ -18,12 +18,15 @@ class Maadle:
     dataframe = pd.DataFrame
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
+    nombre_curso = 'Curso de Moodle'
     def __init__(self, name, path, config):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
+        if len(self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento']) != 0:
+            self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
         self.dataframe = Maadle.add_ID_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
@@ -32,7 +35,7 @@ class Maadle:
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(), columns=[CONTEXTO])
         self.dataframe_recursos['Alias'] = self.dataframe[CONTEXTO].unique()
-        self.dataframe_usuarios['Incluido'] = 'X'
+        self.dataframe_usuarios['Excluido'] = ''
         self.dataframe_usuarios = self.dataframe_usuarios.sort_values([NOMBRE_USUARIO])
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
@@ -41,10 +44,14 @@ class Maadle:
         self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
         for i in range(self.dataframe_recursos[CONTEXTO].size):
-            self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
+            if pd.isna(self.dataframe_recursos['Alias'][i]):
+                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(
+                    self.dataframe_recursos['Contexto del evento'][i], " ")
+            else:
+                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
-            if pd.isna(self.dataframe_usuarios['Incluido'][i]) or self.dataframe_usuarios['Incluido'][i].isspace():
+            if not (pd.isna(self.dataframe_usuarios['Excluido'][i]) or self.dataframe_usuarios['Excluido'][i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]

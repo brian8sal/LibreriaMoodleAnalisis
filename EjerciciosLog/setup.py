@@ -20,7 +20,7 @@ options = {
 executables = [
     Executable('server.py',
                base='console',
-               icon="assets/LogoPrez.ico",
+               icon="assets/favicon.ico",
                targetName='Prez.exe')
 ]
 
