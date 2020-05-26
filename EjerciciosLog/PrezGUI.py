@@ -52,7 +52,7 @@ windowLog = Tk()
 windowLog.title("Prez")
 windowLog.iconbitmap("assets/favicon.ico")
 
-mensaje_log = Text(windowLog, width=40, height=14)
+mensaje_log = Text(windowLog, wrap=WORD, font='Helvetica', width=40, height=14)
 mensaje_log.insert(INSERT, "Bienvenido a Prez. Le acompañaremos en la configuración de su análisis. \n"
                            "\nEn primer lugar, pulse  'Seleccione el fichero log' y elija el fichero "
                            "log del curso que quiera analizar. "
@@ -72,11 +72,11 @@ windowCreateConfig = Tk()
 windowCreateConfig.title("Prez")
 windowCreateConfig.iconbitmap("assets/favicon.ico")
 
-mensaje_create = Text(windowCreateConfig, width=40, height=14)
+mensaje_create = Text(windowCreateConfig, wrap=WORD, font='Helvetica', width=40, height=14)
 mensaje_create.insert(INSERT, "Prez le permite proporcionar fichero Excel de configuración con datos adicionales del"
-                              " curso.\n \nSi actualmente no dispone de este fichero, proporcione un nombre para "
-                              "el mismo, pulse 'Crear' y uno será creado (en la carpeta de instalación de Prez)"
-                              " y utilizado automáticamente en el análisis.\n"
+                              " curso.\n \nSi actualmente no dispone de este fichero pulse 'Crear' y proporcione un"
+                              "nombre y un lugar para que uno sea generado con los datos por defecto. De generarlo"
+                              "en este punto, no hace falta que seleccione ninguno en el siguiente paso\n"
                               "\nSi ya dispone de un fichero Excel de configuración pulse 'Saltar este paso'.")
 btn_create = Button(windowCreateConfig, text="Crear", command=clicked_btn_create)
 btn_skip = Button(windowCreateConfig, text="Saltar este paso", command=clicked_btn_skip)
@@ -91,7 +91,7 @@ windowConfig = Tk()
 windowConfig.title("Prez")
 windowConfig.iconbitmap("assets/favicon.ico")
 
-mensaje_config = Text(windowConfig, width=40, height=14)
+mensaje_config = Text(windowConfig, wrap=WORD, font='Helvetica', width=40, height=14)
 mensaje_config.insert(INSERT, "Para terminar, si no ha creado un fichero de configuración en el paso previo pulse "
                               "'Seleccione el fichero de configuración y elija el fichero on el que quiera realizar "
                               "el análisis.\n \nUna vez creado o seleccionado el fichero de configuración, pulse "
