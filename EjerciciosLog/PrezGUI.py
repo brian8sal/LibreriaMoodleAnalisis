@@ -1,4 +1,3 @@
-import webbrowser
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import *
@@ -15,24 +14,20 @@ def clicked_btn_config():
 
 
 def clicked_btn_create():
-    windowCreateConfig.config = txt_config_name.get()
-    if windowCreateConfig.config.isspace() or windowCreateConfig.config == "":
-        messagebox.showerror("Error", "Escriba un nombre para el fichero de configuración")
-    else:
-        windowCreateConfig.config = windowCreateConfig.config + '.xlsx'
-        windowCreateConfig.destroy()
+    windowCreateConfig.config = filedialog.asksaveasfilename(initialdir=".", title="Select file",
+                               filetypes=(("xlsx files", "*.xlsx"), ("all files", "*.*")))
+    windowCreateConfig.config = windowCreateConfig.config + '.xlsx'
+    windowCreateConfig.destroy()
 
 
 def clicked_btn_accept():
     if not isinstance(windowConfig.config, str) or windowConfig.config == "":
         if windowCreateConfig.config != "":
             windowConfig.config = windowCreateConfig.config
-            webbrowser.open_new("http://localhost:8080")
             windowConfig.destroy()
         else:
             messagebox.showerror("Error", "Seleccione un fichero de configuración")
     else:
-        webbrowser.open_new("http://localhost:8080")
         windowConfig.destroy()
 
 
@@ -87,8 +82,6 @@ btn_create = Button(windowCreateConfig, text="Crear", command=clicked_btn_create
 btn_skip = Button(windowCreateConfig, text="Saltar este paso", command=clicked_btn_skip)
 
 mensaje_create.pack(fill=X)
-txt_config_name = Entry(windowCreateConfig)
-txt_config_name.pack(fill=X)
 btn_create.pack(fill=X)
 btn_skip.pack(fill=X)
 

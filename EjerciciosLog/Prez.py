@@ -6,9 +6,12 @@ import dash_core_components as dcc
 import dash_table
 import os
 from tkinter import *
+import webbrowser
+
 
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
+
 
 prezz = (Maadle.Maadle(PrezGUI.windowLog.log, "", PrezGUI.windowConfig.config))
 
@@ -29,6 +32,7 @@ colors = {
     'text': '#7FDBFF',
     'grey': 'rgb(50, 50, 50)'
 }
+webbrowser.open_new("http://localhost:8080")
 
 app.layout = html.Div(children=[
 
