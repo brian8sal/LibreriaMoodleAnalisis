@@ -41,6 +41,8 @@ class Maadle:
             with pd.ExcelWriter(config) as writer:
                 self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
                 self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
+                writer.sheets['Usuarios'].set_column('A:A', self.dataframe_usuarios[NOMBRE_USUARIO].map(len).max())
+                writer.sheets['Recursos'].set_column('A:B', self.dataframe_recursos[CONTEXTO].map(len).max())
         self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
         for i in range(self.dataframe_recursos[CONTEXTO].size):
