@@ -13,6 +13,8 @@ NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 
+THRESHOLD = 1800
+
 
 class Maadle:
     dataframe = pd.DataFrame
@@ -618,6 +620,36 @@ class Maadle:
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
+
+    def create_dynamic_session_id(self):
+        result = self.dataframe.sort_values(by=['IDUsuario', 'Hora'])
+        previous_row = None
+        user_session_counter = 0
+        sessionids = [None] * len(result)
+        session_counter = 0
+        for index, row in result.iterrows():
+            if previous_row is not None:
+                if row[ID_USUARIO] != previous_row[ID_USUARIO]:
+                    # new user
+                    user_session_counter = 0
+                distance = row[FECHA_HORA] - previous_row[FECHA_HORA]
+                if distance.total_seconds() > THRESHOLD:
+                    user_session_counter += 1
+            sessionid = "{}:{}".format(row[ID_USUARIO], user_session_counter)
+            sessionids[session_counter] = sessionid
+            session_counter += 1
+            previous_row = row
+            result['IDSesion'] = sessionids
+        return result
+
+    def number_of_sessions_by_user(self):
+        df = Maadle.create_dynamic_session_id(self)
+        result = pd.DataFrame(data=df.groupby(ID_USUARIO)['IDSesion'].nunique().values, columns=['Número de sesiones iniciadas'])
+        result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
+        return result
+
+
+
 
     """
     Calcula la media de eventos por participante del dataframe.
