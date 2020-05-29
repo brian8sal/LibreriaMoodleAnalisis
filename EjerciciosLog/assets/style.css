@@ -498,3 +498,13 @@ there.
 Select.has-value.Select--single > .Select-control .Select-value .Select-value-label, .Select.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {
     color: #7FDBFF;
 }
+/* Images header */
+
+.column, .columns {
+    margin-left: 9%;
+    width: auto;
+}
+
+.one-third.column {
+    width: 100px;
+}
