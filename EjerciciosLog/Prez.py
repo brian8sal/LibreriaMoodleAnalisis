@@ -243,29 +243,27 @@ app.layout = html.Div(
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
             ], style={'background': colors['background']}),
-dcc.Graph(
-            id='EventosPorRecurso',
+        dcc.Graph(
             figure={
-                'data': [
-                    {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
-                     'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
-                ],
-                'layout': {
-                    'title': 'Recursos por número de eventos',
-                    "titlefont": {
-                        "size": 23
-                    },
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
-                    'plot_bgcolor': colors['background'],
-                    'paper_bgcolor': colors['background'],
-                    'font': {
-                        'color': colors['text']
-                    }
+            'data': [{
+                'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                'z': prezz.sessions_matrix(),
+                'ygap': 2,
+                'reversescale': 'true',
+                'colorscale': [[0, 'white'], [1, 'blue']],
+                'type': 'heatmap',
+            }],
+            'layout':{
+                'title': 'Sesiones',
+                'yaxis': {'automargin': True},
+                'xaxis': {'automargin': True},
+                'plot_bgcolor': colors['background'],
+                'paper_bgcolor': colors['grey'],
+                'font': {
+                    'color': colors['text']
                 }
-            },
-        ),
-
+            }})
     ])
 
 

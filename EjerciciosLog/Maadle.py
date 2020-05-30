@@ -648,7 +648,37 @@ class Maadle:
         result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
         return result
 
+    def sessions_matrix(self):
+        df = Maadle.create_dynamic_session_id(self)
+        i = 0
+        dfaux = self.dataframe_recursos
+        lista_recursos = dfaux[CONTEXTO].to_list()
+        rows = dfaux[CONTEXTO].nunique()
+        columns = rows
+        matrix = [[0 for x in range(columns)] for x in range(rows)]
+        resource_iterador = 0
+        for session, event in df.groupby('IDSesion'):
+            resource_iterador=0
+            print('Sesión '+session)
+            print('Eventos ')
+            print(event[CONTEXTO].values)
+            for resource in dfaux[CONTEXTO]:
+                if resource in event[CONTEXTO].values:
+                    matrix[resource_iterador][resource_iterador]=matrix[resource_iterador][resource_iterador]+1
+                    for recource_in_event in event[CONTEXTO].unique():
+                        if recource_in_event != resource:
+                            matrix[resource_iterador][lista_recursos.index(recource_in_event)] = matrix[resource_iterador][lista_recursos.index(recource_in_event)] + 1
+                resource_iterador = resource_iterador+1
+            print("\n")
 
+        matrix_result = [[0 for x in range(columns)] for x in range(rows)]
+        for j in range(columns):
+            for i in range(rows):
+                aux=matrix[i][j]/matrix[j][j]
+                matrix_result[j][i]=aux
+                print('gola'+str(aux))
+        print(matrix_result)
+        return matrix_result
 
 
     """
