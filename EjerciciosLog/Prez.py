@@ -249,9 +249,8 @@ app.layout = html.Div(
                 'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
                 'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
                 'z': prezz.sessions_matrix(),
-                'ygap': 2,
-                'reversescale': 'true',
-                'colorscale': [[0, 'white'], [1, 'blue']],
+                'ygap': 1,
+                'xgap': 1,
                 'type': 'heatmap',
             }],
             'layout':{
