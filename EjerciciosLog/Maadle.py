@@ -650,7 +650,6 @@ class Maadle:
 
     def sessions_matrix(self):
         df = Maadle.create_dynamic_session_id(self)
-        i = 0
         dfaux = self.dataframe_recursos
         lista_recursos = dfaux[CONTEXTO].to_list()
         rows = dfaux[CONTEXTO].nunique()
