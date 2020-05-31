@@ -218,14 +218,50 @@ class Test_Maadle(unittest.TestCase):
 
         self.assertEqual(prueba99Rows.events_per_day_per_resource("Carpeta: Exámenes")[Maadle.NUM_EVENTOS][0], 1)
 
-    def test_eventsPerHour(self):
+    def test_create_dynamic_session_id(self):
+        dataframe = prueba99Rows.create_dynamic_session_id()
+        self.assertTrue(Maadle.ID_SESION in dataframe.columns)
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:30:00'].values, ['1:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:33:00'].values, ['1:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-12 17:36:00'].values, ['1:1'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-19 10:13:00'].values, ['1:2'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-27 19:17:00'].values, ['1:5'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-12-23 16:48:00'].values, ['1:8'])
+
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-03-26 15:22:00'].values, ['1010:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-08-01 14:49:00'].values, ['1010:1'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-02 13:34:00'].values, ['1010:2'])
+
+    def test_number_of_sessions_by_user(self):
+        dataframe = prueba99Rows.number_of_sessions_by_user()
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'Pérez González, Docente'].values, 9)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'REVUELTA DIAZ, CRISTINA'].values, 1)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'CUADRIELLO GALDÓS, ÁNGELA'].values, 3)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'CIMAS CAMPOS, NOIVE'].values, 2)
+
+    def test_sessions_matrix(self):
+        result_matrix = prueba99Rows.sessions_matrix()
+        expected_matrix=[[24/24, 2/24, 1/24, 1/24, 1/24, 5/24, 1/24],
+                         [1/1, 1/1, 0/1, 0/1, 0/1, 0/1, 0/1],
+                         [1/1, 0/1, 1/1, 1/1, 0/1, 0/1, 0/1],
+                         [1/1, 0/1, 1/1, 1/1, 0/1, 0/1, 0/1],
+                         [1/1, 0/1, 0/1, 0/1, 1/1, 0/1, 0/1],
+                         [5/5, 0/1, 0/1, 0/1, 0/1, 5/5, 0/1],
+                         [1/1, 0/1, 0/1, 0/1, 0/1, 0/1, 1/1]]
+        self.assertEqual(result_matrix, expected_matrix)
+
+    def test_events_per_hour(self):
+        dataframe = prueba99Rows.events_per_hour()
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '08'].values, 3)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '10'].values, 13)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '11'].values, 5)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '12'].values, 10)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '14'].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '17'].values, 4)
+
+    def test_resources_by_number_of_events(self):
         self.assertEqual(0, 0)
 
-    def test_resourcesByNumberOfEvents(self):
-        self.assertEqual(0, 0)
-
-    def test_averageEventsPerParticipant(self):
-        self.assertEqual(0, 0)
 
 
 if __name__ == '__main__':
