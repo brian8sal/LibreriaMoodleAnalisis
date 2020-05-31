@@ -501,7 +501,6 @@ Select.has-value.Select--single > .Select-control .Select-value .Select-value-la
 /* Images header */
 
 .column, .columns {
-    margin-left: 9%;
     width: auto;
 }
 
