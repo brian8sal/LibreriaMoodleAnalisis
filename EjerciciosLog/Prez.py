@@ -56,6 +56,9 @@ app.layout = html.Div(
                     children=prezz.nombre_curso,
                     style={
                         'textAlign': 'center',
+                        'width': '70%',
+                        'margin-left': '4%',
+                        'margin-right': '4%',
                         'color': colors['text'],
                     }
                 ),
@@ -70,7 +73,12 @@ app.layout = html.Div(
                                 'width': 'auto',
                                 'margin-bottom': '25px'
                             })
-                    ]),
+                    ],
+                    style={'margin-left': '0%',
+                           'margin-right': '5%',
+                           'float': 'right'
+                           }
+                ),
             ]),
 
         html.Div(
@@ -245,24 +253,24 @@ app.layout = html.Div(
             ], style={'background': colors['background']}),
         dcc.Graph(
             figure={
-            'data': [{
-                'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                'z': prezz.sessions_matrix(),
-                'ygap': 1,
-                'xgap': 1,
-                'type': 'heatmap',
-            }],
-            'layout':{
-                'title': 'Sesiones',
-                'yaxis': {'automargin': True},
-                'xaxis': {'automargin': True},
-                'plot_bgcolor': colors['background'],
-                'paper_bgcolor': colors['grey'],
-                'font': {
-                    'color': colors['text']
-                }
-            }})
+                'data': [{
+                    'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    'z': prezz.sessions_matrix(),
+                    'ygap': 1,
+                    'xgap': 1,
+                    'type': 'heatmap',
+                }],
+                'layout': {
+                    'title': 'Sesiones',
+                    'yaxis': {'automargin': True},
+                    'xaxis': {'automargin': True},
+                    'plot_bgcolor': colors['background'],
+                    'paper_bgcolor': colors['grey'],
+                    'font': {
+                        'color': colors['text']
+                    }
+                }})
     ])
 
 
