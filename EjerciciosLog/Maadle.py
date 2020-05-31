@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import openpyxl
 
+ID_SESION = 'IDSesion'
 CONGIG_PREZ = 'ConfigPrez.xlsx'
 ID_USUARIO = 'IDUsuario'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
@@ -12,6 +13,8 @@ CONTEXTO = 'Contexto del evento'
 NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
+
+THRESHOLD = 1800
 
 
 class Maadle:
@@ -619,6 +622,99 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
+    def create_dynamic_session_id(self):
+        """
+        Summary line.
+
+        Crea un identificador para distinguir la sesión a la que pertenece cada evento en función de un tiempo
+        umbral que sirva para aproximarlas.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        DataFrame
+            DataFrame con una columna para el ID de sesión añadida.
+
+        """
+        result = self.dataframe.sort_values(by=['IDUsuario', 'Hora'])
+        previous_row = None
+        sessionids = [None] * len(result)
+        user_session_counter = 0
+        session_counter = 0
+        for index, row in result.iterrows():
+            if previous_row is not None:
+                if row[ID_USUARIO] != previous_row[ID_USUARIO]:
+                    user_session_counter = 0
+                distance = row[FECHA_HORA] - previous_row[FECHA_HORA]
+                if distance.total_seconds() > THRESHOLD:
+                    user_session_counter += 1
+            sessionid = "{}:{}".format(row[ID_USUARIO], user_session_counter)
+            sessionids[session_counter] = sessionid
+            session_counter += 1
+            previous_row = row
+            result[ID_SESION] = sessionids
+        return result
+
+    def number_of_sessions_by_user(self):
+        """
+        Summary line.
+
+        Construye un DataFrame con el número de sesiones de cada usuario.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        DataFrame
+            DataFrame con los usuarios y el número de sesiones de cada uno
+
+        """
+        df = Maadle.create_dynamic_session_id(self)
+        result = pd.DataFrame(data=df.groupby(ID_USUARIO)[ID_SESION].nunique().values, columns=['Número de sesiones iniciadas'])
+        result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
+        return result
+
+    def sessions_matrix(self):
+        """
+        Summary line.
+
+        Construye la matriz de relación de los recursos.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        Matrix
+            Matriz de relación de los recursos.
+
+        """
+        df = Maadle.create_dynamic_session_id(self)
+        dfaux = self.dataframe_recursos
+        lista_recursos = dfaux[CONTEXTO].to_list()
+        rows = dfaux[CONTEXTO].nunique()
+        columns = rows
+        matrix = [[0 for x in range(columns)] for x in range(rows)]
+        for session, event in df.groupby(ID_SESION):
+            resource_iterador = 0
+            for resource in dfaux[CONTEXTO]:
+                if resource in event[CONTEXTO].values:
+                    matrix[resource_iterador][resource_iterador] = matrix[resource_iterador][resource_iterador]+1
+                    for recource_in_event in event[CONTEXTO].unique():
+                        if recource_in_event != resource:
+                            matrix[resource_iterador][lista_recursos.index(recource_in_event)] = matrix[resource_iterador][lista_recursos.index(recource_in_event)] + 1
+                resource_iterador = resource_iterador+1
+        matrix_result = [[0 for x in range(columns)] for x in range(rows)]
+        for j in range(columns):
+            for i in range(rows):
+                aux = matrix[i][j]/matrix[j][j]
+                matrix_result[j][i] = aux
+        return matrix_result
+
+
     """
     Calcula la media de eventos por participante del dataframe.
 
@@ -631,7 +727,8 @@ class Maadle:
     def average_events_per_participant(self, dataframe):
         result=0
         result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, columns=['Media de eventos']))
+        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, 
+        columns=['Media de eventos']))
         resultdf['Participante'] = resultdf.index
         resultdf.reset_index(drop=True,inplace=True)
         resultdf = resultdf.sort_values(by=['Media de eventos'])
