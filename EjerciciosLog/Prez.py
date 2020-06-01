@@ -256,14 +256,15 @@ app.layout = html.Div(
                     'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'z': prezz.sessions_matrix(),
+                    'colorscale': [[0, 'white'], [1, 'red']],
                     'ygap': 1,
                     'xgap': 1,
                     'type': 'heatmap',
                 }],
                 'layout': {
                     'title': 'Sesiones',
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True, 'visible': False},
+                    'xaxis': {'automargin': True, 'visible': False},
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['grey'],
                     'font': {
