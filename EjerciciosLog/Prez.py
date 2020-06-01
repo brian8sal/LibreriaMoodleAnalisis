@@ -26,9 +26,9 @@ app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
 colors = {
-    'background': '#111111',
-    'text': '#7FDBFF',
-    'grey': 'rgb(50, 50, 50)'
+    'background': '#FFFFFF',
+    'text': '#111111',
+    'grey': '#E9E9E9'
 }
 
 app.layout = html.Div(
