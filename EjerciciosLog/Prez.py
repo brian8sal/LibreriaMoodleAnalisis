@@ -30,7 +30,6 @@ colors = {
     'text': '#7FDBFF',
     'grey': 'rgb(50, 50, 50)'
 }
-webbrowser.open_new("http://localhost:8080")
 
 app.layout = html.Div(
     style={'margin': '3%'},
@@ -293,6 +292,7 @@ def update_output(start_date, end_date):
             }
         },
     }
+webbrowser.open_new("http://localhost:8080")
 
 
 @app.callback(
