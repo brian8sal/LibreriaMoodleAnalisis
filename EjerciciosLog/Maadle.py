@@ -693,14 +693,14 @@ class Maadle:
 
         """
         df = Maadle.create_dynamic_session_id(self)
-        dfaux = self.dataframe_recursos
-        lista_recursos = dfaux[CONTEXTO].to_list()
-        rows = dfaux[CONTEXTO].nunique()
+        dfe = self.dataframe[CONTEXTO].unique()
+        lista_recursos = dfe.tolist()
+        rows = len(dfe)
         columns = rows
         matrix = [[0 for x in range(columns)] for x in range(rows)]
         for session, event in df.groupby(ID_SESION):
             resource_iterador = 0
-            for resource in dfaux[CONTEXTO]:
+            for resource in dfe:
                 if resource in event[CONTEXTO].values:
                     matrix[resource_iterador][resource_iterador] = matrix[resource_iterador][resource_iterador]+1
                     for recource_in_event in event[CONTEXTO].unique():

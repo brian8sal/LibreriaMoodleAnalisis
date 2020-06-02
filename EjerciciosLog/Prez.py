@@ -7,7 +7,6 @@ import dash_table
 import os
 from tkinter import *
 import webbrowser
-
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
@@ -26,11 +25,12 @@ app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
 colors = {
-    'background': '#111111',
-    'text': '#7FDBFF',
-    'grey': 'rgb(50, 50, 50)'
+    'background': '#FFFFFF',
+    'text': '#111111',
+    'grey': '#E9E9E9',
+    'uc_color': 'rgb(0,103,113)',
+    'uc_inverse_color': 'rgb(113,10,0)'
 }
-webbrowser.open_new("http://localhost:8080")
 
 app.layout = html.Div(
     style={'margin': '3%'},
@@ -119,15 +119,17 @@ app.layout = html.Div(
                             id='pie-chart-participants-users',
                             figure={
                                 'data': [
-                                    {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
-                                     'values': [
-                                         prezz.num_participants_nonparticipants()[
-                                             Maadle.PARTICIPANTES][0],
-                                         prezz.num_participants_nonparticipants()[
-                                             Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
-                                     'automargin': True,
-                                     'textinfo': 'none'
-                                     },
+                                    {
+                                        'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
+                                        'marker': dict(colors=[colors['uc_color'], colors['uc_inverse_color']]),
+                                        'values': [
+                                            prezz.num_participants_nonparticipants()[
+                                                Maadle.PARTICIPANTES][0],
+                                            prezz.num_participants_nonparticipants()[
+                                                Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
+                                        'automargin': True,
+                                        'textinfo': 'none',
+                                    },
                                 ],
                                 'layout': {
                                     'title': 'Eventos por recurso',
@@ -150,7 +152,9 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
-                     'y': prezz.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                     'y': prezz.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h', 'marker': {
+                        'color': colors['uc_color']}
+                     },
                 ],
                 'layout': {
                     'title': 'Participantes por recurso',
@@ -195,7 +199,8 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
-                     'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                     'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h', 'marker': {
+                        'color': 'rgb(0, 103, 113)'}},
                 ],
                 'layout': {
                     'title': 'Recursos por número de eventos',
@@ -257,14 +262,15 @@ app.layout = html.Div(
                     'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'z': prezz.sessions_matrix(),
+                    'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
                     'xgap': 1,
                     'type': 'heatmap',
                 }],
                 'layout': {
                     'title': 'Sesiones',
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True, 'visible': False},
+                    'xaxis': {'automargin': True, 'visible': False},
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['grey'],
                     'font': {
@@ -272,6 +278,7 @@ app.layout = html.Div(
                     }
                 }})
     ])
+webbrowser.open_new("http://localhost:8080")
 
 
 @app.callback(
@@ -282,12 +289,14 @@ def update_output(start_date, end_date):
     dfaux5 = prezz.events_between_dates(start_date, end_date)
     return {
         'data': [
-            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter',
+             'line': dict(color=colors['uc_color'])},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
+
             'font': {
                 'color': colors['text']
             }
@@ -302,7 +311,10 @@ def update_output(value):
     dfaux6 = prezz.events_per_day_per_user(value)
     return {
         'data': [
-            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar'},
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar',
+             'marker': {
+                 'color': colors['uc_color']}
+             },
         ],
         'layout': {
             'title': 'Eventos por rango de días por alumnos',
@@ -322,7 +334,8 @@ def update_output(value):
     dfaux7 = prezz.events_per_day_per_resource(value)
     return {
         'data': [
-            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar'},
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar', 'marker': {
+                'color': colors['uc_color']}},
         ],
         'layout': {
             'title': 'Eventos por rango de días por recurso',
