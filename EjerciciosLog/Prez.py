@@ -252,7 +252,7 @@ app.layout = html.Div(
                              ],
                     searchable=True,
                     placeholder="Seleccione a un usuario",
-                    value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
+                    value=prezz.dataframe_recursos[Maadle.CONTEXTO].unique()[0]
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
             ], style={'background': colors['background']}),
