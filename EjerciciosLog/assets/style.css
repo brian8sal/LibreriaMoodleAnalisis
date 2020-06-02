@@ -482,6 +482,11 @@ there.
     fill: transparent;
 }
 */
+.CalendarDay__selected_span {
+    background: #006771;
+    border: 1px double #710a00;
+    color: #fff;
+}
 
 /* Dropdown
 .Select.has-value.is-clearable.Select--single > .Select-control .Select-value {
