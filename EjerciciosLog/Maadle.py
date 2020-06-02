@@ -51,6 +51,7 @@ class Maadle:
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
         for i in range(self.dataframe_recursos[CONTEXTO].size):
             if pd.isna(self.dataframe_recursos['Alias'][i]):
+                self.dataframe_recursos['Alias'][i] = " "
                 self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(
                     self.dataframe_recursos[CONTEXTO][i], " ")
             else:
