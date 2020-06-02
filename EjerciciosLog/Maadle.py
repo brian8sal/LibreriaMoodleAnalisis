@@ -38,6 +38,7 @@ class Maadle:
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
         self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(), columns=[CONTEXTO])
         self.dataframe_recursos['Alias'] = self.dataframe[CONTEXTO].unique()
+        self.dataframe_recursos['Excluido'] = ''
         self.dataframe_usuarios['Excluido'] = ''
         self.dataframe_usuarios = self.dataframe_usuarios.sort_values([NOMBRE_USUARIO])
         if not os.path.isfile(config):
@@ -51,15 +52,21 @@ class Maadle:
         for i in range(self.dataframe_recursos[CONTEXTO].size):
             if pd.isna(self.dataframe_recursos['Alias'][i]):
                 self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(
-                    self.dataframe_recursos['Contexto del evento'][i], " ")
+                    self.dataframe_recursos[CONTEXTO][i], " ")
             else:
-                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos['Contexto del evento'][i], self.dataframe_recursos['Alias'][i])
+                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos[CONTEXTO][i], self.dataframe_recursos['Alias'][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
             if not (pd.isna(self.dataframe_usuarios['Excluido'][i]) or self.dataframe_usuarios['Excluido'][i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
+        ele = []
+        for i in range(self.dataframe_recursos['Alias'].size):
+            if not (pd.isna(self.dataframe_recursos['Excluido'][i]) or self.dataframe_recursos['Excluido'][i].isspace()):
+                ele.append(self.dataframe_recursos['Alias'][i])
+        self.dataframe = self.dataframe[~self.dataframe[CONTEXTO].isin(ele)]
+        self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos['Alias'].isin(ele)]
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
