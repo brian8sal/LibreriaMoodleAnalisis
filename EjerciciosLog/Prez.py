@@ -321,7 +321,7 @@ app.layout = html.Div(
                     options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
                              ],
                     searchable=True,
-                    placeholder="Seleccione a un usuario",
+                    placeholder="Seleccione un recurso",
                     value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
