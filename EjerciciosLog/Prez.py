@@ -7,6 +7,7 @@ import dash_table
 import os
 from tkinter import *
 import webbrowser
+
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
@@ -80,6 +81,75 @@ app.layout = html.Div(
                            }
                 ),
             ]),
+        html.Div(id="info-container",
+                 className="eight columns",
+                 children=[
+                     html.Div(id="num-events",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. Interacciones"),
+                                  html.P(str(len(prezz.dataframe)))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="num-participants",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. Participantes"),
+                                  html.P(str(prezz.num_participants_nonparticipants()[
+                                                Maadle.PARTICIPANTES][0]))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="num-no-participants",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. No Participantes"),
+                                  html.P(str(prezz.num_participants_nonparticipants()[
+                                                 Maadle.NO_PARTICIPANTES][0]))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="top-participant",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Máx. Interacciones"),
+                                  html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].tail(1))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="bottom-participant",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Mín. Interacciones"),
+                                  html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].head(1))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              )
+                 ],
+                 style={
+                     'width': '100%',
+                     'margin-left': '0%'}),
 
         html.Div(
             children=[
@@ -251,7 +321,7 @@ app.layout = html.Div(
                     options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
                              ],
                     searchable=True,
-                    placeholder="Seleccione a un usuario",
+                    placeholder="Seleccione un recurso",
                     value=prezz.dataframe_recursos[Maadle.CONTEXTO].unique()[0]
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
