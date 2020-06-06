@@ -1,10 +1,10 @@
 import os
 import pandas as pd
 import openpyxl
+import xml.etree.ElementTree as ET
 
-ID_SESION = 'IDSesion'
-CONGIG_PREZ = 'ConfigPrez.xlsx'
 ID_USUARIO = 'IDUsuario'
+ID_RECURSO = 'IDRecurso'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
 NUM_PARTICIPANTES = 'Número de participantes'
 DESCRIPCION = 'Descripción'
@@ -13,6 +13,8 @@ CONTEXTO = 'Contexto del evento'
 NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
+ID_SESION = 'IDSesion'
+
 
 THRESHOLD = 1800
 
@@ -30,7 +32,8 @@ class Maadle:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
         if len(self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento']) != 0:
             self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
-        self.dataframe = Maadle.add_ID_column(self)
+        self.dataframe = Maadle.add_ID_user_column(self)
+        self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
@@ -111,7 +114,7 @@ class Maadle:
         """
         return pd.read_csv(name)
 
-    def add_ID_column(self) -> pd.DataFrame:
+    def add_ID_user_column(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -128,6 +131,25 @@ class Maadle:
         """
         dataframe = self.dataframe
         dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        return dataframe
+
+    def add_ID_resource_column(self) -> pd.DataFrame:
+        """
+        Summary line.
+
+        Añade una columna con el ID del recurso.
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        dataframe
+            Log con la columna añadida.
+
+        """
+        dataframe = self.dataframe
+        dataframe[ID_RECURSO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'\.', expand=True)
         return dataframe
 
     def delete_columns(self, columns) -> pd.DataFrame:
@@ -268,15 +290,6 @@ class Maadle:
         dataframe['DíaDelMes'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).day
         dataframe['MesDelAño'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).month
         return dataframe
-
-    """
-    def addDiaNormalizadoColumn(dataframe):
-        #dataframe = dataframe.sort_values(by=['Hora'])
-        # dataframe.index = dataframe['Hora']
-        dataframe['DíaNormalizado'] = dataframe['Hora'].dt.dayofyear
-        # dataframe.set_index(pd.Index(['DíaNormalizado']))
-        return dataframe
-    """
 
     def num_events(self):
         """
@@ -721,6 +734,25 @@ class Maadle:
                 aux = matrix[i][j]/matrix[j][j]
                 matrix_result[j][i] = aux
         return matrix_result
+
+    def course_structure(self):
+        tree = ET.parse('C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/moodle_backup.xml')
+        root = tree.getroot()
+        df = pd.DataFrame(columns=['Seccion', 'IDRecurso', 'Recurso'])
+        id_curso = ''
+        for activity in root.findall('information/contents/activities/activity'):
+            df = df.append(
+                pd.Series(
+                    [activity.find('sectionid').text, activity.find('moduleid').text, activity.find('title').text],
+                    index=['Seccion', 'IDRecurso', 'Recurso']), ignore_index=True)
+        for activity in root.findall('information/contents/course'):
+            id_curso = activity.find('courseid').text
+        self.dataframe['Seccion'] = id_curso
+        for activity in df[ID_RECURSO]:
+            self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
+        self.dataframe.to_csv('out.csv')
+        return self.dataframe
+
 
 
     """

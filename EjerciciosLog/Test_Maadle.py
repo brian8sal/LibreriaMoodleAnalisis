@@ -13,19 +13,20 @@ prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", 
 
 class Test_Maadle(unittest.TestCase):
 
-    def test_createDataFrame(self):
+    def test_create_data_frame(self):
+        print(prueba99Rows.dataframe[[Maadle.NOMBRE_USUARIO, Maadle.ID_RECURSO]])
         self.assertEqual(0, 0)
 
-    def test_createDataFrameFileName(self):
+    def test_create_data_frame_file_name(self):
         dataframe = prueba1Rows.create_data_frame_file_fame("TestingLog1Row.csv")
         self.assertEqual(len(dataframe), 1)
         dataframe = prueba99Rows.create_data_frame_file_fame("TestingLog99Rows.csv")
         self.assertEqual(len(dataframe), 99)
 
-    def test_addIDColumn(self):
-        dataframe = prueba1Rows.add_ID_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
+    def test_addID_user_column(self):
+        dataframe = prueba1Rows.add_ID_user_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
         self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
-        dataframe = prueba99Rows.add_ID_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
+        dataframe = prueba99Rows.add_ID_user_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
         self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
 
     def test_deleteColumns(self):
