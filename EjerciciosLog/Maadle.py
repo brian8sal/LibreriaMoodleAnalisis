@@ -3,6 +3,8 @@ import pandas as pd
 import openpyxl
 import xml.etree.ElementTree as ET
 
+EXCLUIDO = 'Excluido'
+
 ID_USUARIO = 'IDUsuario'
 ID_RECURSO = 'IDRecurso'
 NOMBRE_USUARIO = 'Nombre completo del usuario'
@@ -14,6 +16,7 @@ NUM_EVENTOS = 'Número de eventos'
 NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 ID_SESION = 'IDSesion'
+ALIAS = 'Alias'
 
 
 THRESHOLD = 1800
@@ -30,47 +33,59 @@ class Maadle:
             self.dataframe = Maadle.create_data_frame(self, name, path)
         else:
             self.dataframe = Maadle.create_data_frame_file_fame(self, name)
-        if len(self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento']) != 0:
-            self.nombre_curso = self.dataframe[self.dataframe['Contexto del evento'].str.contains("Curso:")]['Contexto del evento'].iloc[0]
+        if len(self.dataframe[self.dataframe[CONTEXTO].str.contains("Curso:")][CONTEXTO]) != 0:
+            self.nombre_curso = self.dataframe[self.dataframe[CONTEXTO].str.contains("Curso:")][CONTEXTO].iloc[0]
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
+        self.create_config(config)
+
+    def create_config(self, config):
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
-        self.dataframe_recursos = pd.DataFrame(self.dataframe[CONTEXTO].unique(), columns=[CONTEXTO])
-        self.dataframe_recursos['Alias'] = self.dataframe[CONTEXTO].unique()
-        self.dataframe_recursos['Excluido'] = ''
-        self.dataframe_usuarios['Excluido'] = ''
+        self.dataframe_recursos = pd.DataFrame(self.dataframe.groupby([CONTEXTO, ID_RECURSO]).size().reset_index(),
+                                               columns=[CONTEXTO, ID_RECURSO])
+        self.dataframe_recursos[ALIAS] = self.dataframe_recursos[CONTEXTO]
+        self.dataframe_recursos[ID_RECURSO] = self.dataframe_recursos[ID_RECURSO].astype('float')
+        self.dataframe_recursos = self.dataframe_recursos.sort_values([ID_RECURSO])
+        self.dataframe_recursos[EXCLUIDO] = ''
+        self.dataframe_usuarios[EXCLUIDO] = ''
         self.dataframe_usuarios = self.dataframe_usuarios.sort_values([NOMBRE_USUARIO])
         if not os.path.isfile(config):
             with pd.ExcelWriter(config) as writer:
                 self.dataframe_usuarios.to_excel(writer, sheet_name='Usuarios', index=False)
                 self.dataframe_recursos.to_excel(writer, sheet_name='Recursos', index=False)
                 writer.sheets['Usuarios'].set_column('A:A', self.dataframe_usuarios[NOMBRE_USUARIO].map(len).max())
-                writer.sheets['Recursos'].set_column('A:B', self.dataframe_recursos[CONTEXTO].map(len).max())
+                writer.sheets['Recursos'].set_column('A:C', self.dataframe_recursos[CONTEXTO].map(len).max())
+                writer.sheets['Recursos'].set_column('B:B', options={'hidden': True})
         self.dataframe_usuarios = pd.ExcelFile(config).parse('Usuarios')
         self.dataframe_recursos = pd.ExcelFile(config).parse('Recursos')
         for i in range(self.dataframe_recursos[CONTEXTO].size):
-            if pd.isna(self.dataframe_recursos['Alias'][i]):
-                self.dataframe_recursos['Alias'][i] = " "
+            if pd.isna(self.dataframe_recursos[ALIAS][i]):
+                self.dataframe_recursos[ALIAS][i] = " "
                 self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(
                     self.dataframe_recursos[CONTEXTO][i], " ")
             else:
-                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos[CONTEXTO][i], self.dataframe_recursos['Alias'][i])
+                self.dataframe[CONTEXTO] = self.dataframe[CONTEXTO].replace(self.dataframe_recursos[CONTEXTO][i],
+                                                                            self.dataframe_recursos[ALIAS][i])
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
-            if not (pd.isna(self.dataframe_usuarios['Excluido'][i]) or self.dataframe_usuarios['Excluido'][i].isspace()):
+            if not (pd.isna(self.dataframe_usuarios[EXCLUIDO][i]) or self.dataframe_usuarios[EXCLUIDO][
+                i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
         ele = []
-        for i in range(self.dataframe_recursos['Alias'].size):
-            if not (pd.isna(self.dataframe_recursos['Excluido'][i]) or self.dataframe_recursos['Excluido'][i].isspace()):
-                ele.append(self.dataframe_recursos['Alias'][i])
-        self.dataframe = self.dataframe[~self.dataframe[CONTEXTO].isin(ele)]
-        self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos['Alias'].isin(ele)]
+        for i in range(self.dataframe_recursos[ALIAS].size):
+            if not (pd.isna(self.dataframe_recursos[EXCLUIDO][i]) or self.dataframe_recursos[EXCLUIDO][
+                i].isspace()):
+                ele.append(self.dataframe_recursos[ID_RECURSO][i])
+        self.dataframe = self.dataframe[~self.dataframe[ID_RECURSO].isin(ele)]
+        self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(ele)]
+
+
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -149,7 +164,8 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[ID_RECURSO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'\.', expand=True)
+        dataframe[ID_RECURSO] = self.dataframe[DESCRIPCION].str.extract('with course module id\s\'(\d*)\'\.', expand=True)
+        dataframe[ID_RECURSO] = pd.to_numeric(dataframe[ID_RECURSO])
         return dataframe
 
     def delete_columns(self, columns) -> pd.DataFrame:
@@ -489,12 +505,12 @@ class Maadle:
 
         """
         result = 0
-        result = self.dataframe[CONTEXTO].groupby(self.dataframe[CONTEXTO]).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
-        resultdf['Recurso'] = resultdf.index
-        resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(ascending=False, by=[NUM_EVENTOS])
-        return resultdf
+        result = self.dataframe.groupby([CONTEXTO,ID_RECURSO]).size() + result
+        result = result.reset_index()
+        result.rename(columns={0: NUM_EVENTOS})
+        result.columns = ['Recurso', ID_RECURSO, NUM_EVENTOS]
+        result = result.sort_values(ascending=False, by=[ID_RECURSO])
+        return result
 
     def participants_per_resource(self):
         """
@@ -511,12 +527,12 @@ class Maadle:
             Lista con los recursos y su número de eventos.
 
         """
-        result = self.dataframe.groupby(CONTEXTO)[ID_USUARIO].nunique()
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_PARTICIPANTES]))
-        resultdf['Recurso'] = resultdf.index
-        resultdf.reset_index(drop=True, inplace=True)
-        resultdf = resultdf.sort_values(ascending=False, by=[NUM_PARTICIPANTES])
-        return resultdf
+        result = self.dataframe.groupby([CONTEXTO,ID_RECURSO])[ID_USUARIO].nunique()
+        result = result.reset_index()
+        result.rename(columns={0: NUM_PARTICIPANTES})
+        result.columns = ['Recurso', ID_RECURSO, NUM_PARTICIPANTES]
+        result = result.sort_values(ascending=False, by=[ID_RECURSO])
+        return result
 
     def events_per_hour(self):
         """
@@ -634,8 +650,8 @@ class Maadle:
 
         """
         result = 0
-        df = self.dataframe[[FECHA_HORA, CONTEXTO]]
-        df = df[df[CONTEXTO].str.contains(resource)]
+        df = self.dataframe[[FECHA_HORA, CONTEXTO, ID_RECURSO]]
+        df = df[(df[ID_RECURSO] <= resource + .00) & (df[ID_RECURSO] >= resource - .00)]
         result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
@@ -659,7 +675,7 @@ class Maadle:
             DataFrame con una columna para el ID de sesión añadida.
 
         """
-        result = self.dataframe.sort_values(by=['IDUsuario', 'Hora'])
+        result = self.dataframe.sort_values(by=[ID_USUARIO, FECHA_HORA])
         previous_row = None
         sessionids = [None] * len(result)
         user_session_counter = 0
@@ -713,22 +729,22 @@ class Maadle:
             Matriz de relación de los recursos.
 
         """
-        df = Maadle.create_dynamic_session_id(self)
-        dfe = self.dataframe[CONTEXTO].unique()
-        lista_recursos = dfe.tolist()
+        df = Maadle.create_dynamic_session_id(self).dropna()
+        dfe = self.dataframe_recursos[ID_RECURSO].dropna().unique()
+        lista_recursos = sorted(dfe.tolist())
         rows = len(dfe)
         columns = rows
-        matrix = [[0 for x in range(columns)] for x in range(rows)]
+        matrix = [[0 for _ in range(columns)] for _ in range(rows)]
         for session, event in df.groupby(ID_SESION):
             resource_iterador = 0
             for resource in dfe:
-                if resource in event[CONTEXTO].values:
+                if resource in event[ID_RECURSO].values:
                     matrix[resource_iterador][resource_iterador] = matrix[resource_iterador][resource_iterador]+1
-                    for recource_in_event in event[CONTEXTO].unique():
+                    for recource_in_event in event[ID_RECURSO].unique():
                         if recource_in_event != resource:
                             matrix[resource_iterador][lista_recursos.index(recource_in_event)] = matrix[resource_iterador][lista_recursos.index(recource_in_event)] + 1
                 resource_iterador = resource_iterador+1
-        matrix_result = [[0 for x in range(columns)] for x in range(rows)]
+        matrix_result = [[0 for _ in range(columns)] for _ in range(rows)]
         for j in range(columns):
             for i in range(rows):
                 aux = matrix[i][j]/matrix[j][j]
@@ -738,19 +754,18 @@ class Maadle:
     def course_structure(self):
         tree = ET.parse('C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/moodle_backup.xml')
         root = tree.getroot()
-        df = pd.DataFrame(columns=['Seccion', 'IDRecurso', 'Recurso'])
+        df = pd.DataFrame(columns=['Seccion', ID_RECURSO, 'Recurso'])
         id_curso = ''
         for activity in root.findall('information/contents/activities/activity'):
             df = df.append(
                 pd.Series(
                     [activity.find('sectionid').text, activity.find('moduleid').text, activity.find('title').text],
-                    index=['Seccion', 'IDRecurso', 'Recurso']), ignore_index=True)
+                    index=['Seccion', ID_RECURSO, 'Recurso']), ignore_index=True)
         for activity in root.findall('information/contents/course'):
             id_curso = activity.find('courseid').text
         self.dataframe['Seccion'] = id_curso
         for activity in df[ID_RECURSO]:
             self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
-        self.dataframe.to_csv('out.csv')
         return self.dataframe
 
 

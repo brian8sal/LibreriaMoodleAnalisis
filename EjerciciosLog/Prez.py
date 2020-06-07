@@ -88,7 +88,7 @@ app.layout = html.Div(
                               className="pretty_container four columns",
                               children=[
                                   html.H6(children="Núm. Interacciones"),
-                                  html.P(str(len(prezz.dataframe)))],
+                                  html.P(str(len(prezz.dataframe.dropna())))],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -101,7 +101,7 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                Maadle.PARTICIPANTES][0]))],
+                                                 Maadle.PARTICIPANTES][0]))],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -222,7 +222,10 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
-                     'y': prezz.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h', 'marker': {
+                     'y': str(prezz.participants_per_resource()[RECURSO]),
+                     'text': prezz.participants_per_resource()[RECURSO],
+                     'hovertemplate': 'Recurso: %{text} <br> Participantes: %{x}<extra></extra>',
+                     'type': 'bar', 'orientation': 'h', 'marker': {
                         'color': colors['uc_color']}
                      },
                 ],
@@ -231,8 +234,13 @@ app.layout = html.Div(
                     "titlefont": {
                         "size": 23
                     },
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True,
+                              'title': 'Recursos',
+                              'showticklabels': False,
+                              },
+                    'xaxis': {'automargin': True,
+                              'title': 'Número de Participantes',
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['background'],
                     'font': {
@@ -269,16 +277,26 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
-                     'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h', 'marker': {
+                     'y': str(prezz.events_per_resource()[RECURSO]),
+                     'text': prezz.events_per_resource()[RECURSO],
+                     # 'hoverinfo':'x+text',
+                     'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
+                     # 'hovermode':'x',
+                     'type': 'bar', 'orientation': 'h', 'marker': {
                         'color': 'rgb(0, 103, 113)'}},
                 ],
                 'layout': {
-                    'title': 'Recursos por número de eventos',
+                    'title': 'Recursos por número de interacciones',
                     "titlefont": {
                         "size": 23
                     },
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True,
+                              'title': 'Recursos',
+                              'showticklabels': False,
+                              },
+                    'xaxis': {'automargin': True,
+                              'title': 'Número de Interacciones',
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['background'],
                     'font': {
@@ -318,19 +336,21 @@ app.layout = html.Div(
                 ),
                 dcc.Dropdown(
                     id='resources-dropdown',
-                    options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
+                    options=[{'label': i, 'value': j} for i, j in
+                             zip(prezz.dataframe_recursos[Maadle.ALIAS], prezz.dataframe_recursos[Maadle.ID_RECURSO])
                              ],
                     searchable=True,
-                    placeholder="Seleccione un recurso",
-                    value=prezz.dataframe_recursos[Maadle.CONTEXTO].unique()[0]
+                    placeholder="Seleccione a un recurso",
+                    value=prezz.dataframe_recursos[Maadle.ID_RECURSO].unique()[0]
+
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
             ], style={'background': colors['background']}),
         dcc.Graph(
             figure={
                 'data': [{
-                    'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                    'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    # 'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    # 'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'z': prezz.sessions_matrix(),
                     'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
@@ -339,8 +359,16 @@ app.layout = html.Div(
                 }],
                 'layout': {
                     'title': 'Sesiones',
-                    'yaxis': {'automargin': True, 'visible': False},
-                    'xaxis': {'automargin': True, 'visible': False},
+                    'yaxis': {'automargin': True,
+                              'showticklabels': False,
+                              "ticktext": prezz.dataframe_recursos[Maadle.CONTEXTO],
+                              "tickvals": list(range(len(prezz.dataframe_recursos[Maadle.CONTEXTO])))
+                              },
+                    'xaxis': {'automargin': True,
+                              'showticklabels': False,
+                              "ticktext": prezz.dataframe_recursos[Maadle.CONTEXTO],
+                              "tickvals": list(range(len(prezz.dataframe_recursos[Maadle.CONTEXTO])))
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['grey'],
                     'font': {
