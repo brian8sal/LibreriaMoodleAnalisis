@@ -26,11 +26,12 @@ app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
 colors = {
-    'background': '#111111',
-    'text': '#7FDBFF',
-    'grey': 'rgb(50, 50, 50)'
+    'background': '#FFFFFF',
+    'text': '#111111',
+    'grey': '#E9E9E9',
+    'uc_color': 'rgb(0,103,113)',
+    'uc_inverse_color': 'rgb(113,10,0)'
 }
-webbrowser.open_new("http://localhost:8080")
 
 app.layout = html.Div(
     style={'margin': '3%'},
@@ -80,6 +81,75 @@ app.layout = html.Div(
                            }
                 ),
             ]),
+        html.Div(id="info-container",
+                 className="eight columns",
+                 children=[
+                     html.Div(id="num-events",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. Interacciones"),
+                                  html.P(str(len(prezz.dataframe.dropna())))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="num-participants",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. Participantes"),
+                                  html.P(str(prezz.num_participants_nonparticipants()[
+                                                 Maadle.PARTICIPANTES][0]))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="num-no-participants",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Núm. No Participantes"),
+                                  html.P(str(prezz.num_participants_nonparticipants()[
+                                                 Maadle.NO_PARTICIPANTES][0]))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="top-participant",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Máx. Interacciones"),
+                                  html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].tail(1))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              ),
+                     html.Div(id="bottom-participant",
+                              className="pretty_container four columns",
+                              children=[
+                                  html.H6(children="Mín. Interacciones"),
+                                  html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].head(1))],
+                              style={
+                                  'width': 'auto',
+                                  'color': 'white',
+                                  'box-shadow': '2px 2px 2px ' + colors['uc_inverse_color'],
+                                  'background-color': colors['uc_color'],
+                              }
+                              )
+                 ],
+                 style={
+                     'width': '100%',
+                     'margin-left': '0%'}),
 
         html.Div(
             children=[
@@ -119,15 +189,17 @@ app.layout = html.Div(
                             id='pie-chart-participants-users',
                             figure={
                                 'data': [
-                                    {'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
-                                     'values': [
-                                         prezz.num_participants_nonparticipants()[
-                                             Maadle.PARTICIPANTES][0],
-                                         prezz.num_participants_nonparticipants()[
-                                             Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
-                                     'automargin': True,
-                                     'textinfo': 'none'
-                                     },
+                                    {
+                                        'labels': [Maadle.PARTICIPANTES, Maadle.NO_PARTICIPANTES],
+                                        'marker': dict(colors=[colors['uc_color'], colors['uc_inverse_color']]),
+                                        'values': [
+                                            prezz.num_participants_nonparticipants()[
+                                                Maadle.PARTICIPANTES][0],
+                                            prezz.num_participants_nonparticipants()[
+                                                Maadle.NO_PARTICIPANTES][0]], 'type': 'pie',
+                                        'automargin': True,
+                                        'textinfo': 'none',
+                                    },
                                 ],
                                 'layout': {
                                     'title': 'Eventos por recurso',
@@ -150,15 +222,25 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES],
-                     'y': prezz.participants_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                     'y': str(prezz.participants_per_resource()[RECURSO]),
+                     'text': prezz.participants_per_resource()[RECURSO],
+                     'hovertemplate': 'Recurso: %{text} <br> Participantes: %{x}<extra></extra>',
+                     'type': 'bar', 'orientation': 'h', 'marker': {
+                        'color': colors['uc_color']}
+                     },
                 ],
                 'layout': {
                     'title': 'Participantes por recurso',
                     "titlefont": {
                         "size": 23
                     },
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True,
+                              'title': 'Recursos',
+                              'showticklabels': False,
+                              },
+                    'xaxis': {'automargin': True,
+                              'title': 'Número de Participantes',
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['background'],
                     'font': {
@@ -195,15 +277,26 @@ app.layout = html.Div(
             figure={
                 'data': [
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
-                     'y': prezz.events_per_resource()[RECURSO], 'type': 'bar', 'orientation': 'h'},
+                     'y': str(prezz.events_per_resource()[RECURSO]),
+                     'text': prezz.events_per_resource()[RECURSO],
+                     # 'hoverinfo':'x+text',
+                     'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
+                     # 'hovermode':'x',
+                     'type': 'bar', 'orientation': 'h', 'marker': {
+                        'color': 'rgb(0, 103, 113)'}},
                 ],
                 'layout': {
-                    'title': 'Recursos por número de eventos',
+                    'title': 'Recursos por número de interacciones',
                     "titlefont": {
                         "size": 23
                     },
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True,
+                              'title': 'Recursos',
+                              'showticklabels': False,
+                              },
+                    'xaxis': {'automargin': True,
+                              'title': 'Número de Interacciones',
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['background'],
                     'font': {
@@ -243,28 +336,39 @@ app.layout = html.Div(
                 ),
                 dcc.Dropdown(
                     id='resources-dropdown',
-                    options=[{'label': i, 'value': i} for i in prezz.dataframe[Maadle.CONTEXTO].unique()
+                    options=[{'label': i, 'value': j} for i, j in
+                             zip(prezz.dataframe_recursos[Maadle.ALIAS], prezz.dataframe_recursos[Maadle.ID_RECURSO])
                              ],
                     searchable=True,
-                    placeholder="Seleccione a un usuario",
-                    value=prezz.dataframe_recursos[Maadle.CONTEXTO][0]
+                    placeholder="Seleccione a un recurso",
+                    value=prezz.dataframe_recursos[Maadle.ID_RECURSO].unique()[0]
+
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
             ], style={'background': colors['background']}),
         dcc.Graph(
             figure={
                 'data': [{
-                    'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                    'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    # 'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
+                    # 'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
                     'z': prezz.sessions_matrix(),
+                    'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
                     'xgap': 1,
                     'type': 'heatmap',
                 }],
                 'layout': {
                     'title': 'Sesiones',
-                    'yaxis': {'automargin': True},
-                    'xaxis': {'automargin': True},
+                    'yaxis': {'automargin': True,
+                              'showticklabels': False,
+                              "ticktext": prezz.dataframe_recursos[Maadle.CONTEXTO],
+                              "tickvals": list(range(len(prezz.dataframe_recursos[Maadle.CONTEXTO])))
+                              },
+                    'xaxis': {'automargin': True,
+                              'showticklabels': False,
+                              "ticktext": prezz.dataframe_recursos[Maadle.CONTEXTO],
+                              "tickvals": list(range(len(prezz.dataframe_recursos[Maadle.CONTEXTO])))
+                              },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['grey'],
                     'font': {
@@ -272,6 +376,7 @@ app.layout = html.Div(
                     }
                 }})
     ])
+webbrowser.open_new("http://localhost:8080")
 
 
 @app.callback(
@@ -282,12 +387,14 @@ def update_output(start_date, end_date):
     dfaux5 = prezz.events_between_dates(start_date, end_date)
     return {
         'data': [
-            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter'},
+            {'x': dfaux5[FECHA], 'y': dfaux5[Maadle.NUM_EVENTOS], 'type': 'scatter',
+             'line': dict(color=colors['uc_color'])},
         ],
         'layout': {
             'title': 'Eventos por rango de días',
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
+
             'font': {
                 'color': colors['text']
             }
@@ -302,7 +409,10 @@ def update_output(value):
     dfaux6 = prezz.events_per_day_per_user(value)
     return {
         'data': [
-            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar'},
+            {'x': dfaux6[FECHA], 'y': dfaux6[Maadle.NUM_EVENTOS], 'type': 'bar',
+             'marker': {
+                 'color': colors['uc_color']}
+             },
         ],
         'layout': {
             'title': 'Eventos por rango de días por alumnos',
@@ -322,7 +432,8 @@ def update_output(value):
     dfaux7 = prezz.events_per_day_per_resource(value)
     return {
         'data': [
-            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar'},
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar', 'marker': {
+                'color': colors['uc_color']}},
         ],
         'layout': {
             'title': 'Eventos por rango de días por recurso',

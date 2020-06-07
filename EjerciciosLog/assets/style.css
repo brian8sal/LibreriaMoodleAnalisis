@@ -128,7 +128,7 @@ are based on 10px sizing. So basically 1.5rem = 15px :) */
 html {
   font-size: 62.5%; }
 body {
-  background-color:#111111 ;
+  background-color:#FFFFFF ;
   font-size: 1.5em; /* currently ems cause chrome bug misinterpreting rems on body element */
   line-height: 1.6;
   font-weight: 400;
@@ -249,8 +249,8 @@ textarea,
 select {
   height: 38px;
   padding: 6px 10px; /* The 6px vertically centers text on FF, ignored by Webkit */
-  background-color: #111111;
-  color: #7FDBFF;
+  background-color: #FFFFFF;
+  color: #111111;
   border: 1px solid #D1D1D1;
   border-radius: 4px;
   box-shadow: none;
@@ -419,7 +419,7 @@ there.
 @media (min-width: 1200px) {}
 
 
-/* Calendar */
+/* Calendar
 .DateRangePickerInput {
     background-color: black;
     display: inline-block;
@@ -481,8 +481,14 @@ there.
     stroke: black;
     fill: transparent;
 }
+*/
+.CalendarDay__selected_span {
+    background: #006771;
+    border: 1px double #710a00;
+    color: #fff;
+}
 
-/* Dropdown */
+/* Dropdown
 .Select.has-value.is-clearable.Select--single > .Select-control .Select-value {
     padding-right: 42px;
     background: black;
@@ -497,7 +503,7 @@ there.
 
 Select.has-value.Select--single > .Select-control .Select-value .Select-value-label, .Select.has-value.is-pseudo-focused.Select--single > .Select-control .Select-value .Select-value-label {
     color: #7FDBFF;
-}
+} */
 /* Images header */
 
 .column, .columns {
@@ -506,4 +512,13 @@ Select.has-value.Select--single > .Select-control .Select-value .Select-value-la
 
 .one-third.column {
     width: 100px;
+}
+/* Pretty container*/
+.pretty_container {
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  margin: 10px;
+  padding: 15px;
+  position: relative;
+  box-shadow: 2px 2px 2px lightgrey;
 }
