@@ -18,7 +18,6 @@ PARTICIPANTES = 'Participantes'
 ID_SESION = 'IDSesion'
 ALIAS = 'Alias'
 
-
 THRESHOLD = 1800
 
 
@@ -27,6 +26,7 @@ class Maadle:
     dataframe_usuarios = pd.DataFrame
     dataframe_recursos = pd.DataFrame
     nombre_curso = 'Curso de Moodle'
+
     def __init__(self, name, path, config):
 
         if path != "":
@@ -84,8 +84,9 @@ class Maadle:
                 ele.append(self.dataframe_recursos[ID_RECURSO][i])
         self.dataframe = self.dataframe[~self.dataframe[ID_RECURSO].isin(ele)]
         self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(ele)]
-
-
+        self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(list(
+            set(self.dataframe_recursos[ID_RECURSO].dropna().unique()) - set(
+                sorted(self.dataframe[ID_RECURSO].dropna().unique()))))]
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -145,7 +146,8 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True) #NÚMEROS NEGATIVOS
+        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'',
+                                                                        expand=True)  # NÚMEROS NEGATIVOS
         return dataframe
 
     def add_ID_resource_column(self) -> pd.DataFrame:
@@ -164,7 +166,8 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[ID_RECURSO] = self.dataframe[DESCRIPCION].str.extract('with course module id\s\'(\d*)\'\.', expand=True)
+        dataframe[ID_RECURSO] = self.dataframe[DESCRIPCION].str.extract('with course module id\s\'(\d*)\'\.',
+                                                                        expand=True)
         dataframe[ID_RECURSO] = pd.to_numeric(dataframe[ID_RECURSO])
         return dataframe
 
@@ -330,6 +333,7 @@ class Maadle:
     Recibe como parámetro el dataframe.
     Retorna el número de profesores del dataframe.
     """""
+
     def num_teachers(self):
         result = 0
         for d in self.dataframe[NOMBRE_USUARIO].unique():
@@ -505,7 +509,7 @@ class Maadle:
 
         """
         result = 0
-        result = self.dataframe.groupby([CONTEXTO,ID_RECURSO]).size() + result
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO]).size() + result
         result = result.reset_index()
         result.rename(columns={0: NUM_EVENTOS})
         result.columns = ['Recurso', ID_RECURSO, NUM_EVENTOS]
@@ -527,7 +531,7 @@ class Maadle:
             Lista con los recursos y su número de eventos.
 
         """
-        result = self.dataframe.groupby([CONTEXTO,ID_RECURSO])[ID_USUARIO].nunique()
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO])[ID_USUARIO].nunique()
         result = result.reset_index()
         result.rename(columns={0: NUM_PARTICIPANTES})
         result.columns = ['Recurso', ID_RECURSO, NUM_PARTICIPANTES]
@@ -710,7 +714,8 @@ class Maadle:
 
         """
         df = Maadle.create_dynamic_session_id(self)
-        result = pd.DataFrame(data=df.groupby(ID_USUARIO)[ID_SESION].nunique().values, columns=['Número de sesiones iniciadas'])
+        result = pd.DataFrame(data=df.groupby(ID_USUARIO)[ID_SESION].nunique().values,
+                              columns=['Número de sesiones iniciadas'])
         result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
         return result
 
@@ -739,15 +744,16 @@ class Maadle:
             resource_iterador = 0
             for resource in dfe:
                 if resource in event[ID_RECURSO].values:
-                    matrix[resource_iterador][resource_iterador] = matrix[resource_iterador][resource_iterador]+1
+                    matrix[resource_iterador][resource_iterador] = matrix[resource_iterador][resource_iterador] + 1
                     for recource_in_event in event[ID_RECURSO].unique():
                         if recource_in_event != resource:
-                            matrix[resource_iterador][lista_recursos.index(recource_in_event)] = matrix[resource_iterador][lista_recursos.index(recource_in_event)] + 1
-                resource_iterador = resource_iterador+1
+                            matrix[resource_iterador][lista_recursos.index(recource_in_event)] = \
+                                matrix[resource_iterador][lista_recursos.index(recource_in_event)] + 1
+                resource_iterador = resource_iterador + 1
         matrix_result = [[0 for _ in range(columns)] for _ in range(rows)]
         for j in range(columns):
             for i in range(rows):
-                aux = matrix[i][j]/matrix[j][j]
+                aux = matrix[i][j] / matrix[j][j]
                 matrix_result[j][i] = aux
         return matrix_result
 
@@ -765,10 +771,9 @@ class Maadle:
             id_curso = activity.find('courseid').text
         self.dataframe['Seccion'] = id_curso
         for activity in df[ID_RECURSO]:
-            self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
+            self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[
+                self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
         return self.dataframe
-
-
 
     """
     Calcula la media de eventos por participante del dataframe.
