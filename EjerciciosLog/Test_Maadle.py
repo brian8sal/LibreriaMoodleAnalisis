@@ -14,7 +14,6 @@ prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", 
 class Test_Maadle(unittest.TestCase):
 
     def test_create_data_frame(self):
-        print(prueba99Rows.dataframe[[Maadle.NOMBRE_USUARIO, Maadle.ID_RECURSO]])
         self.assertEqual(0, 0)
 
     def test_create_data_frame_file_name(self):
@@ -110,50 +109,45 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(0, 0)
 
     def test_eventsPerResource(self):
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[0][Maadle.NUM_EVENTOS], 32)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[0][RECURSO],
-                         "Curso: G000 - Curso de Testing - Curso 2018-2019")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[0][Maadle.NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[0][Maadle.ID_RECURSO], 5016.0)
 
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[1][Maadle.NUM_EVENTOS], 13)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[1][RECURSO], "Foro: Noticias de clase")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[1][Maadle.NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[1][Maadle.ID_RECURSO], 5015.0)
 
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[2][Maadle.NUM_EVENTOS], 4)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[2][RECURSO], "Carpeta: Recursos del Alumnado")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[2][Maadle.NUM_EVENTOS], 1)
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[2][Maadle.ID_RECURSO], 5014.0)
 
         self.assertEqual(prueba99Rows.events_per_resource().iloc[3][Maadle.NUM_EVENTOS], 1)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[3][RECURSO], "Carpeta: Entrega inicial")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[3][Maadle.ID_RECURSO], 5013.0)
 
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[4][Maadle.NUM_EVENTOS], 1)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[4][RECURSO], "Carpeta: Exámenes")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[4][Maadle.NUM_EVENTOS], 2)
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[4][Maadle.ID_RECURSO], 5012.0)
 
         self.assertEqual(prueba99Rows.events_per_resource().iloc[5][Maadle.NUM_EVENTOS], 1)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[5][RECURSO], "Carpeta: Papeleo")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[5][Maadle.ID_RECURSO], 5011.0)
 
         self.assertEqual(prueba99Rows.events_per_resource().iloc[6][Maadle.NUM_EVENTOS], 1)
-        self.assertEqual(prueba99Rows.events_per_resource().iloc[6][RECURSO], "Tarea: Entrega inicial")
-
-        self.assertEqual(prueba1Rows.events_per_resource().iloc[0][Maadle.NUM_EVENTOS], 1)
-        self.assertEqual(prueba1Rows.events_per_resource().iloc[0][RECURSO],
-                         "Curso: G000 - Curso de Testing - Curso 2018-2019")
+        self.assertEqual(prueba99Rows.events_per_resource().iloc[6][Maadle.ID_RECURSO], 5002.0)
 
     def test_events_between_dates(self):
-        ini = np.datetime64('2019-08-01')
-        fin = np.datetime64('2019-08-29')
-        dataframe = prueba99Rows.events_between_dates(ini, fin)
+        initial = np.datetime64('2019-08-01')
+        final = np.datetime64('2019-08-29')
+        dataframe = prueba99Rows.events_between_dates(initial, final)
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-08-01'][Maadle.NUM_EVENTOS].to_string(index=False),
                          " 1")
-        ini = np.datetime64('2019-09-01')
-        fin = np.datetime64('2019-09-10')
-        dataframe = prueba99Rows.events_between_dates(ini, fin)
+        initial = np.datetime64('2019-09-01')
+        final = np.datetime64('2019-09-10')
+        dataframe = prueba99Rows.events_between_dates(initial, final)
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False),
                          " 3")
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-05'][Maadle.NUM_EVENTOS].to_string(index=False),
                          " 1")
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-02'][Maadle.NUM_EVENTOS].to_string(index=False),
                          " 1")
-        ini = np.datetime64('2019-09-09')
-        fin = np.datetime64('2019-09-23')
-        dataframe = prueba99Rows.events_between_dates(ini, fin)
+        initial = np.datetime64('2019-09-09')
+        final = np.datetime64('2019-09-23')
+        dataframe = prueba99Rows.events_between_dates(initial, final)
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-09'][Maadle.NUM_EVENTOS].to_string(index=False),
                          " 3")
         self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09-22'][Maadle.NUM_EVENTOS].to_string(index=False),
@@ -162,33 +156,37 @@ class Test_Maadle(unittest.TestCase):
 
     def test_participants_per_resource(self):
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[0][
-                             Maadle.NUM_PARTICIPANTES], 13)
+                             Maadle.NUM_PARTICIPANTES], 1)
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[0][RECURSO],
-                         "Curso: G000 - Curso de Testing - Curso 2018-2019")
+                         "Carpeta: Entrega inicial")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[1][
-                             Maadle.NUM_PARTICIPANTES], 2)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[1][RECURSO], "Carpeta: Recursos del Alumnado")
+                             Maadle.NUM_PARTICIPANTES], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[1][RECURSO], "Tarea: Entrega inicial")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[2][
                              Maadle.NUM_PARTICIPANTES], 1)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[2][RECURSO], "Carpeta: Entrega inicial")
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[2][RECURSO], "Carpeta: Recursos del Alumnado")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[3][
                              Maadle.NUM_PARTICIPANTES], 1)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[3][RECURSO], "Carpeta: Exámenes")
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[3][RECURSO], "Carpeta: Papeleo")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[4][
                              Maadle.NUM_PARTICIPANTES], 1)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[4][RECURSO], "Carpeta: Papeleo")
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[4][RECURSO], "Carpeta: Recursos del Alumnado")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[5][
                              Maadle.NUM_PARTICIPANTES], 1)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[5][RECURSO], "Foro: Noticias de clase")
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[5][RECURSO], "Carpeta: Recursos del Alumnado")
 
         self.assertEqual(prueba99Rows.participants_per_resource().iloc[6][
                              Maadle.NUM_PARTICIPANTES], 1)
-        self.assertEqual(prueba99Rows.participants_per_resource().iloc[6][RECURSO], "Tarea: Entrega inicial")
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[6][RECURSO], "Carpeta: Exámenes")
+
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[7][
+                             Maadle.NUM_PARTICIPANTES], 1)
+        self.assertEqual(prueba99Rows.participants_per_resource().iloc[7][RECURSO], "Foro: Noticias de clase")
 
     def test_events_per_day_per_user(self):
         self.assertEqual(prueba99Rows.events_per_day_per_user("CUADRIELLO GALDÓS, ÁNGELA")[Maadle.NUM_EVENTOS][0], 4)
@@ -209,46 +207,71 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(prueba99Rows.events_per_day_per_user("Pérez González, Docente")[Maadle.NUM_EVENTOS][6], 6)
 
     def test_events_per_day_per_resource(self):
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Carpeta: Recursos del Alumnado")[Maadle.NUM_EVENTOS][0], 3)
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Carpeta: Recursos del Alumnado")[Maadle.NUM_EVENTOS][1], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5000.0)[Maadle.NUM_EVENTOS][0], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5000.0)[Maadle.NUM_EVENTOS][1], 3)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5000.0)[Maadle.NUM_EVENTOS][2], 6)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5000.0)[Maadle.NUM_EVENTOS][3], 2)
 
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Foro: Noticias de clase")[Maadle.NUM_EVENTOS][0], 2)
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Foro: Noticias de clase")[Maadle.NUM_EVENTOS][1], 3)
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Foro: Noticias de clase")[Maadle.NUM_EVENTOS][2], 6)
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Foro: Noticias de clase")[Maadle.NUM_EVENTOS][3], 2)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5002.0)[Maadle.NUM_EVENTOS][0], 1)
 
-        self.assertEqual(prueba99Rows.events_per_day_per_resource("Carpeta: Exámenes")[Maadle.NUM_EVENTOS][0], 1)
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5011.0)[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5012.0)[Maadle.NUM_EVENTOS][0], 2)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5013.0)[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5014.0)[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5015.0)[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5015.0)[Maadle.NUM_EVENTOS][0], 1)
+
+        self.assertEqual(prueba99Rows.events_per_day_per_resource(5016.0)[Maadle.NUM_EVENTOS][0], 1)
 
     def test_create_dynamic_session_id(self):
         dataframe = prueba99Rows.create_dynamic_session_id()
         self.assertTrue(Maadle.ID_SESION in dataframe.columns)
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:30:00'].values, ['1:0'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:33:00'].values, ['1:0'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-12 17:36:00'].values, ['1:1'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-19 10:13:00'].values, ['1:2'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-27 19:17:00'].values, ['1:5'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-12-23 16:48:00'].values, ['1:8'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:30:00'].values,
+                         ['1:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-01 10:33:00'].values,
+                         ['1:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-12 17:36:00'].values,
+                         ['1:1'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-07-19 10:13:00'].values,
+                         ['1:2'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-27 19:17:00'].values,
+                         ['1:5'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-12-23 16:48:00'].values,
+                         ['1:8'])
 
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-03-26 15:22:00'].values, ['1010:0'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-08-01 14:49:00'].values, ['1010:1'])
-        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-02 13:34:00'].values, ['1010:2'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-03-26 15:22:00'].values,
+                         ['1010:0'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-08-01 14:49:00'].values,
+                         ['1010:1'])
+        self.assertEqual(dataframe[Maadle.ID_SESION].loc[dataframe[Maadle.FECHA_HORA] == '2019-09-02 13:34:00'].values,
+                         ['1010:2'])
 
     def test_number_of_sessions_by_user(self):
         dataframe = prueba99Rows.number_of_sessions_by_user()
-        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'Pérez González, Docente'].values, 9)
-        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'REVUELTA DIAZ, CRISTINA'].values, 1)
-        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'CUADRIELLO GALDÓS, ÁNGELA'].values, 3)
-        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[dataframe[Maadle.NOMBRE_USUARIO] == 'CIMAS CAMPOS, NOIVE'].values, 2)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[
+                             dataframe[Maadle.NOMBRE_USUARIO] == 'Pérez González, Docente'].values, 9)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[
+                             dataframe[Maadle.NOMBRE_USUARIO] == 'REVUELTA DIAZ, CRISTINA'].values, 1)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[
+                             dataframe[Maadle.NOMBRE_USUARIO] == 'CUADRIELLO GALDÓS, ÁNGELA'].values, 3)
+        self.assertEqual(dataframe['Número de sesiones iniciadas'].loc[
+                             dataframe[Maadle.NOMBRE_USUARIO] == 'CIMAS CAMPOS, NOIVE'].values, 2)
 
     def test_sessions_matrix(self):
         result_matrix = prueba99Rows.sessions_matrix()
-        expected_matrix=[[24/24, 2/24, 1/24, 1/24, 1/24, 5/24, 1/24],
-                         [1/1, 1/1, 0/1, 0/1, 0/1, 0/1, 0/1],
-                         [1/1, 0/1, 1/1, 1/1, 0/1, 0/1, 0/1],
-                         [1/1, 0/1, 1/1, 1/1, 0/1, 0/1, 0/1],
-                         [1/1, 0/1, 0/1, 0/1, 1/1, 0/1, 0/1],
-                         [5/5, 0/1, 0/1, 0/1, 0/1, 5/5, 0/1],
-                         [1/1, 0/1, 0/1, 0/1, 0/1, 0/1, 1/1]]
+        expected_matrix = [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0]]
         self.assertEqual(result_matrix, expected_matrix)
 
     def test_events_per_hour(self):
@@ -262,7 +285,6 @@ class Test_Maadle(unittest.TestCase):
 
     def test_resources_by_number_of_events(self):
         self.assertEqual(0, 0)
-
 
 
 if __name__ == '__main__':
