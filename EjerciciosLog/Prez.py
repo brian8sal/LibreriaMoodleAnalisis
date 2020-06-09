@@ -289,7 +289,7 @@ app.layout = html.Div(
                      'text': prezz.events_per_resource()[RECURSO],
                      'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
                      'type': 'bar', 'orientation': 'h', 'marker': {
-                        'color': 'rgb(0, 103, 113)'}},
+                        'color': colors_graph}},
                 ],
                 'layout': {
                     'title': 'Recursos por número de interacciones',

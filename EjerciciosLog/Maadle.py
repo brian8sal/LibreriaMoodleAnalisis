@@ -37,7 +37,7 @@ class Maadle:
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
-        # self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
+        #self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
         self.dataframe['Seccion'] = 1
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
@@ -511,10 +511,10 @@ class Maadle:
 
         """
         result = 0
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO]).size() + result
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, 'Seccion']).size() + result
         result = result.reset_index()
         result.rename(columns={0: NUM_EVENTOS})
-        result.columns = ['Recurso', ID_RECURSO, NUM_EVENTOS]
+        result.columns = ['Recurso', ID_RECURSO, 'Seccion', NUM_EVENTOS]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
