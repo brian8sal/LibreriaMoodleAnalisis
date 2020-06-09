@@ -25,6 +25,15 @@ def find_data_file(filename):
 app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
+colors_graph = ['rgb(0,103,113)'] * len(prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES])
+i=0
+for x in prezz.participants_per_resource()['Seccion'].astype(int):
+    if x%2 != 0:
+        colors_graph[i]='rgb(0,103,113)'
+    else:
+        colors_graph[i]='red'
+    i=i+1
+
 colors = {
     'background': '#FFFFFF',
     'text': '#111111',
@@ -226,7 +235,7 @@ app.layout = html.Div(
                      'text': prezz.participants_per_resource()[RECURSO],
                      'hovertemplate': 'Recurso: %{text} <br> Participantes: %{x}<extra></extra>',
                      'type': 'bar', 'orientation': 'h', 'marker': {
-                        'color': colors['uc_color']}
+                        'color': colors_graph}
                      },
                 ],
                 'layout': {
@@ -279,9 +288,7 @@ app.layout = html.Div(
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
                      'y': str(prezz.events_per_resource()[RECURSO]),
                      'text': prezz.events_per_resource()[RECURSO],
-                     # 'hoverinfo':'x+text',
                      'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
-                     # 'hovermode':'x',
                      'type': 'bar', 'orientation': 'h', 'marker': {
                         'color': 'rgb(0, 103, 113)'}},
                 ],
@@ -342,15 +349,13 @@ app.layout = html.Div(
                     searchable=True,
                     placeholder="Seleccione a un recurso",
                     value=prezz.dataframe_recursos[Maadle.ID_RECURSO].unique()[0]
-
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
             ], style={'background': colors['background']}),
         dcc.Graph(
             figure={
                 'data': [{
-                    # 'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                    # 'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+
                     'z': prezz.sessions_matrix(),
                     'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
