@@ -31,7 +31,7 @@ for x in prezz.participants_per_resource()['Seccion'].astype(int):
     if x % 2 != 0:
         colors_graph[i] = 'rgb(0,103,113)'
     else:
-        colors_graph[i] = 'red'
+        colors_graph[i] = 'rgb(113,10,0)'
     i = i + 1
 
 colors = {
