@@ -17,7 +17,6 @@ NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 ID_SESION = 'IDSesion'
 ALIAS = 'Alias'
-
 THRESHOLD = 1800
 
 
@@ -38,6 +37,8 @@ class Maadle:
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
+        #self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
+        self.dataframe['Seccion'] = 1
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
@@ -73,20 +74,21 @@ class Maadle:
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
             if not (pd.isna(self.dataframe_usuarios[EXCLUIDO][i]) or self.dataframe_usuarios[EXCLUIDO][
-                i].isspace()):
+                    i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
         ele = []
         for i in range(self.dataframe_recursos[ALIAS].size):
             if not (pd.isna(self.dataframe_recursos[EXCLUIDO][i]) or self.dataframe_recursos[EXCLUIDO][
-                i].isspace()):
+                    i].isspace()):
                 ele.append(self.dataframe_recursos[ID_RECURSO][i])
         self.dataframe = self.dataframe[~self.dataframe[ID_RECURSO].isin(ele)]
         self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(ele)]
         self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(list(
             set(self.dataframe_recursos[ID_RECURSO].dropna().unique()) - set(
                 sorted(self.dataframe[ID_RECURSO].dropna().unique()))))]
+
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -147,7 +149,7 @@ class Maadle:
         """
         dataframe = self.dataframe
         dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'',
-                                                                        expand=True)  # NÚMEROS NEGATIVOS
+                                                                        expand=True)
         return dataframe
 
     def add_ID_resource_column(self) -> pd.DataFrame:
@@ -247,7 +249,7 @@ class Maadle:
         groups = self.dataframe.groupby([CONTEXTO]).size
         groups.plot.bar()
 
-    def change_hora_type(self):
+    def change_hora_type(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -266,7 +268,7 @@ class Maadle:
         dataframe[FECHA_HORA] = pd.to_datetime(self.dataframe[FECHA_HORA], dayfirst=True)
         return dataframe
 
-    def between_dates(self, initial, final):
+    def between_dates(self, initial, final) -> pd.DataFrame:
         """
         Summary line.
 
@@ -289,7 +291,7 @@ class Maadle:
         dataframe = self.dataframe.loc[result]
         return dataframe
 
-    def add_mont_day_hour_columns(self):
+    def add_mont_day_hour_columns(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -310,7 +312,7 @@ class Maadle:
         dataframe['MesDelAño'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).month
         return dataframe
 
-    def num_events(self):
+    def num_events(self) -> int:
         """
         Summary line.
 
@@ -334,14 +336,14 @@ class Maadle:
     Retorna el número de profesores del dataframe.
     """""
 
-    def num_teachers(self):
+    def num_teachers(self) -> int:
         result = 0
         for d in self.dataframe[NOMBRE_USUARIO].unique():
             if d.isupper() == False and d != '-':
                 result = result + 1
         return result
 
-    def num_participants_per_subject(self):
+    def num_participants_per_subject(self) -> int:
         """
         Summary line.
 
@@ -358,7 +360,7 @@ class Maadle:
         """
         return self.dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self)
 
-    def num_participants_nonparticipants(self):
+    def num_participants_nonparticipants(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -382,7 +384,7 @@ class Maadle:
                 df[NO_PARTICIPANTES] = df[NO_PARTICIPANTES] + 1
         return df
 
-    def list_nonparticipant(self):
+    def list_nonparticipant(self) -> pd.Series:
         """
         Summary line.
 
@@ -393,8 +395,8 @@ class Maadle:
 
         Returns
         -------
-        Dataframe
-            Dataframe con una columna con la lista de todos los usuarios no participantes.
+        Series
+            Lista de todos los usuarios no participantes.
 
         """
         result = list()
@@ -407,7 +409,7 @@ class Maadle:
         df = pd.DataFrame(result, columns=[NOMBRE_USUARIO])
         return df
 
-    def num_events_per_participant(self):
+    def num_events_per_participant(self) -> pd.Series:
         """
         Summary line.
 
@@ -418,7 +420,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con los participantes y su número de participantes.
 
         """
@@ -426,7 +428,7 @@ class Maadle:
         result = result.sort_values(by=[NUM_EVENTOS])
         return result
 
-    def events_per_month(self):
+    def events_per_month(self) -> pd.Series:
         """
         Summary line.
 
@@ -437,7 +439,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con los meses y su número de participantes.
 
         """
@@ -448,7 +450,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_week(self):
+    def events_per_week(self) -> pd.Series:
         """
         Summary line.
 
@@ -459,7 +461,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con las semanas y su número de eventos.
 
         """
@@ -470,7 +472,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day(self):
+    def events_per_day(self) -> pd.Series:
         """
         Summary line.
 
@@ -481,7 +483,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con los días y su número de eventos.
 
         """
@@ -493,7 +495,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_resource(self):
+    def events_per_resource(self) -> pd.Series:
         """
         Summary line.
 
@@ -504,19 +506,19 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con los recursos y su número de eventos.
 
         """
         result = 0
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO]).size() + result
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, 'Seccion']).size() + result
         result = result.reset_index()
         result.rename(columns={0: NUM_EVENTOS})
-        result.columns = ['Recurso', ID_RECURSO, NUM_EVENTOS]
+        result.columns = ['Recurso', ID_RECURSO, 'Seccion', NUM_EVENTOS]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
-    def participants_per_resource(self):
+    def participants_per_resource(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -527,18 +529,18 @@ class Maadle:
 
         Returns
         -------
-        series??int
-            Lista con los recursos y su número de eventos.
+        DataFrame
+            DataFrame con los recursos y su número de eventos.
 
         """
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO])[ID_USUARIO].nunique()
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, 'Seccion'])[ID_USUARIO].nunique()
         result = result.reset_index()
         result.rename(columns={0: NUM_PARTICIPANTES})
-        result.columns = ['Recurso', ID_RECURSO, NUM_PARTICIPANTES]
+        result.columns = ['Recurso', ID_RECURSO,'Seccion', NUM_PARTICIPANTES]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
-    def events_per_hour(self):
+    def events_per_hour(self) -> pd.Series:
         """
         Summary line.
 
@@ -549,7 +551,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con las horas del día y su número de eventos.
 
         """
@@ -560,7 +562,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def resources_by_number_of_events(self, min, max):
+    def resources_by_number_of_events(self, min, max) -> pd.DataFrame:
         """
         Summary line.
 
@@ -584,7 +586,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, initial, final):
+    def events_between_dates(self, initial, final) -> pd.Series:
         """
         Summary line.
 
@@ -597,11 +599,10 @@ class Maadle:
         final : int
             Límite superior del rango.
 
-
         Returns
         -------
-        series??int
-            El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
+        series
+            El número de eventos por cada fecha.
 
         """
         resultdf = Maadle.events_per_day(self)
@@ -609,7 +610,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_per_day_per_user(self, usuario):
+    def events_per_day_per_user(self, usuario) -> pd.Series:
         """
         Summary line.
 
@@ -622,7 +623,7 @@ class Maadle:
 
         Returns
         -------
-        series
+        Series
             Lista con los días y su número de eventos.
 
         """
@@ -636,7 +637,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day_per_resource(self, resource):
+    def events_per_day_per_resource(self, resource) -> pd.Series:
         """
         Summary line.
 
@@ -649,7 +650,7 @@ class Maadle:
 
         Returns
         -------
-        series
+        Series
             Lista con los días y su número de eventos.
 
         """
@@ -663,7 +664,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def create_dynamic_session_id(self):
+    def create_dynamic_session_id(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -698,7 +699,7 @@ class Maadle:
             result[ID_SESION] = sessionids
         return result
 
-    def number_of_sessions_by_user(self):
+    def number_of_sessions_by_user(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -769,11 +770,13 @@ class Maadle:
                     index=['Seccion', ID_RECURSO, 'Recurso']), ignore_index=True)
         for activity in root.findall('information/contents/course'):
             id_curso = activity.find('courseid').text
-        self.dataframe['Seccion'] = id_curso
-        for activity in df[ID_RECURSO]:
-            self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[
-                self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
-        return self.dataframe
+        dfaux = self.dataframe.copy()
+        dfaux['Seccion'] = id_curso
+        for activity, section in zip(df[ID_RECURSO], df['Seccion']):
+            dfaux.loc[dfaux[ID_RECURSO] == float(activity)] = dfaux.loc[
+                dfaux[ID_RECURSO] == float(activity)].astype(str).replace(id_curso, section)
+        # self.dataframe['Seccion'] = dfaux['Seccion']
+        return dfaux
 
     """
     Calcula la media de eventos por participante del dataframe.
