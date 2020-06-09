@@ -26,13 +26,13 @@ app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
 colors_graph = ['rgb(0,103,113)'] * len(prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES])
-i=0
+i = 0
 for x in prezz.participants_per_resource()['Seccion'].astype(int):
-    if x%2 != 0:
-        colors_graph[i]='rgb(0,103,113)'
+    if x % 2 != 0:
+        colors_graph[i] = 'rgb(0,103,113)'
     else:
-        colors_graph[i]='red'
-    i=i+1
+        colors_graph[i] = 'red'
+    i = i + 1
 
 colors = {
     'background': '#FFFFFF',
@@ -157,8 +157,7 @@ app.layout = html.Div(
                               )
                  ],
                  style={
-                     'width': '100%',
-                     'margin-left': '0%'}),
+                     'width': 'auto', }),
 
         html.Div(
             children=[
