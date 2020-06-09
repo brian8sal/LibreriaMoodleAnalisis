@@ -97,7 +97,10 @@ app.layout = html.Div(
                               className="pretty_container four columns",
                               children=[
                                   html.H6(children="Núm. Interacciones"),
-                                  html.P(str(len(prezz.dataframe.dropna())))],
+                                  html.P(str(len(prezz.dataframe.dropna())),
+                                          style={
+                                              'textAlign':'center'
+                                          })],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -110,7 +113,11 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                 Maadle.PARTICIPANTES][0]))],
+                                                  Maadle.PARTICIPANTES][0]),
+                                          style={
+                                              'textAlign': 'center'
+                                          })
+                              ],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -123,7 +130,11 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. No Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                 Maadle.NO_PARTICIPANTES][0]))],
+                                                  Maadle.NO_PARTICIPANTES][0]),
+                                          style={
+                                              'textAlign': 'center',
+                                          })
+                              ],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
