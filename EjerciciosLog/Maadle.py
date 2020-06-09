@@ -37,8 +37,8 @@ class Maadle:
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
-        self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
-        # self.dataframe['Seccion'] = 1
+        # self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
+        self.dataframe['Seccion'] = 1
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
