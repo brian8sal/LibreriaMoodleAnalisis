@@ -763,6 +763,21 @@ class Maadle:
         return matrix_result
 
     def course_structure(self, backup):
+        """
+        Summary line.
+
+        Añade la sección a la que pertenece cada recurso dentro del curso de Moodle.
+
+        Parameters
+        ----------
+        str
+            Ruta del la copia de seguridad del curso de Moodle en formato mbz
+        Returns
+        -------
+        DataFrame
+            DataFrame con una columna para añadir la sección
+
+        """
         tarfile.open(backup).extract(member='moodle_backup.xml')
         tree = ET.parse('moodle_backup.xml')
         root = tree.getroot()
@@ -782,23 +797,3 @@ class Maadle:
                 dfaux[ID_RECURSO] == float(activity)].astype(str).replace(id_curso, section)
         os.remove("moodle_backup.xml")
         return dfaux
-
-    """
-    Calcula la media de eventos por participante del dataframe.
-
-    Recibe como parámetro el dataframe.
-    Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
-    estando ordenado por la primera.
-    ##########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
-    """
-    """
-    def average_events_per_participant(self, dataframe):
-        result=0
-        result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, 
-        columns=['Media de eventos']))
-        resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,inplace=True)
-        resultdf = resultdf.sort_values(by=['Media de eventos'])
-        return resultdf
-    """
