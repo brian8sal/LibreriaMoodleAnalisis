@@ -11,7 +11,7 @@ import webbrowser
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
-prezz = (Maadle.Maadle(PrezGUI.windowLog.log, "", PrezGUI.windowConfig.config))
+prezz = (Maadle.Maadle(PrezGUI.windowLog.log, "", PrezGUI.windowConfig.config, PrezGUI.windowBackup.backup))
 
 
 def find_data_file(filename):
