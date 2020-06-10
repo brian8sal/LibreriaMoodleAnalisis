@@ -1,7 +1,10 @@
 import os
+import tarfile
 import pandas as pd
 import openpyxl
 import xml.etree.ElementTree as ET
+
+SECCION = 'Seccion'
 
 EXCLUIDO = 'Excluido'
 
@@ -26,7 +29,7 @@ class Maadle:
     dataframe_recursos = pd.DataFrame
     nombre_curso = 'Curso de Moodle'
 
-    def __init__(self, name, path, config):
+    def __init__(self, name, path, config, backup):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
@@ -37,8 +40,10 @@ class Maadle:
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
-        #self.dataframe['Seccion'] = Maadle.course_structure(self)['Seccion']
-        self.dataframe['Seccion'] = 1
+        if backup != "":
+            self.dataframe[SECCION] = Maadle.course_structure(self, backup)[SECCION]
+        else:
+            self.dataframe[SECCION] = 1
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
@@ -74,21 +79,20 @@ class Maadle:
         ele = []
         for i in range(self.dataframe_usuarios[NOMBRE_USUARIO].size):
             if not (pd.isna(self.dataframe_usuarios[EXCLUIDO][i]) or self.dataframe_usuarios[EXCLUIDO][
-                    i].isspace()):
+                i].isspace()):
                 ele.append(self.dataframe_usuarios[NOMBRE_USUARIO][i])
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(ele)]
         self.dataframe_usuarios = self.dataframe_usuarios[~self.dataframe_usuarios[NOMBRE_USUARIO].isin(ele)]
         ele = []
         for i in range(self.dataframe_recursos[ALIAS].size):
             if not (pd.isna(self.dataframe_recursos[EXCLUIDO][i]) or self.dataframe_recursos[EXCLUIDO][
-                    i].isspace()):
+                i].isspace()):
                 ele.append(self.dataframe_recursos[ID_RECURSO][i])
         self.dataframe = self.dataframe[~self.dataframe[ID_RECURSO].isin(ele)]
         self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(ele)]
         self.dataframe_recursos = self.dataframe_recursos[~self.dataframe_recursos[ID_RECURSO].isin(list(
             set(self.dataframe_recursos[ID_RECURSO].dropna().unique()) - set(
                 sorted(self.dataframe[ID_RECURSO].dropna().unique()))))]
-
 
     def create_data_frame(self, name, path) -> pd.DataFrame:
         """
@@ -511,10 +515,10 @@ class Maadle:
 
         """
         result = 0
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, 'Seccion']).size() + result
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, SECCION]).size() + result
         result = result.reset_index()
         result.rename(columns={0: NUM_EVENTOS})
-        result.columns = ['Recurso', ID_RECURSO, 'Seccion', NUM_EVENTOS]
+        result.columns = ['Recurso', ID_RECURSO, SECCION, NUM_EVENTOS]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
@@ -533,10 +537,10 @@ class Maadle:
             DataFrame con los recursos y su número de eventos.
 
         """
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, 'Seccion'])[ID_USUARIO].nunique()
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, SECCION])[ID_USUARIO].nunique()
         result = result.reset_index()
         result.rename(columns={0: NUM_PARTICIPANTES})
-        result.columns = ['Recurso', ID_RECURSO,'Seccion', NUM_PARTICIPANTES]
+        result.columns = ['Recurso', ID_RECURSO, SECCION, NUM_PARTICIPANTES]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
@@ -758,42 +762,38 @@ class Maadle:
                 matrix_result[j][i] = aux
         return matrix_result
 
-    def course_structure(self):
-        tree = ET.parse('C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/moodle_backup.xml')
+    def course_structure(self, backup):
+        """
+        Summary line.
+
+        Añade la sección a la que pertenece cada recurso dentro del curso de Moodle.
+
+        Parameters
+        ----------
+        str
+            Ruta del la copia de seguridad del curso de Moodle en formato mbz
+        Returns
+        -------
+        DataFrame
+            DataFrame con una columna para añadir la sección
+
+        """
+        tarfile.open(backup).extract(member='moodle_backup.xml')
+        tree = ET.parse('moodle_backup.xml')
         root = tree.getroot()
-        df = pd.DataFrame(columns=['Seccion', ID_RECURSO, 'Recurso'])
+        df = pd.DataFrame(columns=[SECCION, ID_RECURSO, 'Recurso'])
         id_curso = ''
         for activity in root.findall('information/contents/activities/activity'):
             df = df.append(
                 pd.Series(
                     [activity.find('sectionid').text, activity.find('moduleid').text, activity.find('title').text],
-                    index=['Seccion', ID_RECURSO, 'Recurso']), ignore_index=True)
+                    index=[SECCION, ID_RECURSO, 'Recurso']), ignore_index=True)
         for activity in root.findall('information/contents/course'):
             id_curso = activity.find('courseid').text
         dfaux = self.dataframe.copy()
-        dfaux['Seccion'] = id_curso
-        for activity, section in zip(df[ID_RECURSO], df['Seccion']):
+        dfaux[SECCION] = id_curso
+        for activity, section in zip(df[ID_RECURSO], df[SECCION]):
             dfaux.loc[dfaux[ID_RECURSO] == float(activity)] = dfaux.loc[
                 dfaux[ID_RECURSO] == float(activity)].astype(str).replace(id_curso, section)
-        # self.dataframe['Seccion'] = dfaux['Seccion']
+        os.remove("moodle_backup.xml")
         return dfaux
-
-    """
-    Calcula la media de eventos por participante del dataframe.
-
-    Recibe como parámetro el dataframe.
-    Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
-    estando ordenado por la primera.
-    ##########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
-    """
-    """
-    def average_events_per_participant(self, dataframe):
-        result=0
-        result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, 
-        columns=['Media de eventos']))
-        resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,inplace=True)
-        resultdf = resultdf.sort_values(by=['Media de eventos'])
-        return resultdf
-    """
