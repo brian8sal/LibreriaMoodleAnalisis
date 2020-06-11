@@ -363,8 +363,6 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(0, 0)
 
     def test_rest(self):
-        Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig0.xlsx", "")
-        self.assertTrue(os.path.isfile("PrezConfig0.xlsx"))
         Maadle.Maadle("TestingLog99Rows.csv", ".", "PrezConfigN.xlsx", "")
         self.assertTrue(os.path.isfile("PrezConfigN.xlsx"))
 
