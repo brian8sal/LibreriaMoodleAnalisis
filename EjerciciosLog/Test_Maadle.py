@@ -339,7 +339,24 @@ class Test_Maadle(unittest.TestCase):
         self.assertTrue(Maadle.SECCION in dataframe.columns)
 
     def test_resources_by_number_of_events(self):
-        self.assertEqual(0, 0)
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 0)
+        self.assertTrue(dataframe.empty)
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5016.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5015.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5014.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5013.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5011.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5002.0].values, 1)
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 100)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5016.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5015.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5014.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5013.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5012.0].values, 2)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5011.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5002.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5000.0].values, 13)
 
 
 if __name__ == '__main__':

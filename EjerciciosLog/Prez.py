@@ -98,9 +98,9 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. Interacciones"),
                                   html.P(str(len(prezz.dataframe.dropna())),
-                                          style={
-                                              'textAlign':'center'
-                                          })],
+                                         style={
+                                             'textAlign': 'center'
+                                         })],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -113,10 +113,10 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                  Maadle.PARTICIPANTES][0]),
-                                          style={
-                                              'textAlign': 'center'
-                                          })
+                                                 Maadle.PARTICIPANTES][0]),
+                                         style={
+                                             'textAlign': 'center'
+                                         })
                               ],
                               style={
                                   'width': 'auto',
@@ -130,10 +130,10 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. No Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                  Maadle.NO_PARTICIPANTES][0]),
-                                          style={
-                                              'textAlign': 'center',
-                                          })
+                                                 Maadle.NO_PARTICIPANTES][0]),
+                                         style={
+                                             'textAlign': 'center',
+                                         })
                               ],
                               style={
                                   'width': 'auto',
@@ -357,11 +357,12 @@ app.layout = html.Div(
                              zip(prezz.dataframe_recursos[Maadle.ALIAS], prezz.dataframe_recursos[Maadle.ID_RECURSO])
                              ],
                     searchable=True,
-                    placeholder="Seleccione a un recurso",
+                    placeholder="Seleccione un recurso",
                     value=prezz.dataframe_recursos[Maadle.ID_RECURSO].unique()[0]
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
-            ], style={'background': colors['background']}),
+            ], style={'background': colors['background']}
+        ),
         dcc.Graph(
             figure={
                 'data': [{
@@ -430,7 +431,13 @@ def update_output(value):
              },
         ],
         'layout': {
-            'title': 'Eventos por rango de días por alumnos',
+            'title': 'Eventos por día por alumno',
+            'yaxis': {
+                'title': 'Número de Interacciones',
+            },
+            'xaxis': {
+                'title': 'Fecha',
+            },
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
             'font': {
@@ -447,11 +454,21 @@ def update_output(value):
     dfaux7 = prezz.events_per_day_per_resource(value)
     return {
         'data': [
-            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar', 'marker': {
-                'color': colors['uc_color']}},
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS],
+             'type': 'bar',
+             'marker': {
+                 'color': colors['uc_color']
+             }
+             },
         ],
         'layout': {
-            'title': 'Eventos por rango de días por recurso',
+            'title': 'Interacciones por día por recurso',
+            'yaxis': {
+                'title': 'Número de Interacciones',
+            },
+            'xaxis': {
+                'title': 'Fecha',
+            },
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['background'],
             'font': {

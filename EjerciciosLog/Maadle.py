@@ -48,6 +48,7 @@ class Maadle:
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.create_config(config)
+        self.dataframe = Maadle.create_dynamic_session_id(self)
 
     def create_config(self, config):
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
@@ -152,8 +153,7 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'',
-                                                                        expand=True)
+        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
     def add_ID_resource_column(self) -> pd.DataFrame:
@@ -343,7 +343,7 @@ class Maadle:
     def num_teachers(self) -> int:
         result = 0
         for d in self.dataframe[NOMBRE_USUARIO].unique():
-            if d.isupper() == False and d != '-':
+            if d.isupper() is False and d != '-':
                 result = result + 1
         return result
 
@@ -388,7 +388,7 @@ class Maadle:
                 df[NO_PARTICIPANTES] = df[NO_PARTICIPANTES] + 1
         return df
 
-    def list_nonparticipant(self) -> pd.Series:
+    def list_nonparticipant(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -399,7 +399,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista de todos los usuarios no participantes.
 
         """
@@ -413,7 +413,7 @@ class Maadle:
         df = pd.DataFrame(result, columns=[NOMBRE_USUARIO])
         return df
 
-    def num_events_per_participant(self) -> pd.Series:
+    def num_events_per_participant(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -424,7 +424,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con los participantes y su número de participantes.
 
         """
@@ -454,7 +454,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_week(self) -> pd.Series:
+    def events_per_week(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -465,7 +465,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con las semanas y su número de eventos.
 
         """
@@ -476,7 +476,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day(self) -> pd.Series:
+    def events_per_day(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -487,7 +487,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con los días y su número de eventos.
 
         """
@@ -499,7 +499,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_resource(self) -> pd.Series:
+    def events_per_resource(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -510,8 +510,8 @@ class Maadle:
 
         Returns
         -------
-        Series
-            Lista con los recursos y su número de eventos.
+        DataFrame
+            Dataframe con los recursos y su número de eventos.
 
         """
         result = 0
@@ -614,7 +614,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_per_day_per_user(self, usuario) -> pd.Series:
+    def events_per_day_per_user(self, usuario) -> pd.DataFrame:
         """
         Summary line.
 
@@ -627,7 +627,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con los días y su número de eventos.
 
         """
@@ -641,7 +641,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day_per_resource(self, resource) -> pd.Series:
+    def events_per_day_per_resource(self, resource) -> pd.DataFrame:
         """
         Summary line.
 
@@ -650,19 +650,19 @@ class Maadle:
         Parameters
         ----------
         resource : String
-            Nombre del recurso a analizar.
+            ID del recurso a analizar.
 
         Returns
         -------
-        Series
-            Lista con los días y su número de eventos.
+        DataFrame
+            DataFrame con el nombre del evento, su recurso y las fechas en las que se interactuó con él.
 
         """
         result = 0
         df = self.dataframe[[FECHA_HORA, CONTEXTO, ID_RECURSO]]
-        df = df[(df[ID_RECURSO] <= resource + .00) & (df[ID_RECURSO] >= resource - .00)]
+        df = df[df[ID_RECURSO] == resource]
         result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
+        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS])
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
@@ -739,7 +739,7 @@ class Maadle:
             Matriz de relación de los recursos.
 
         """
-        df = Maadle.create_dynamic_session_id(self).dropna()
+        df = self.dataframe.dropna()
         dfe = self.dataframe_recursos[ID_RECURSO].dropna().unique()
         lista_recursos = sorted(dfe.tolist())
         rows = len(dfe)
@@ -772,22 +772,23 @@ class Maadle:
         ----------
         str
             Ruta del la copia de seguridad del curso de Moodle en formato mbz
+
         Returns
         -------
         DataFrame
-            DataFrame con una columna para añadir la sección
+            DataFrame con una columna columna con la sección a la que pertenece el recurso.
 
         """
         tarfile.open(backup).extract(member='moodle_backup.xml')
         tree = ET.parse('moodle_backup.xml')
         root = tree.getroot()
         df = pd.DataFrame(columns=[SECCION, ID_RECURSO, 'Recurso'])
-        id_curso = ''
         for activity in root.findall('information/contents/activities/activity'):
             df = df.append(
                 pd.Series(
                     [activity.find('sectionid').text, activity.find('moduleid').text, activity.find('title').text],
                     index=[SECCION, ID_RECURSO, 'Recurso']), ignore_index=True)
+        id_curso = ''
         for activity in root.findall('information/contents/course'):
             id_curso = activity.find('courseid').text
         dfaux = self.dataframe.copy()

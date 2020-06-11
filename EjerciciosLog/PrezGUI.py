@@ -132,8 +132,7 @@ mensaje_backup.insert(INSERT,
                       "'Seleccionar la copia de seguridad' y adjunte la copia "
                       "de seguridad del curso de Moodle, se encuentra debajo de la sección de informes en la que se "
                       "descarga el registro previamente proporcionado. \n \n"
-                      "Tras esto, pulse 'Aceptar' y el análisis será mostrado en su navegador web."
-                      "")
+                      "Tras esto, pulse 'Aceptar' y el análisis será mostrado en su navegador web.")
 
 mensaje_backup.config(state=DISABLED)
 btn_backup = Button(windowBackup, text="Seleccionar la copia de seguridad", command=clicked_btn_backup)
