@@ -1,5 +1,6 @@
 import unittest
 import Maadle
+import os
 import numpy as np
 
 FECHA = 'Fecha'
@@ -358,6 +359,14 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5002.0].values, 1)
         self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5000.0].values, 13)
 
+    def test_course_structure(self):
+        self.assertEqual(0, 0)
+
+    def test_rest(self):
+        Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig0.xlsx", "")
+        self.assertTrue(os.path.isfile("PrezConfig0.xlsx"))
+        Maadle.Maadle("TestingLog99Rows.csv", ".", "PrezConfigN.xlsx", "")
+        self.assertTrue(os.path.isfile("PrezConfigN.xlsx"))
 
 if __name__ == '__main__':
     unittest.main()
