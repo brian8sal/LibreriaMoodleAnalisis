@@ -362,9 +362,5 @@ class Test_Maadle(unittest.TestCase):
     def test_course_structure(self):
         self.assertEqual(0, 0)
 
-    def test_rest(self):
-        Maadle.Maadle("TestingLog99Rows.csv", ".", "PrezConfigN.xlsx", "")
-        self.assertTrue(os.path.isfile("PrezConfigN.xlsx"))
-
 if __name__ == '__main__':
     unittest.main()
