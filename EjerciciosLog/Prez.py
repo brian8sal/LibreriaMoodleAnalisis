@@ -11,7 +11,7 @@ import webbrowser
 RECURSO = 'Recurso'
 FECHA = 'Fecha'
 
-prezz = (Maadle.Maadle(PrezGUI.windowLog.log, "", PrezGUI.windowConfig.config))
+prezz = (Maadle.Maadle(PrezGUI.windowLog.log, "", PrezGUI.windowConfig.config, PrezGUI.windowBackup.backup))
 
 
 def find_data_file(filename):
@@ -25,6 +25,15 @@ def find_data_file(filename):
 app = dash.Dash(__name__, assets_folder=find_data_file('assets/'))
 app.title = 'Prez'
 server = app.server
+colors_graph = ['rgb(0,103,113)'] * len(prezz.participants_per_resource()[Maadle.NUM_PARTICIPANTES])
+i = 0
+for x in prezz.participants_per_resource()['Seccion'].astype(int):
+    if x % 2 != 0:
+        colors_graph[i] = 'rgb(0,103,113)'
+    else:
+        colors_graph[i] = 'rgb(113,10,0)'
+    i = i + 1
+
 colors = {
     'background': '#FFFFFF',
     'text': '#111111',
@@ -88,7 +97,10 @@ app.layout = html.Div(
                               className="pretty_container four columns",
                               children=[
                                   html.H6(children="Núm. Interacciones"),
-                                  html.P(str(len(prezz.dataframe.dropna())))],
+                                  html.P(str(len(prezz.dataframe.dropna())),
+                                         style={
+                                             'textAlign': 'center'
+                                         })],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -101,7 +113,11 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                 Maadle.PARTICIPANTES][0]))],
+                                                 Maadle.PARTICIPANTES][0]),
+                                         style={
+                                             'textAlign': 'center'
+                                         })
+                              ],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -114,7 +130,11 @@ app.layout = html.Div(
                               children=[
                                   html.H6(children="Núm. No Participantes"),
                                   html.P(str(prezz.num_participants_nonparticipants()[
-                                                 Maadle.NO_PARTICIPANTES][0]))],
+                                                 Maadle.NO_PARTICIPANTES][0]),
+                                         style={
+                                             'textAlign': 'center',
+                                         })
+                              ],
                               style={
                                   'width': 'auto',
                                   'color': 'white',
@@ -148,8 +168,7 @@ app.layout = html.Div(
                               )
                  ],
                  style={
-                     'width': '100%',
-                     'margin-left': '0%'}),
+                     'width': 'auto', }),
 
         html.Div(
             children=[
@@ -226,7 +245,7 @@ app.layout = html.Div(
                      'text': prezz.participants_per_resource()[RECURSO],
                      'hovertemplate': 'Recurso: %{text} <br> Participantes: %{x}<extra></extra>',
                      'type': 'bar', 'orientation': 'h', 'marker': {
-                        'color': colors['uc_color']}
+                        'color': colors_graph}
                      },
                 ],
                 'layout': {
@@ -279,11 +298,9 @@ app.layout = html.Div(
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
                      'y': str(prezz.events_per_resource()[RECURSO]),
                      'text': prezz.events_per_resource()[RECURSO],
-                     # 'hoverinfo':'x+text',
                      'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
-                     # 'hovermode':'x',
                      'type': 'bar', 'orientation': 'h', 'marker': {
-                        'color': 'rgb(0, 103, 113)'}},
+                        'color': colors_graph}},
                 ],
                 'layout': {
                     'title': 'Recursos por número de interacciones',
@@ -340,17 +357,16 @@ app.layout = html.Div(
                              zip(prezz.dataframe_recursos[Maadle.ALIAS], prezz.dataframe_recursos[Maadle.ID_RECURSO])
                              ],
                     searchable=True,
-                    placeholder="Seleccione a un recurso",
+                    placeholder="Seleccione un recurso",
                     value=prezz.dataframe_recursos[Maadle.ID_RECURSO].unique()[0]
-
                 ),
                 dcc.Graph(id='graph-events-per-day-per-resource')
-            ], style={'background': colors['background']}),
+            ], style={'background': colors['background']}
+        ),
         dcc.Graph(
             figure={
                 'data': [{
-                    # 'x': prezz.dataframe_recursos[Maadle.CONTEXTO],
-                    # 'y': prezz.dataframe_recursos[Maadle.CONTEXTO],
+
                     'z': prezz.sessions_matrix(),
                     'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
@@ -415,7 +431,13 @@ def update_output(value):
              },
         ],
         'layout': {
-            'title': 'Eventos por rango de días por alumnos',
+            'title': 'Eventos por día por alumno',
+            'yaxis': {
+                'title': 'Número de Interacciones',
+            },
+            'xaxis': {
+                'title': 'Fecha',
+            },
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['grey'],
             'font': {
@@ -432,11 +454,21 @@ def update_output(value):
     dfaux7 = prezz.events_per_day_per_resource(value)
     return {
         'data': [
-            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS], 'type': 'bar', 'marker': {
-                'color': colors['uc_color']}},
+            {'x': dfaux7[FECHA], 'y': dfaux7[Maadle.NUM_EVENTOS],
+             'type': 'bar',
+             'marker': {
+                 'color': colors['uc_color']
+             }
+             },
         ],
         'layout': {
-            'title': 'Eventos por rango de días por recurso',
+            'title': 'Interacciones por día por recurso',
+            'yaxis': {
+                'title': 'Número de Interacciones',
+            },
+            'xaxis': {
+                'title': 'Fecha',
+            },
             'plot_bgcolor': colors['background'],
             'paper_bgcolor': colors['background'],
             'font': {

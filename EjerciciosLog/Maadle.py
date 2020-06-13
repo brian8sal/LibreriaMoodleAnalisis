@@ -1,7 +1,10 @@
 import os
+import tarfile
 import pandas as pd
 import openpyxl
 import xml.etree.ElementTree as ET
+
+SECCION = 'Seccion'
 
 EXCLUIDO = 'Excluido'
 
@@ -17,7 +20,6 @@ NO_PARTICIPANTES = 'No participantes'
 PARTICIPANTES = 'Participantes'
 ID_SESION = 'IDSesion'
 ALIAS = 'Alias'
-
 THRESHOLD = 1800
 
 
@@ -27,7 +29,7 @@ class Maadle:
     dataframe_recursos = pd.DataFrame
     nombre_curso = 'Curso de Moodle'
 
-    def __init__(self, name, path, config):
+    def __init__(self, name, path, config, backup):
 
         if path != "":
             self.dataframe = Maadle.create_data_frame(self, name, path)
@@ -38,10 +40,15 @@ class Maadle:
         self.dataframe = Maadle.add_ID_user_column(self)
         self.dataframe = Maadle.add_ID_resource_column(self)
         self.dataframe = self.dataframe[~self.dataframe[NOMBRE_USUARIO].isin(['-'])]
+        if backup != "":
+            self.dataframe[SECCION] = Maadle.course_structure(self, backup)[SECCION]
+        else:
+            self.dataframe[SECCION] = 1
         self.dataframe = Maadle.change_hora_type(self)
         self.dataframe = Maadle.add_mont_day_hour_columns(self)
         self.dataframe = self.dataframe.sort_values(by=[FECHA_HORA])
         self.create_config(config)
+        self.dataframe = Maadle.create_dynamic_session_id(self)
 
     def create_config(self, config):
         self.dataframe_usuarios = pd.DataFrame(self.dataframe[NOMBRE_USUARIO].unique(), columns=[NOMBRE_USUARIO])
@@ -146,8 +153,7 @@ class Maadle:
 
         """
         dataframe = self.dataframe
-        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'',
-                                                                        expand=True)  # NÚMEROS NEGATIVOS
+        dataframe[ID_USUARIO] = self.dataframe[DESCRIPCION].str.extract('[i][d]\s\'(\d*)\'', expand=True)
         return dataframe
 
     def add_ID_resource_column(self) -> pd.DataFrame:
@@ -247,7 +253,7 @@ class Maadle:
         groups = self.dataframe.groupby([CONTEXTO]).size
         groups.plot.bar()
 
-    def change_hora_type(self):
+    def change_hora_type(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -266,7 +272,7 @@ class Maadle:
         dataframe[FECHA_HORA] = pd.to_datetime(self.dataframe[FECHA_HORA], dayfirst=True)
         return dataframe
 
-    def between_dates(self, initial, final):
+    def between_dates(self, initial, final) -> pd.DataFrame:
         """
         Summary line.
 
@@ -289,7 +295,7 @@ class Maadle:
         dataframe = self.dataframe.loc[result]
         return dataframe
 
-    def add_mont_day_hour_columns(self):
+    def add_mont_day_hour_columns(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -310,7 +316,7 @@ class Maadle:
         dataframe['MesDelAño'] = pd.DatetimeIndex(self.dataframe[FECHA_HORA]).month
         return dataframe
 
-    def num_events(self):
+    def num_events(self) -> int:
         """
         Summary line.
 
@@ -334,14 +340,14 @@ class Maadle:
     Retorna el número de profesores del dataframe.
     """""
 
-    def num_teachers(self):
+    def num_teachers(self) -> int:
         result = 0
         for d in self.dataframe[NOMBRE_USUARIO].unique():
-            if d.isupper() == False and d != '-':
+            if d.isupper() is False and d != '-':
                 result = result + 1
         return result
 
-    def num_participants_per_subject(self):
+    def num_participants_per_subject(self) -> int:
         """
         Summary line.
 
@@ -358,7 +364,7 @@ class Maadle:
         """
         return self.dataframe[ID_USUARIO].nunique() - Maadle.num_teachers(self)
 
-    def num_participants_nonparticipants(self):
+    def num_participants_nonparticipants(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -382,7 +388,7 @@ class Maadle:
                 df[NO_PARTICIPANTES] = df[NO_PARTICIPANTES] + 1
         return df
 
-    def list_nonparticipant(self):
+    def list_nonparticipant(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -393,8 +399,8 @@ class Maadle:
 
         Returns
         -------
-        Dataframe
-            Dataframe con una columna con la lista de todos los usuarios no participantes.
+        DataFrame
+            Lista de todos los usuarios no participantes.
 
         """
         result = list()
@@ -407,7 +413,7 @@ class Maadle:
         df = pd.DataFrame(result, columns=[NOMBRE_USUARIO])
         return df
 
-    def num_events_per_participant(self):
+    def num_events_per_participant(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -418,7 +424,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        DataFrame
             Lista con los participantes y su número de participantes.
 
         """
@@ -426,7 +432,7 @@ class Maadle:
         result = result.sort_values(by=[NUM_EVENTOS])
         return result
 
-    def events_per_month(self):
+    def events_per_month(self) -> pd.Series:
         """
         Summary line.
 
@@ -437,7 +443,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con los meses y su número de participantes.
 
         """
@@ -448,7 +454,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_week(self):
+    def events_per_week(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -459,7 +465,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        DataFrame
             Lista con las semanas y su número de eventos.
 
         """
@@ -470,7 +476,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day(self):
+    def events_per_day(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -481,7 +487,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        DataFrame
             Lista con los días y su número de eventos.
 
         """
@@ -493,7 +499,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_resource(self):
+    def events_per_resource(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -504,19 +510,19 @@ class Maadle:
 
         Returns
         -------
-        series??int
-            Lista con los recursos y su número de eventos.
+        DataFrame
+            Dataframe con los recursos y su número de eventos.
 
         """
         result = 0
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO]).size() + result
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, SECCION]).size() + result
         result = result.reset_index()
         result.rename(columns={0: NUM_EVENTOS})
-        result.columns = ['Recurso', ID_RECURSO, NUM_EVENTOS]
+        result.columns = ['Recurso', ID_RECURSO, SECCION, NUM_EVENTOS]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
-    def participants_per_resource(self):
+    def participants_per_resource(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -527,18 +533,18 @@ class Maadle:
 
         Returns
         -------
-        series??int
-            Lista con los recursos y su número de eventos.
+        DataFrame
+            DataFrame con los recursos y su número de eventos.
 
         """
-        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO])[ID_USUARIO].nunique()
+        result = self.dataframe.groupby([CONTEXTO, ID_RECURSO, SECCION])[ID_USUARIO].nunique()
         result = result.reset_index()
         result.rename(columns={0: NUM_PARTICIPANTES})
-        result.columns = ['Recurso', ID_RECURSO, NUM_PARTICIPANTES]
+        result.columns = ['Recurso', ID_RECURSO, SECCION, NUM_PARTICIPANTES]
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
-    def events_per_hour(self):
+    def events_per_hour(self) -> pd.Series:
         """
         Summary line.
 
@@ -549,7 +555,7 @@ class Maadle:
 
         Returns
         -------
-        series??int
+        Series
             Lista con las horas del día y su número de eventos.
 
         """
@@ -560,7 +566,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def resources_by_number_of_events(self, min, max):
+    def resources_by_number_of_events(self, min, max) -> pd.DataFrame:
         """
         Summary line.
 
@@ -584,7 +590,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, initial, final):
+    def events_between_dates(self, initial, final) -> pd.Series:
         """
         Summary line.
 
@@ -597,11 +603,10 @@ class Maadle:
         final : int
             Límite superior del rango.
 
-
         Returns
         -------
-        series??int
-            El número de eventos por cada fecha. ??REVISAR DOCUMENTACIÓN.
+        series
+            El número de eventos por cada fecha.
 
         """
         resultdf = Maadle.events_per_day(self)
@@ -609,7 +614,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_per_day_per_user(self, usuario):
+    def events_per_day_per_user(self, usuario) -> pd.DataFrame:
         """
         Summary line.
 
@@ -622,7 +627,7 @@ class Maadle:
 
         Returns
         -------
-        series
+        DataFrame
             Lista con los días y su número de eventos.
 
         """
@@ -636,7 +641,7 @@ class Maadle:
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def events_per_day_per_resource(self, resource):
+    def events_per_day_per_resource(self, resource) -> pd.DataFrame:
         """
         Summary line.
 
@@ -645,25 +650,25 @@ class Maadle:
         Parameters
         ----------
         resource : String
-            Nombre del recurso a analizar.
+            ID del recurso a analizar.
 
         Returns
         -------
-        series
-            Lista con los días y su número de eventos.
+        DataFrame
+            DataFrame con el nombre del evento, su recurso y las fechas en las que se interactuó con él.
 
         """
         result = 0
         df = self.dataframe[[FECHA_HORA, CONTEXTO, ID_RECURSO]]
-        df = df[(df[ID_RECURSO] <= resource + .00) & (df[ID_RECURSO] >= resource - .00)]
+        df = df[df[ID_RECURSO] == resource]
         result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
-        resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
+        resultdf = pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS])
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
         resultdf.reset_index(drop=True, inplace=True)
         return resultdf
 
-    def create_dynamic_session_id(self):
+    def create_dynamic_session_id(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -698,7 +703,7 @@ class Maadle:
             result[ID_SESION] = sessionids
         return result
 
-    def number_of_sessions_by_user(self):
+    def number_of_sessions_by_user(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -734,7 +739,7 @@ class Maadle:
             Matriz de relación de los recursos.
 
         """
-        df = Maadle.create_dynamic_session_id(self).dropna()
+        df = self.dataframe.dropna()
         dfe = self.dataframe_recursos[ID_RECURSO].dropna().unique()
         lista_recursos = sorted(dfe.tolist())
         rows = len(dfe)
@@ -757,40 +762,39 @@ class Maadle:
                 matrix_result[j][i] = aux
         return matrix_result
 
-    def course_structure(self):
-        tree = ET.parse('C:/Users/sal8b/OneDrive/Escritorio/LibreriaMoodleAnalisis/EjerciciosLog/moodle_backup.xml')
+    def course_structure(self, backup):
+        """
+        Summary line.
+
+        Añade la sección a la que pertenece cada recurso dentro del curso de Moodle.
+
+        Parameters
+        ----------
+        str
+            Ruta del la copia de seguridad del curso de Moodle en formato mbz
+
+        Returns
+        -------
+        DataFrame
+            DataFrame con una columna columna con la sección a la que pertenece el recurso.
+
+        """
+        tarfile.open(backup).extract(member='moodle_backup.xml')
+        tree = ET.parse('moodle_backup.xml')
         root = tree.getroot()
-        df = pd.DataFrame(columns=['Seccion', ID_RECURSO, 'Recurso'])
-        id_curso = ''
+        df = pd.DataFrame(columns=[SECCION, ID_RECURSO, 'Recurso'])
         for activity in root.findall('information/contents/activities/activity'):
             df = df.append(
                 pd.Series(
                     [activity.find('sectionid').text, activity.find('moduleid').text, activity.find('title').text],
-                    index=['Seccion', ID_RECURSO, 'Recurso']), ignore_index=True)
+                    index=[SECCION, ID_RECURSO, 'Recurso']), ignore_index=True)
+        id_curso = ''
         for activity in root.findall('information/contents/course'):
             id_curso = activity.find('courseid').text
-        self.dataframe['Seccion'] = id_curso
-        for activity in df[ID_RECURSO]:
-            self.dataframe.loc[self.dataframe[ID_RECURSO] == str(activity)] = self.dataframe.loc[
-                self.dataframe[ID_RECURSO] == str(activity)].astype(str).replace(id_curso, activity)
-        return self.dataframe
-
-    """
-    Calcula la media de eventos por participante del dataframe.
-
-    Recibe como parámetro el dataframe.
-    Retorna un dataframe con una columna con la media de eventos y con otra con el nombre del participante,
-    estando ordenado por la primera.
-    ##########OJO NO TIENE SENTIDO, ESTA MÉTRICA TIENE QUE SER DE CURSO
-    """
-    """
-    def average_events_per_participant(self, dataframe):
-        result=0
-        result = dataframe.groupby([NOMBRE_USUARIO]).size() + result
-        resultdf = (pd.DataFrame(data=((result / len(dataframe)).values), index=(result / len(dataframe)).index, 
-        columns=['Media de eventos']))
-        resultdf['Participante'] = resultdf.index
-        resultdf.reset_index(drop=True,inplace=True)
-        resultdf = resultdf.sort_values(by=['Media de eventos'])
-        return resultdf
-    """
+        dfaux = self.dataframe.copy()
+        dfaux[SECCION] = id_curso
+        for activity, section in zip(df[ID_RECURSO], df[SECCION]):
+            dfaux.loc[dfaux[ID_RECURSO] == float(activity)] = dfaux.loc[
+                dfaux[ID_RECURSO] == float(activity)].astype(str).replace(id_curso, section)
+        os.remove("moodle_backup.xml")
+        return dfaux

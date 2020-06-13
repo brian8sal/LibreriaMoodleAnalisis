@@ -1,20 +1,24 @@
 import unittest
 import Maadle
+import os
 import numpy as np
 
 FECHA = 'Fecha'
 RECURSO = 'Recurso'
 
-prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx"))
-prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx"))
-prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx"))
-prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx"))
+prueba1Rows = (Maadle.Maadle("TestingLog1Row.csv", "", "PrezConfig1.xlsx", ""))
+prueba99Rows = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig2.xlsx", ""))
+prueba99RowsSinUsuarios = (Maadle.Maadle("TestingLog99Rows.csv", "", "PrezConfig.xlsx", ""))
+prueba99RowsTodosUsuarios = (Maadle.Maadle("TestingLog99RowsTodosUsuarios.csv", "", "PrezConfig1.xlsx", ""))
 
 
 class Test_Maadle(unittest.TestCase):
 
     def test_create_data_frame(self):
-        self.assertEqual(0, 0)
+        dataframe = prueba1Rows.create_data_frame("TestingLog1Row.csv", ".")
+        self.assertEqual(len(dataframe), 1)
+        dataframe = prueba99Rows.create_data_frame("TestingLog99Rows.csv", ".")
+        self.assertEqual(len(dataframe), 99)
 
     def test_create_data_frame_file_name(self):
         dataframe = prueba1Rows.create_data_frame_file_fame("TestingLog1Row.csv")
@@ -23,9 +27,9 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(len(dataframe), 99)
 
     def test_addID_user_column(self):
-        dataframe = prueba1Rows.add_ID_user_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
+        dataframe = prueba1Rows.add_ID_user_column()
         self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
-        dataframe = prueba99Rows.add_ID_user_column()  # Ya la tiene en el constructor, probada borrándolo y añadiéndolo aquí
+        dataframe = prueba99Rows.add_ID_user_column()
         self.assertTrue(Maadle.ID_USUARIO in dataframe.columns)
 
     def test_deleteColumns(self):
@@ -97,16 +101,64 @@ class Test_Maadle(unittest.TestCase):
                             Maadle.NOMBRE_USUARIO][2] == 'JAVI')
         self.assertTrue((prueba99Rows.list_nonparticipant())[
                             Maadle.NOMBRE_USUARIO][3] == 'RODRIGUEZ PÉREZ, DANIEL')
-        self.assertTrue('TODOS HAN PARTICIPADO' in (prueba99RowsTodosUsuarios.list_nonparticipant().columns))
+        self.assertTrue('TODOS HAN PARTICIPADO' in prueba99RowsTodosUsuarios.list_nonparticipant().columns)
 
-    def test_eventsPerMonth(self):
-        self.assertEqual(0, 0)
+    def test_events_per_month(self):
+        dataframe = prueba99Rows.events_per_month()
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-03'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 5")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-05'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 6")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-06'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 3")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-07'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 12")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-08'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-09'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 17")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-10'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 3")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-12'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 6")
 
-    def test_eventsPerWeek(self):
-        self.assertEqual(0, 0)
+    def test_events_per_week(self):
+        dataframe = prueba99Rows.events_per_week()
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '12'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 5")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '17'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 4")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '18'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '21'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '22'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 2")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '23'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '26'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 4")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '27'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 2")
 
-    def test_eventsPerDay(self):
-        self.assertEqual(0, 0)
+    def test_events_per_day(self):
+        dataframe = prueba99Rows.events_per_day()
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-03-26'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 4")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-03-27'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-05-03'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 4")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-05-07'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-05-29'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-06-03'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 2")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-06-16'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 1")
+        self.assertEqual(dataframe.loc[dataframe[FECHA] == '2019-07-01'][Maadle.NUM_EVENTOS].to_string(index=False),
+                         " 4")
 
     def test_eventsPerResource(self):
         self.assertEqual(prueba99Rows.events_per_resource().iloc[0][Maadle.NUM_EVENTOS], 1)
@@ -283,9 +335,32 @@ class Test_Maadle(unittest.TestCase):
         self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '14'].values, 1)
         self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.FECHA_HORA] == '17'].values, 4)
 
-    def test_resources_by_number_of_events(self):
-        self.assertEqual(0, 0)
+    def course_structure(self):
+        dataframe = prueba99Rows.course_structure()
+        self.assertTrue(Maadle.SECCION in dataframe.columns)
 
+    def test_resources_by_number_of_events(self):
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 0)
+        self.assertTrue(dataframe.empty)
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5016.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5015.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5014.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5013.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5011.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5002.0].values, 1)
+        dataframe = prueba99Rows.resources_by_number_of_events(0, 100)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5016.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5015.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5014.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5013.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5012.0].values, 2)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5011.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5002.0].values, 1)
+        self.assertEqual(dataframe[Maadle.NUM_EVENTOS].loc[dataframe[Maadle.ID_RECURSO] == 5000.0].values, 13)
+
+    def test_course_structure(self):
+        self.assertEqual(0, 0)
 
 if __name__ == '__main__':
     unittest.main()
