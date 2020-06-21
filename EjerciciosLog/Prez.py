@@ -303,7 +303,7 @@ app.layout = html.Div(
                         'color': colors_graph}},
                 ],
                 'layout': {
-                    'title': 'Recursos por número de interacciones',
+                    'title': 'Número de interacciones por recurso',
                     "titlefont": {
                         "size": 23
                     },
