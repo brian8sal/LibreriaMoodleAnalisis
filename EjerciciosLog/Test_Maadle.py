@@ -315,7 +315,7 @@ class Test_Maadle(unittest.TestCase):
                              dataframe[Maadle.NOMBRE_USUARIO] == 'CIMAS CAMPOS, NOIVE'].values, 2)
 
     def test_sessions_matrix(self):
-        result_matrix = prueba99Rows.sessions_matrix()
+        result_matrix = prueba99Rows.sessions_matrix().values.tolist()
         expected_matrix = [[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                            [0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0],

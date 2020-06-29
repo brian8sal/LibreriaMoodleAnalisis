@@ -145,7 +145,6 @@ class Maadle:
 
         Parameters
         ----------
-
         Returns
         -------
         dataframe
@@ -306,7 +305,7 @@ class Maadle:
 
         Returns
         -------
-        dataframe
+        DataFrame
             Log con las columnas añadidas.
 
         """
@@ -388,7 +387,7 @@ class Maadle:
                 df[NO_PARTICIPANTES] = df[NO_PARTICIPANTES] + 1
         return df
 
-    def list_nonparticipant(self) -> pd.DataFrame:
+    def list_nonparticipant(self) -> pd.Series:
         """
         Summary line.
 
@@ -399,7 +398,7 @@ class Maadle:
 
         Returns
         -------
-        DataFrame
+        Series
             Lista de todos los usuarios no participantes.
 
         """
@@ -432,7 +431,7 @@ class Maadle:
         result = result.sort_values(by=[NUM_EVENTOS])
         return result
 
-    def events_per_month(self) -> pd.Series:
+    def events_per_month(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -443,7 +442,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con los meses y su número de participantes.
 
         """
@@ -544,7 +543,7 @@ class Maadle:
         result = result.sort_values(ascending=False, by=[ID_RECURSO])
         return result
 
-    def events_per_hour(self) -> pd.Series:
+    def events_per_hour(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -555,7 +554,7 @@ class Maadle:
 
         Returns
         -------
-        Series
+        DataFrame
             Lista con las horas del día y su número de eventos.
 
         """
@@ -590,7 +589,7 @@ class Maadle:
         resultdf = resultdf.loc[result2]
         return resultdf
 
-    def events_between_dates(self, initial, final) -> pd.Series:
+    def events_between_dates(self, initial, final) -> pd.DataFrame:
         """
         Summary line.
 
@@ -605,7 +604,7 @@ class Maadle:
 
         Returns
         -------
-        series
+        DataFrame
             El número de eventos por cada fecha.
 
         """
@@ -631,10 +630,9 @@ class Maadle:
             Lista con los días y su número de eventos.
 
         """
-        result = 0
         df = self.dataframe[[FECHA_HORA, NOMBRE_USUARIO]]
         df = df[df[NOMBRE_USUARIO].str.contains(usuario)]
-        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count')
         resultdf = (pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS]))
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
@@ -658,10 +656,9 @@ class Maadle:
             DataFrame con el nombre del evento, su recurso y las fechas en las que se interactuó con él.
 
         """
-        result = 0
         df = self.dataframe[[FECHA_HORA, CONTEXTO, ID_RECURSO]]
         df = df[df[ID_RECURSO] == resource]
-        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count') + result
+        result = df[FECHA_HORA].groupby(df.Hora.dt.strftime('%Y-%m-%d')).agg('count')
         resultdf = pd.DataFrame(data=result.values, index=result.index, columns=[NUM_EVENTOS])
         resultdf['Fecha'] = resultdf.index
         resultdf['Fecha'] = pd.to_datetime(resultdf['Fecha'])
@@ -724,7 +721,7 @@ class Maadle:
         result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
         return result
 
-    def sessions_matrix(self):
+    def sessions_matrix(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -735,7 +732,7 @@ class Maadle:
 
         Returns
         -------
-        Matrix
+        DataFrame
             Matriz de relación de los recursos.
 
         """
@@ -760,9 +757,9 @@ class Maadle:
             for i in range(rows):
                 aux = matrix[i][j] / matrix[j][j]
                 matrix_result[j][i] = aux
-        return matrix_result
+        return pd.DataFrame(matrix_result)
 
-    def course_structure(self, backup):
+    def course_structure(self, backup) -> pd.DataFrame:
         """
         Summary line.
 
