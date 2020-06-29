@@ -27,7 +27,7 @@ executables = [
 setup(
     name='Prez',
     packages=find_packages(),
-    version='0.0.3',
+    version='1.0',
     description='rig',
     executables=executables,
     options=options

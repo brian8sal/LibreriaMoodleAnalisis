@@ -721,7 +721,7 @@ class Maadle:
         result[NOMBRE_USUARIO] = df[NOMBRE_USUARIO].unique()
         return result
 
-    def sessions_matrix(self) -> list:
+    def sessions_matrix(self) -> pd.DataFrame:
         """
         Summary line.
 
@@ -732,7 +732,7 @@ class Maadle:
 
         Returns
         -------
-        Matrix
+        DataFrame
             Matriz de relación de los recursos.
 
         """
@@ -757,7 +757,7 @@ class Maadle:
             for i in range(rows):
                 aux = matrix[i][j] / matrix[j][j]
                 matrix_result[j][i] = aux
-        return matrix_result
+        return pd.DataFrame(matrix_result)
 
     def course_structure(self, backup) -> pd.DataFrame:
         """

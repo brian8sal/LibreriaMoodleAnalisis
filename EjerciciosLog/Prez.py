@@ -96,7 +96,7 @@ app.layout = html.Div(
                      html.Div(id="num-events",
                               className="pretty_container four columns",
                               children=[
-                                  html.H6(children="Núm. Interacciones"),
+                                  html.H6(children="Núm. Eventos"),
                                   html.P(str(len(prezz.dataframe.dropna())),
                                          style={
                                              'textAlign': 'center'
@@ -145,7 +145,7 @@ app.layout = html.Div(
                      html.Div(id="top-participant",
                               className="pretty_container four columns",
                               children=[
-                                  html.H6(children="Máx. Interacciones"),
+                                  html.H6(children="Máx. Eventos"),
                                   html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].tail(1))],
                               style={
                                   'width': 'auto',
@@ -157,7 +157,7 @@ app.layout = html.Div(
                      html.Div(id="bottom-participant",
                               className="pretty_container four columns",
                               children=[
-                                  html.H6(children="Mín. Interacciones"),
+                                  html.H6(children="Mín. Eventos"),
                                   html.P(prezz.num_events_per_participant()[Maadle.NOMBRE_USUARIO].head(1))],
                               style={
                                   'width': 'auto',
@@ -298,12 +298,12 @@ app.layout = html.Div(
                     {'x': prezz.events_per_resource()[Maadle.NUM_EVENTOS],
                      'y': str(prezz.events_per_resource()[RECURSO]),
                      'text': prezz.events_per_resource()[RECURSO],
-                     'hovertemplate': 'Recurso: %{text} <br> Interacciones: %{x}<extra></extra>',
+                     'hovertemplate': 'Recurso: %{text} <br> Eventos: %{x}<extra></extra>',
                      'type': 'bar', 'orientation': 'h', 'marker': {
                         'color': colors_graph}},
                 ],
                 'layout': {
-                    'title': 'Número de interacciones por recurso',
+                    'title': 'Número de Eventos por recurso',
                     "titlefont": {
                         "size": 23
                     },
@@ -312,7 +312,7 @@ app.layout = html.Div(
                               'showticklabels': False,
                               },
                     'xaxis': {'automargin': True,
-                              'title': 'Número de Interacciones',
+                              'title': 'Número de Eventos',
                               },
                     'plot_bgcolor': colors['background'],
                     'paper_bgcolor': colors['background'],
@@ -367,14 +367,14 @@ app.layout = html.Div(
             figure={
                 'data': [{
 
-                    'z': prezz.sessions_matrix(),
+                    'z': prezz.sessions_matrix().values.tolist(),
                     'colorscale': [[0, 'white'], [1, colors['uc_inverse_color']]],
                     'ygap': 1,
                     'xgap': 1,
                     'type': 'heatmap',
                 }],
                 'layout': {
-                    'title': 'Sesiones',
+                    'title': 'Relación entre los recursos por sesión',
                     'yaxis': {'automargin': True,
                               'showticklabels': False,
                               "ticktext": prezz.dataframe_recursos[Maadle.CONTEXTO],
@@ -433,7 +433,7 @@ def update_output(value):
         'layout': {
             'title': 'Eventos por día por alumno',
             'yaxis': {
-                'title': 'Número de Interacciones',
+                'title': 'Número de Eventos',
             },
             'xaxis': {
                 'title': 'Fecha',
@@ -462,9 +462,9 @@ def update_output(value):
              },
         ],
         'layout': {
-            'title': 'Interacciones por día por recurso',
+            'title': 'Eventos por día por recurso',
             'yaxis': {
-                'title': 'Número de Interacciones',
+                'title': 'Número de Eventos',
             },
             'xaxis': {
                 'title': 'Fecha',
